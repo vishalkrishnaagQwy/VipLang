@@ -2,6 +2,7 @@
 
 class Main
     def main()
+       #some Comment
        a = 10
 
 # Call the main function

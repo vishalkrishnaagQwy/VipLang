@@ -62,7 +62,6 @@ public class Parser {
         String vipClasName = currentToken.getLexme();
         consume(Token.TokenType.IDENTIFIER);
         this.className = vipClasName;
-        consume(Token.TokenType.INDENT);
     }
 
     public void parseClass(){
@@ -133,7 +132,6 @@ public class Parser {
         // Optionally parse parameters
         consume(Token.TokenType.OPERATOR,ParsingType.R_PARENTHESIS); // Expect ')'
         // Parse method body
-        consume(Token.TokenType.INDENT);
         parseStatement();
     }
 

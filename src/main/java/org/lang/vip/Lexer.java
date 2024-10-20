@@ -17,11 +17,13 @@ public class Lexer {
     private int index;
     private Stack<Integer> indentStack = new Stack<>();
     private int currentIndentation = 0;
+    int expectIndent = 0;
 
     private final Set<String> keywords = new HashSet<String>();
 
     // Define symbols and their types
     private final Map<String, Token.TokenType> symbols = new HashMap<>();
+    private static final int minimum_space=1;
 
     public Lexer(String fileName) {
         this.encoding = "UTF-8"; // Change as needed
@@ -252,32 +254,70 @@ public class Lexer {
 
 
     public Token getNextToken() {
+
         StringBuilder tokenValue = new StringBuilder();
+        currentIndentation = 0; // Reset for new lines
 
         while (index < textContent.length()) {
             char currentChar = textContent.charAt(index);
 
             // Handle whitespaces
-            if (Character.isWhitespace(currentChar)) {
-                // Manage newlines and indentation
+            if (Character.isWhitespace(currentChar) || textContent.charAt(index) == '\n') {
+                // Increment the current indentation for spaces or tabs
+                if (currentChar == ' ' || currentChar == '\t') {
+                    currentIndentation++;
+                    index++;
+                    continue; // Continue processing whitespace
+                }
+
+                // Handle new lines
                 if (currentChar == '\n') {
                     lineNumber++;
                     index++;
 
-                    // Check for dedentation
-                    if (!indentStack.isEmpty() && currentIndentation < indentStack.peek()) {
-                        indentStack.pop(); // Dedent
-                        return new Token(Token.TokenType.DEDENT, "DEDENT", lineNumber);
-                    }
-
-                    // Reset current indentation after a line break
+                    // Reset for the next line
                     currentIndentation = 0;
                     continue;
-                } else if (currentChar == ' ' || currentChar == '\t') {
-                    currentIndentation++;
-                    index++;
-                    continue;
                 }
+            }
+
+            // Handle identifiers and keywords
+            if (Character.isLetter(currentChar) || currentChar == '_') {
+                if (currentIndentation > minimum_space &&  currentIndentation > (indentStack.isEmpty() ? 0 : indentStack.peek())) {
+                    if (expectIndent > 0) {
+                        indentStack.push(currentIndentation);
+                    } else {
+                        throw new RuntimeException("expected intentation");
+                    }
+
+                }
+                while (index < textContent.length() &&
+                        (Character.isLetterOrDigit(textContent.charAt(index)) || textContent.charAt(index) == '_')) {
+                    tokenValue.append(textContent.charAt(index));
+                    index++;
+                }
+                String idValue = tokenValue.toString();
+
+                if (idValue.equals("class") || idValue.equals("def")) {
+                    expectIndent++; // Set the flag to expect an indent after the newline
+                }
+
+
+
+                // After a line found check if an indent/dedent is required
+                if (!indentStack.isEmpty() && currentIndentation < indentStack.peek() && currentIndentation > minimum_space) {
+                    if(expectIndent>0)
+                    {
+                        indentStack.pop();
+                    }
+                    return new Token(Token.TokenType.DEDENT, "DEDENT", lineNumber);
+                }
+
+                // Return as a keyword or identifier
+                if (keywords.contains(idValue)) {
+                    return new Token(Token.TokenType.KEYWORD, idValue, lineNumber);
+                }
+                return new Token(Token.TokenType.IDENTIFIER, idValue, lineNumber);
             }
 
             // Handle single-line comments
@@ -285,8 +325,10 @@ public class Lexer {
                 while (index < textContent.length() && textContent.charAt(index) != '\n') {
                     index++; // Skip the comment
                 }
+
                 continue; // Move to the next line (comments are ignored)
             }
+
 
             // Handle multi-line comments (triple double quotes)
             if (currentChar == '"' && index + 2 < textContent.length() &&
@@ -320,22 +362,6 @@ public class Lexer {
                 return new Token(Token.TokenType.STRING, tokenValue.toString(), lineNumber);
             }
 
-            // Handle identifiers and keywords
-            if (Character.isLetter(currentChar) || currentChar == '_') {
-                while (index < textContent.length() &&
-                        (Character.isLetterOrDigit(textContent.charAt(index)) || textContent.charAt(index) == '_')) {
-                    tokenValue.append(textContent.charAt(index));
-                    index++;
-                }
-
-                String idValue = tokenValue.toString();
-                // Check if the token is a keyword
-                if (keywords.contains(idValue)) {
-                    return new Token(Token.TokenType.KEYWORD, idValue, lineNumber);
-                }
-                // Return as an identifier
-                return new Token(Token.TokenType.IDENTIFIER, idValue, lineNumber);
-            }
 
             // Handle numbers (integers, floats, and complex numbers)
             if (Character.isDigit(currentChar)) {
@@ -344,7 +370,6 @@ public class Lexer {
                     tokenValue.append(textContent.charAt(index));
                     index++;
                 }
-
                 // Check for a floating-point number
                 if (index < textContent.length() && textContent.charAt(index) == '.') {
                     tokenValue.append('.');
@@ -354,18 +379,17 @@ public class Lexer {
                         index++;
                     }
                 }
-
                 // Check for complex number (e.g., 1 + 2j)
                 if (index < textContent.length() && (textContent.charAt(index) == 'j' || textContent.charAt(index) == 'J')) {
                     tokenValue.append(textContent.charAt(index));
                     index++;
                 }
-
                 return new Token(Token.TokenType.NUMBER, tokenValue.toString(), lineNumber);
             }
 
             // Handle multi-character operators
-            String twoCharOperator = String.valueOf(currentChar) + (index + 1 < textContent.length() ? textContent.charAt(index + 1) : "");
+            String twoCharOperator = String.valueOf(currentChar) +
+                    (index + 1 < textContent.length() ? textContent.charAt(index + 1) : "");
             if (symbols.containsKey(twoCharOperator)) {
                 tokenValue.append(twoCharOperator);
                 index += 2; // Move past both characters
@@ -391,5 +415,9 @@ public class Lexer {
 
     public String getFolderPath() {
         return file.getParent();
+    }
+
+    private void mangaeIntent() {
+
     }
 }
