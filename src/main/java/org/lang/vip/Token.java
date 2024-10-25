@@ -3,7 +3,6 @@ package org.lang.vip;
 public class Token {
 
     public enum TokenType {
-        ID,
         OPERATOR,
         KEYWORD,
         EOF,
@@ -12,19 +11,26 @@ public class Token {
         BYTE_STRING,
         FORMATTED_STRING,
         IDENTIFIER,
-        INDENT,
-        DEDENT,
+        SPACE,
+        NEW_LINE,
         ERROR
     }
 
     public String value;  // The actual string value of the token
     public TokenType type; // The type of the token
-    public int line;      // The line number where the token was found
+    public int line;
+    public int count;
 
     // Constructor for creating a new token
     public Token(TokenType type, String value, int line) {
         this.type = type;
         this.value = value;
+        this.line = line;
+    }
+
+    public Token(TokenType type,int value, int line) {
+        this.type = type;
+        this.count = value;
         this.line = line;
     }
 

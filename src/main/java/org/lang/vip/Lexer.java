@@ -13,11 +13,9 @@ public class Lexer {
     private String path;
     private File file;
     private int lineNumber;
-    private String textContent;
+    private List<String> textContent;
     private int index;
-    private Stack<Integer> indentStack = new Stack<>();
     private int currentIndentation = 0;
-    int expectIndent = 0;
 
     private final Set<String> keywords = new HashSet<String>();
 
@@ -37,24 +35,24 @@ public class Lexer {
 
     private void initLocalFile() {
         try {
-            StringBuilder sb = new StringBuilder();
+            List<String> lines = new ArrayList<>();
             if (file.isFile() && file.exists()) {
                 InputStreamReader read = new InputStreamReader(new FileInputStream(file), encoding);
                 BufferedReader bufferedReader = new BufferedReader(read);
                 String lineText;
                 while ((lineText = bufferedReader.readLine()) != null) {
-                    sb.append(lineText).append("\n");
+                    lines.add(lineText); // Store each line separately
                 }
                 read.close();
             } else {
                 System.out.println("Cannot find the file");
             }
-            textContent = sb.toString();
         } catch (Exception e) {
             System.out.println("Error reading file.");
             e.printStackTrace();
         }
     }
+
 
     private void initSymbols() {
         symbols.put("(", Token.TokenType.OPERATOR);
@@ -102,311 +100,109 @@ public class Lexer {
         keywords.add("None");
     }
 
-//    public Token getNextToken() {
-//        String tokenValue = "";
-//
-//        while (index < textContent.length()) {
-//            char currentChar = textContent.charAt(index);
-//
-//            // Handle whitespaces
-//            if (Character.isWhitespace(currentChar)) {
-//                if (currentChar == '\n') {
-//                    lineNumber++;
-//                    index++;
-//                    if (currentIndentation > 0) {
-//                        // Check if current indentation is less than stack top
-//                        if (!indentStack.isEmpty() && currentIndentation < indentStack.peek()) {
-//                            indentStack.pop(); // Dedent
-//                            return new Token(Token.TokenType.DEDENT, "DEDENT", lineNumber);
-//                        }
-//                        // If current indentation is greater than stack top, push new indent
-//                        indentStack.push(currentIndentation);
-//                        return new Token(Token.TokenType.INDENT, "INDENT", lineNumber);
-//                    }
-//                    currentIndentation = 0; // Reset on newline
-//                    continue;
-//                } else if (currentChar == ' ' || currentChar == '\t') {
-//                    currentIndentation++; // Increment indentation count
-//                    index++;
-//                    continue;
-//                }
-//            }
-//
-//            // Handle single-line comments
-//            if (currentChar == '#') {
-//                while (index < textContent.length() && textContent.charAt(index) != '\n') {
-//                    index++; // Skip the comment
-//                }
-//                continue; // Move to the next line
-//            }
-//
-//            // Handle multi-line comments (triple double quotes)
-//            if (currentChar == '"' && index + 2 < textContent.length() &&
-//                    textContent.charAt(index + 1) == '"' && textContent.charAt(index + 2) == '"') {
-//                index += 3; // Skip opening triple quotes
-//                while (index < textContent.length() && !(textContent.charAt(index) == '"' &&
-//                        textContent.charAt(index + 1) == '"' &&
-//                        textContent.charAt(index + 2) == '"')) {
-//                    index++;
-//                }
-//                index += 3; // Skip closing triple quotes
-//                continue; // Move to the next token
-//            }
-//
-//            // Handle multi-line comments (triple single quotes)
-//            if (currentChar == '\'' && index + 2 < textContent.length() &&
-//                    textContent.charAt(index + 1) == '\'' && textContent.charAt(index + 2) == '\'') {
-//                index += 3; // Skip opening triple quotes
-//                while (index < textContent.length() && !(textContent.charAt(index) == '\'' &&
-//                        textContent.charAt(index + 1) == '\'' &&
-//                        textContent.charAt(index + 2) == '\'')) {
-//                    index++;
-//                }
-//                index += 3; // Skip closing triple quotes
-//                continue; // Move to the next token
-//            }
-//
-//            // Handle identifiers and keywords
-//            if (Character.isLetter(currentChar) || currentChar == '_') {
-//                while (index < textContent.length() &&
-//                        (Character.isLetterOrDigit(textContent.charAt(index)) || textContent.charAt(index) == '_')) {
-//                    tokenValue += textContent.charAt(index);
-//                    index++;
-//                }
-//
-//                // Check if the token is a keyword
-//                for (String keyword : keywords) {
-//                    if (tokenValue.equals(keyword)) {
-//                        return new Token(Token.TokenType.KEYWORD, tokenValue, lineNumber);
-//                    }
-//                }
-//
-//                // If not a keyword, return as an identifier
-//                return new Token(Token.TokenType.IDENTIFIER, tokenValue, lineNumber);
-//            }
-//
-//            // Handle numbers (including floating-point)
-//            if (Character.isDigit(currentChar)) {
-//                while (index < textContent.length() && Character.isDigit(textContent.charAt(index))) {
-//                    tokenValue += textContent.charAt(index);
-//                    index++;
-//                }
-//                // Check for a floating point
-//                if (index < textContent.length() && textContent.charAt(index) == '.') {
-//                    tokenValue += textContent.charAt(index);
-//                    index++;
-//                    while (index < textContent.length() && Character.isDigit(textContent.charAt(index))) {
-//                        tokenValue += textContent.charAt(index);
-//                        index++;
-//                    }
-//                }
-//                return new Token(Token.TokenType.NUMBER, tokenValue, lineNumber);
-//            }
-//
-//            // Handle string literals
-//            if (currentChar == '"') {
-//                index++; // Skip opening quote
-//                while (index < textContent.length() && textContent.charAt(index) != '"') {
-//                    tokenValue += textContent.charAt(index);
-//                    index++;
-//                }
-//                index++; // Skip closing quote
-//                return new Token(Token.TokenType.STRING, tokenValue, lineNumber);
-//            }
-//
-//            // Handle byte strings (e.g., b"string")
-//            if (currentChar == 'b' && index + 1 < textContent.length() && textContent.charAt(index + 1) == '"') {
-//                index += 2; // Skip 'b' and opening quote
-//                while (index < textContent.length() && textContent.charAt(index) != '"') {
-//                    tokenValue += textContent.charAt(index);
-//                    index++;
-//                }
-//                index++; // Skip closing quote
-//                return new Token(Token.TokenType.BYTE_STRING, tokenValue, lineNumber);
-//            }
-//
-//            // Handle formatted strings (e.g., f"string")
-//            if (currentChar == 'f' && index + 1 < textContent.length() && textContent.charAt(index + 1) == '"') {
-//                index += 2; // Skip 'f' and opening quote
-//                while (index < textContent.length() && textContent.charAt(index) != '"') {
-//                    tokenValue += textContent.charAt(index);
-//                    index++;
-//                }
-//                index++; // Skip closing quote
-//                return new Token(Token.TokenType.FORMATTED_STRING, tokenValue, lineNumber);
-//            }
-//
-//            // Handle symbols and operators
-//            if (symbols.containsKey(String.valueOf(currentChar))) {
-//                tokenValue = String.valueOf(currentChar);
-//                index++;
-//                return new Token(Token.TokenType.OPERATOR, tokenValue, lineNumber);
-//            }
-//
-//            // Unknown character handling (error)
-//            System.out.println("Unknown character: " + currentChar);
-//            index++;
-//        }
-//
-//        // End of file
-//        return new Token(Token.TokenType.EOF, "", lineNumber);
-//    }
 
-
-    public Token getNextToken() {
-
-        StringBuilder tokenValue = new StringBuilder();
-        currentIndentation = 0; // Reset for new lines
-
-        while (index < textContent.length()) {
-            char currentChar = textContent.charAt(index);
-
-            // Handle whitespaces
-            if (Character.isWhitespace(currentChar) || textContent.charAt(index) == '\n') {
-                // Increment the current indentation for spaces or tabs
-                if (currentChar == ' ' || currentChar == '\t') {
-                    currentIndentation++;
-                    index++;
-                    continue; // Continue processing whitespace
-                }
-
-                // Handle new lines
-                if (currentChar == '\n') {
-                    lineNumber++;
-                    index++;
-
-                    // Reset for the next line
-                    currentIndentation = 0;
-                    continue;
-                }
-            }
-
-            // Handle identifiers and keywords
-            if (Character.isLetter(currentChar) || currentChar == '_') {
-                if (currentIndentation > minimum_space &&  currentIndentation > (indentStack.isEmpty() ? 0 : indentStack.peek())) {
-                    if (expectIndent > 0) {
-                        indentStack.push(currentIndentation);
-                    } else {
-                        throw new RuntimeException("expected intentation");
-                    }
-
-                }
-                while (index < textContent.length() &&
-                        (Character.isLetterOrDigit(textContent.charAt(index)) || textContent.charAt(index) == '_')) {
-                    tokenValue.append(textContent.charAt(index));
-                    index++;
-                }
-                String idValue = tokenValue.toString();
-
-                if (idValue.equals("class") || idValue.equals("def")) {
-                    expectIndent++; // Set the flag to expect an indent after the newline
-                }
-
-
-
-                // After a line found check if an indent/dedent is required
-                if (!indentStack.isEmpty() && currentIndentation < indentStack.peek() && currentIndentation > minimum_space) {
-                    if(expectIndent>0)
-                    {
-                        indentStack.pop();
-                    }
-                    return new Token(Token.TokenType.DEDENT, "DEDENT", lineNumber);
-                }
-
-                // Return as a keyword or identifier
-                if (keywords.contains(idValue)) {
-                    return new Token(Token.TokenType.KEYWORD, idValue, lineNumber);
-                }
-                return new Token(Token.TokenType.IDENTIFIER, idValue, lineNumber);
-            }
-
-            // Handle single-line comments
-            if (currentChar == '#') {
-                while (index < textContent.length() && textContent.charAt(index) != '\n') {
-                    index++; // Skip the comment
-                }
-
-                continue; // Move to the next line (comments are ignored)
-            }
-
-
-            // Handle multi-line comments (triple double quotes)
-            if (currentChar == '"' && index + 2 < textContent.length() &&
-                    textContent.charAt(index + 1) == '"' && textContent.charAt(index + 2) == '"') {
-                index += 3; // Skip opening triple quotes
-                while (index < textContent.length() && !(textContent.charAt(index) == '"' &&
-                        index + 2 < textContent.length() &&
-                        textContent.charAt(index + 1) == '"' &&
-                        textContent.charAt(index + 2) == '"')) {
-                    if (textContent.charAt(index) == '\\') { // Handle escape sequences
-                        index++; // Skip the escape character
-                    }
-                    index++;
-                }
-                index += 3; // Skip closing triple quotes
-                continue; // Move to the next token
-            }
-
-            // Handle string literals (single and double quotes)
-            if (currentChar == '"' || currentChar == '\'') {
-                char quoteType = currentChar; // Store the type of quote
-                index++;
-                while (index < textContent.length() && textContent.charAt(index) != quoteType) {
-                    if (textContent.charAt(index) == '\\') { // Handle escape sequences
-                        index++; // Skip the escape character
-                    }
-                    tokenValue.append(textContent.charAt(index));
-                    index++;
-                }
-                index++; // Skip the closing quote
-                return new Token(Token.TokenType.STRING, tokenValue.toString(), lineNumber);
-            }
-
-
-            // Handle numbers (integers, floats, and complex numbers)
-            if (Character.isDigit(currentChar)) {
-                // Parse integer part
-                while (index < textContent.length() && Character.isDigit(textContent.charAt(index))) {
-                    tokenValue.append(textContent.charAt(index));
-                    index++;
-                }
-                // Check for a floating-point number
-                if (index < textContent.length() && textContent.charAt(index) == '.') {
-                    tokenValue.append('.');
-                    index++;
-                    while (index < textContent.length() && Character.isDigit(textContent.charAt(index))) {
-                        tokenValue.append(textContent.charAt(index));
-                        index++;
-                    }
-                }
-                // Check for complex number (e.g., 1 + 2j)
-                if (index < textContent.length() && (textContent.charAt(index) == 'j' || textContent.charAt(index) == 'J')) {
-                    tokenValue.append(textContent.charAt(index));
-                    index++;
-                }
-                return new Token(Token.TokenType.NUMBER, tokenValue.toString(), lineNumber);
-            }
-
-            // Handle multi-character operators
-            String twoCharOperator = String.valueOf(currentChar) +
-                    (index + 1 < textContent.length() ? textContent.charAt(index + 1) : "");
-            if (symbols.containsKey(twoCharOperator)) {
-                tokenValue.append(twoCharOperator);
-                index += 2; // Move past both characters
-                return new Token(Token.TokenType.OPERATOR, tokenValue.toString(), lineNumber);
-            }
-
-            // Handle single-character operators
-            if (symbols.containsKey(String.valueOf(currentChar))) {
-                tokenValue.append(currentChar);
-                index++;
-                return new Token(Token.TokenType.OPERATOR, tokenValue.toString(), lineNumber);
-            }
-
-            // Unknown character handling (error)
-            System.out.println("Unknown character: " + currentChar);
-            index++;
+    private void handleIndentation(int indentLevel) {
+        if (indentLevel > currentIndentation) {
+            tokens.add(new Token(currentIndentation.INDENT, "", lineNumber));
+        } else if (indentLevel < currentIndentation) {
+            tokens.add(new Token(TokenType.DEDENT, "", lineNumber));
         }
+        currentIndentation = indentLevel;
+    }
+
+
+    public List<Token> getNextLine() {
+
+            lineNumber++;
+        return lexLine(textContent.get(lineNumber));
+
+    }
+    List<Token> lexLine(String input_line){
+        List<Token> tokens = new ArrayList<>();
+
+        charIndex = 0;
+
+        int indentLevel = calculateIndent(line);
+        handleIndentation(indentLevel);
+
+        // Now lex the actual content of the line
+        char[] chars = line.trim().toCharArray(); // Ignore leading whitespace
+        StringBuilder currentToken = new StringBuilder();
+
+        for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
+
+            if (Character.isWhitespace(c)) {
+                continue; // Ignore whitespace
+            }
+
+            if (Character.isLetter(c)) {
+                currentToken.append(c);
+                i = readIdentifier(chars, i, currentToken); // Read identifier/keyword
+            } else if (Character.isDigit(c)) {
+                currentToken.append(c);
+                i = readNumber(chars, i, currentToken); // Read number
+            } else if (c == '"') {
+                currentToken.append(c);
+                i = readString(chars, i, currentToken); // Read string
+            } else if (isOperator(c)) {
+                tokens.add(new Token(TokenType.OPERATOR, String.valueOf(c), lineNumber)); // Add operator token
+            } else if (c == '#') {
+                break; // Ignore comments
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         // End of file
         return new Token(Token.TokenType.EOF, "", lineNumber);

@@ -1,0 +1,149 @@
+     while (index < textContent.size()) {
+
+
+            String currentChar = textContent.get(index);
+
+            // Handle whitespaces
+            if (Character.isWhitespace(currentChar)) {
+                // Increment the current indentation for spaces or tabs
+
+                while (index < textContent.length() && (textContent.charAt(index)== ' ' || textContent.charAt(index)== '\t' ) &&
+                        !(Character.isLetterOrDigit(textContent.charAt(index)) || textContent.charAt(index) == '_')) {
+                    currentIndentation++;
+                    index++;
+                }
+                  if(currentIndentation>1)
+                  {
+                      return new Token(Token.TokenType.SPACE,currentIndentation,lineNumber);
+                  }
+
+            }
+
+            // Handle identifiers and keywords
+            if (Character.isLetter(currentChar) || currentChar == '_') {
+                while (index < textContent.length() &&
+                        (Character.isLetterOrDigit(textContent.charAt(index)) || textContent.charAt(index) == '_')) {
+                    tokenValue.append(textContent.charAt(index));
+                    index++;
+                }
+                String idValue = tokenValue.toString();
+
+                // Return as a keyword or identifier
+                if (keywords.contains(idValue)) {
+                    return new Token(Token.TokenType.KEYWORD, idValue, lineNumber);
+                }
+                return new Token(Token.TokenType.IDENTIFIER, idValue, lineNumber);
+            }
+
+            // Handle single-line comments
+            if (currentChar == '#') {
+                while (index < textContent.length() && textContent.charAt(index) != '\n') {
+                    index++; // Skip the comment
+                }
+                lineNumber++;
+                index++;
+                currentIndentation =0;
+                continue;
+            }
+
+
+            // Handle multi-line comments (triple double quotes)
+            if (currentChar == '"' && index + 2 < textContent.length() &&
+                    textContent.charAt(index + 1) == '"' && textContent.charAt(index + 2) == '"') {
+                index += 3; // Skip opening triple quotes
+                while (index < textContent.length() && !(textContent.charAt(index) == '"' &&
+                        index + 2 < textContent.length() &&
+                        textContent.charAt(index + 1) == '"' &&
+                        textContent.charAt(index + 2) == '"')) {
+                    if (textContent.charAt(index) == '\\') { // Handle escape sequences
+                        index++; // Skip the escape character
+                    }
+                    index++;
+                }
+                index += 3; // Skip closing triple quotes
+                continue; // Move to the next token
+            }
+
+            // Handle string literals (single and double quotes)
+            if (currentChar == '"' || currentChar == '\'') {
+                char quoteType = currentChar; // Store the type of quote
+                index++;
+                while (index < textContent.length() && textContent.charAt(index) != quoteType) {
+                    if (textContent.charAt(index) == '\\') { // Handle escape sequences
+                        index++; // Skip the escape character
+                    }
+                    tokenValue.append(textContent.charAt(index));
+                    index++;
+                }
+                index++; // Skip the closing quote
+                return new Token(Token.TokenType.STRING, tokenValue.toString(), lineNumber);
+            }
+
+                        // Handle byte strings (e.g., b"string")
+            if (currentChar == 'b' && index + 1 < textContent.length() && textContent.charAt(index + 1) == '"') {
+                index += 2; // Skip 'b' and opening quote
+                while (index < textContent.length() && textContent.charAt(index) != '"') {
+                    tokenValue.append( textContent.charAt(index));
+                    index++;
+                }
+                index++; // Skip closing quote
+                return new Token(Token.TokenType.BYTE_STRING, tokenValue.toString(), lineNumber);
+            }
+
+            // Handle formatted strings (e.g., f"string")
+            if (currentChar == 'f' && index + 1 < textContent.length() && textContent.charAt(index + 1) == '"') {
+                index += 2; // Skip 'f' and opening quote
+                while (index < textContent.length() && textContent.charAt(index) != '"') {
+                    tokenValue.append(textContent.charAt(index));
+                    index++;
+                }
+                index++; // Skip closing quote
+                return new Token(Token.TokenType.FORMATTED_STRING, tokenValue.toString(), lineNumber);
+            }
+
+
+
+            // Handle numbers (integers, floats, and complex numbers)
+            if (Character.isDigit(currentChar)) {
+                // Parse integer part
+                while (index < textContent.length() && Character.isDigit(textContent.charAt(index))) {
+                    tokenValue.append(textContent.charAt(index));
+                    index++;
+                }
+                // Check for a floating-point number
+                if (index < textContent.length() && textContent.charAt(index) == '.') {
+                    tokenValue.append('.');
+                    index++;
+                    while (index < textContent.length() && Character.isDigit(textContent.charAt(index))) {
+                        tokenValue.append(textContent.charAt(index));
+                        index++;
+                    }
+                }
+                // Check for complex number (e.g., 1 + 2j)
+                if (index < textContent.length() && (textContent.charAt(index) == 'j' || textContent.charAt(index) == 'J')) {
+                    tokenValue.append(textContent.charAt(index));
+                    index++;
+                }
+                return new Token(Token.TokenType.NUMBER, tokenValue.toString(), lineNumber);
+            }
+
+            // Handle multi-character operators
+            String twoCharOperator = String.valueOf(currentChar) +
+                    (index + 1 < textContent.length() ? textContent.charAt(index + 1) : "");
+            if (symbols.containsKey(twoCharOperator)) {
+                tokenValue.append(twoCharOperator);
+                index += 2; // Move past both characters
+                return new Token(Token.TokenType.OPERATOR, tokenValue.toString(), lineNumber);
+            }
+
+            // Handle single-character operators
+            if (symbols.containsKey(String.valueOf(currentChar))) {
+                tokenValue.append(currentChar);
+                index++;
+                return new Token(Token.TokenType.OPERATOR, tokenValue.toString(), lineNumber);
+            }
+
+            // Unknown character handling (error)
+            System.out.println("Unknown character: " + currentChar);
+            index++;
+        }
