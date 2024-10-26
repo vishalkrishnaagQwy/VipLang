@@ -1,6 +1,8 @@
 package org.lang.vip;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -21,6 +23,7 @@ public class Main {
 
         processDirectory(directory);
     }
+
     /**
      * Process all .vp files in the specified directory.
      *
@@ -66,6 +69,18 @@ public class Main {
         System.out.println("Processing file: " + file.getName());
         Lexer lexer = new Lexer(file.getPath());
         Parser parser = new Parser(lexer);
+        List<ASTNode> astNodes = parser.getParseTree();
+        ASTAnalyser astAnalyser = new ASTAnalyser();
+        ASTPrinter astPrinter = new ASTPrinter();
+        CodeGen codeGen = new CodeGen();
+        if (astNodes != null) {
+            for (ASTNode nodes : astNodes) {
+                nodes.accept(astPrinter);
+                nodes.accept(astAnalyser);
+                nodes.accept(codeGen);
+            }
+        }
+
 
         // Perform further actions like semantic analysis and VM code generation here
     }

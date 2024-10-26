@@ -11,75 +11,115 @@ import java.util.List;
 public class Parser {
     private Lexer lexer;
     private Token currentToken;
-    String className="";
+    private List<Token> LineTokens;
+    String className = "";
+    int readIndex = 0;
+    boolean eof_reached = false;
+    List<ASTNode> node;
 
     public Parser(Lexer lexer) {
         this.lexer = lexer;
-        this.currentToken = lexer.getNextToken(); // Initialize the current token
+        this.LineTokens = lexer.getNextLine();
+        getNextToken();// Initialize the current token
         parseProgram();
+    }
+
+    List<ASTNode> getParseTree(){
+        return this.node;
     }
 
     // Advance to the next token
     private void consume(Token.TokenType expectedType) {
-        System.out.println("token.lexme : "+currentToken.getLexme());
+        System.out.println(currentToken);
         if (currentToken.getType() == expectedType) {
-            currentToken = lexer.getNextToken();
+            getNextToken();
         } else {
             throw new RuntimeException("Unexpected token: " + currentToken);
         }
     }
+
+    private void getNextToken() {
+        if (readIndex < LineTokens.size() && !eof_reached) {
+            currentToken = LineTokens.get(readIndex);
+        } else {
+            LineTokens = lexer.getNextLine();
+            if (LineTokens != null && LineTokens.size() != 0) {
+                readIndex = 0;
+                currentToken = LineTokens.getFirst();
+            } else {
+                if (LineTokens != null) {
+                    eof_reached = true;
+                }
+
+            }
+        }
+        readIndex++;
+
+    }
+
     private void consumeSilent(Token.TokenType expectedType) {
-        System.out.println("token.lexme : "+currentToken.getLexme());
+        System.out.println("silent = " + currentToken);
         if (currentToken.getType() == expectedType) {
-            currentToken = lexer.getNextToken();
+            getNextToken();
         }
     }
 
-    private boolean match(String lexeme){
+    private boolean match(String lexeme) {
         return (currentToken.getLexme().equals(lexeme));
     }
 
-    private void consume(Token.TokenType expectedType,ParsingType parsingType)
-    {
-        System.out.println("token.lexme : "+currentToken.getLexme());
+    private void consume(Token.TokenType expectedType, ParsingType parsingType) {
+        System.out.println(currentToken + "parsing type : " + parsingType);
         if (currentToken.getType() == expectedType && currentToken.getLexme().equals(parsingType.getValue())) {
-            currentToken = lexer.getNextToken();
+            getNextToken();
         } else {
-            throw new RuntimeException("Unexpected token: " + currentToken);
+            throw new RuntimeException("Unexpected token: " + currentToken + " expected " + expectedType);
         }
     }
 
     // Parse a program consisting of statements
     public void parseProgram() {
-        while (currentToken.getType() != Token.TokenType.EOF) {
-            detectClass();
-            parseClass();
-        }
+        parseClass();
     }
 
-    private void detectClass() {
-        consume(Token.TokenType.KEYWORD,ParsingType.CLASS);
+
+    public void parseClass() {
+        consume(Token.TokenType.KEYWORD, ParsingType.CLASS);
         String vipClasName = currentToken.getLexme();
         consume(Token.TokenType.IDENTIFIER);
         this.className = vipClasName;
+        consume(Token.TokenType.INDENT);
+        parseClassBody();
+        consumeSilent(Token.TokenType.DEDENT);
     }
 
-    public void parseClass(){
-          switch (currentToken.getType())
-          {
-              case KEYWORD:
-                  if (match(ParsingType.DEF.getValue())) {
-                      parseMethodDefinition();
-                  } else {
-                      // Handle other keywords like if, for, etc.
-                      throw new RuntimeException("Illegal codes inside class body of '"+className+"' .vp");
-                  }
-                  break;
-              case IDENTIFIER:
+    private void parseClassBody() {
+        while (LineTokens != null || eof_reached) {
+            switch (currentToken.getType()) {
+                case KEYWORD:
+                    if (match(ParsingType.DEF.getValue())) {
+                        parseMethodDefinition();
+                    } else {
+                        // Handle other keywords like if, for, etc.
+                        throw new RuntimeException("Illegal codes inside class body of '" + className + "' .vp");
+                    }
+                    break;
+                case IDENTIFIER:
+                    parseAssignment();
+                    // assignment a = 20 or a , b = 10 , 20
+                    break;
+                case INDENT:
+                    consume(Token.TokenType.INDENT);
+                    break;
+                case DEDENT:
+                    consume(Token.TokenType.DEDENT);
+                    break;
+                default:
+                    System.out.println("jinki jink jin ji");
+                    break;
+            }
+        }
 
-                  // assignment a = 20 or a , b = 10 , 20
-                  break;
-          }
     }
 
     // Parse a single statement
@@ -91,11 +131,9 @@ public class Parser {
             case KEYWORD:
                 if (match(ParsingType.IF.getValue())) {
 
-                }
-                else if (match(ParsingType.WHILE.getValue())) {
+                } else if (match(ParsingType.WHILE.getValue())) {
 
-                }
-                else {
+                } else {
                     // Handle other keywords like if, for, etc.
                 }
                 break;
@@ -125,14 +163,15 @@ public class Parser {
 
     // Parse a function definition
     private void parseMethodDefinition() {
-        consume(Token.TokenType.KEYWORD); // Consume 'def'
+        consume(Token.TokenType.KEYWORD, ParsingType.DEF); // Consume 'def'
         String functionName = currentToken.getLexme();
         consume(Token.TokenType.IDENTIFIER);
-        consume(Token.TokenType.OPERATOR,ParsingType.L_PARENTHESIS); // Expect '('
+        consume(Token.TokenType.OPERATOR, ParsingType.L_PARENTHESIS); // Expect '('
         // Optionally parse parameters
-        consume(Token.TokenType.OPERATOR,ParsingType.R_PARENTHESIS); // Expect ')'
+        consume(Token.TokenType.OPERATOR, ParsingType.R_PARENTHESIS); // Expect ')'
         // Parse method body
         parseStatement();
+        consumeSilent(Token.TokenType.DEDENT);
     }
 
     //Insert the VM codes into the VM file
