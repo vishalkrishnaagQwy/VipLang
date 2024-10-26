@@ -5,6 +5,7 @@ class Main
        #some Comment
        a = 10
 
-# Call the main function
-if __name__ == "__main__"
-    Main.main()
+    def calc_hox()
+      a = 210
+      b = 212
+      c = 24

@@ -21,27 +21,26 @@ public class Lexer {
 
     // Define symbols and their types
     private final Map<String, Token.TokenType> symbols = new HashMap<>();
-    private static final int minimum_space=1;
+    private static final int minimum_space = 1;
 
     public Lexer(String fileName) {
         this.encoding = "UTF-8"; // Change as needed
         this.path = fileName;
         this.file = new File(path);
         this.lineNumber = 1;
-        this.index = 0;
         initSymbols();
         initLocalFile(); // Read file content
     }
 
     private void initLocalFile() {
         try {
-            List<String> lines = new ArrayList<>();
+            textContent = new ArrayList<>();
             if (file.isFile() && file.exists()) {
                 InputStreamReader read = new InputStreamReader(new FileInputStream(file), encoding);
                 BufferedReader bufferedReader = new BufferedReader(read);
                 String lineText;
                 while ((lineText = bufferedReader.readLine()) != null) {
-                    lines.add(lineText); // Store each line separately
+                    textContent.add(lineText); // Store each line separately
                 }
                 read.close();
             } else {
@@ -100,33 +99,50 @@ public class Lexer {
         keywords.add("None");
     }
 
+    private int calculateIndent(String line) {
+        int indentLevel = 0;
+        for (char c : line.toCharArray()) {
+            if (c == ' ') {
+                indentLevel++;
+            } else {
+                break;
+            }
+        }
+        return indentLevel / 4; // Assuming 4 spaces per indent
+    }
 
-    private void handleIndentation(int indentLevel) {
+
+    private void handleIndentation(List<Token> tokens, int indentLevel) {
+
         if (indentLevel > currentIndentation) {
-            tokens.add(new Token(currentIndentation.INDENT, "", lineNumber));
+            tokens.add(new Token(Token.TokenType.INDENT, "", lineNumber));
         } else if (indentLevel < currentIndentation) {
-            tokens.add(new Token(TokenType.DEDENT, "", lineNumber));
+            tokens.add(new Token(Token.TokenType.DEDENT, "", lineNumber));
         }
         currentIndentation = indentLevel;
     }
 
 
     public List<Token> getNextLine() {
-
-            lineNumber++;
-        return lexLine(textContent.get(lineNumber));
-
+        lineNumber++;
+        if (lineNumber < textContent.size()) {
+            return lexLine(textContent.get(lineNumber));
+        }
+        else {
+//            ArrayList<Token> last_token = new ArrayList<>();
+//            last_token.add(new Token(Token.TokenType.EOF,"EOF",lineNumber));
+            return null;
+        }
     }
-    List<Token> lexLine(String input_line){
+
+    List<Token> lexLine(String input_line) {
         List<Token> tokens = new ArrayList<>();
 
-        charIndex = 0;
-
-        int indentLevel = calculateIndent(line);
-        handleIndentation(indentLevel);
+        int indentationLevel = calculateIndent(input_line);
+        handleIndentation(tokens, indentationLevel);
 
         // Now lex the actual content of the line
-        char[] chars = line.trim().toCharArray(); // Ignore leading whitespace
+        char[] chars = input_line.trim().toCharArray(); // Ignore leading whitespace
         StringBuilder currentToken = new StringBuilder();
 
         for (int i = 0; i < chars.length; i++) {
@@ -138,82 +154,64 @@ public class Lexer {
 
             if (Character.isLetter(c)) {
                 currentToken.append(c);
-                i = readIdentifier(chars, i, currentToken); // Read identifier/keyword
+                i = readIdentifier(tokens, chars, i, currentToken); // Read identifier/keyword
             } else if (Character.isDigit(c)) {
                 currentToken.append(c);
-                i = readNumber(chars, i, currentToken); // Read number
+                i = readNumber(tokens, chars, i, currentToken); // Read number
             } else if (c == '"') {
                 currentToken.append(c);
-                i = readString(chars, i, currentToken); // Read string
+                i = readString(tokens, chars, i, currentToken); // Read string
             } else if (isOperator(c)) {
-                tokens.add(new Token(TokenType.OPERATOR, String.valueOf(c), lineNumber)); // Add operator token
+                tokens.add(new Token(Token.TokenType.OPERATOR, String.valueOf(c), lineNumber)); // Add operator token
             } else if (c == '#') {
-                break; // Ignore comments
+                return getNextLine();
             }
         }
+        return tokens;
+    }
+
+    private boolean isOperator(char c) {
+        return symbols.containsKey(String.valueOf(c));
+    }
 
 
+    private int readIdentifier(List<Token> tokens, char[] chars, int i, StringBuilder currentToken) {
+        while (i + 1 < chars.length && (Character.isLetterOrDigit(chars[i + 1]) || chars[i + 1] == '_')) {
+            currentToken.append(chars[++i]);
+        }
+        if(keywords.contains(currentToken.toString()))
+        {
+            tokens.add(new Token(Token.TokenType.KEYWORD, currentToken.toString(), lineNumber));
+        }
+        else {
+            tokens.add(new Token(Token.TokenType.IDENTIFIER, currentToken.toString(), lineNumber));
+        }
 
+        currentToken.setLength(0); // Clear the token
+        return i;
+    }
 
+    private int readNumber(List<Token> tokens, char[] chars, int i, StringBuilder currentToken) {
+        while (i + 1 < chars.length && Character.isDigit(chars[i + 1])) {
+            currentToken.append(chars[++i]);
+        }
+        tokens.add(new Token(Token.TokenType.NUMBER, currentToken.toString(), lineNumber));
+        currentToken.setLength(0); // Clear the token
+        return i;
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        // End of file
-        return new Token(Token.TokenType.EOF, "", lineNumber);
+    private int readString(List<Token> tokens, char[] chars, int i, StringBuilder currentToken) {
+        while (i + 1 < chars.length && chars[i + 1] != '"') {
+            currentToken.append(chars[++i]);
+        }
+        currentToken.append('"'); // Append the closing quote
+        tokens.add(new Token(Token.TokenType.STRING, currentToken.toString(), lineNumber));
+        currentToken.setLength(0); // Clear the token
+        return i;
     }
 
 
     public String getFolderPath() {
         return file.getParent();
-    }
-
-    private void mangaeIntent() {
-
     }
 }

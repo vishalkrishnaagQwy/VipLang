@@ -11,7 +11,8 @@ public class Token {
         BYTE_STRING,
         FORMATTED_STRING,
         IDENTIFIER,
-        SPACE,
+        INDENT,
+        DEDENT,
         NEW_LINE,
         ERROR
     }
