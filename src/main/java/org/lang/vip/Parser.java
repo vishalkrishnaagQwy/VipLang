@@ -154,19 +154,20 @@ public class Parser {
     }
 
     // Parse a single statement
-    private void parseStatement() throws VipCompilerException {
+    private ASTNode parseStatement() throws VipCompilerException {
+        List<ASTNode> astList=new ArrayList<>();
         switch (currentToken.getType()) {
             case IDENTIFIER:
                 parseAssignment();
                 break;
             case KEYWORD:
                 if (match("if")) {
-                   this.parseIfStatement();
+                   astList.add(this.parseIfStatement());
                 } else if (match("while")) {
-                   this.parseWhileStatement();
+                   astList.add(this.parseWhileStatement());
                 }
                 else if (match("for")) {
-                    this.parseForStatement();
+                    astList.add(this.parseForStatement());
                 }
                 else {
                     // Handle other keywords like if, for, etc.
@@ -175,15 +176,19 @@ public class Parser {
             default:
                 throw new RuntimeException("Unexpected token in statement: " + currentToken);
         }
+        return new BlockNode();
     }
 
-    private void parseForStatement() {
+    private ASTNode parseForStatement() {
+        return null;
     }
 
-    private void parseWhileStatement() {
+    private ASTNode parseWhileStatement() {
+        return null;
     }
 
-    private void parseIfStatement() {
+    private ASTNode parseIfStatement() {
+        return null;
     }
 
     private void parseBuiltInClassMethods() {
@@ -215,8 +220,10 @@ public class Parser {
         // Optionally parse parameters
         consume(Token.TokenType.OPERATOR, ParsingType.R_PARENTHESIS);
         // Parse method body
-        parseStatement();
+        ASTNode statements=parseStatement();
         consumeSilent(Token.TokenType.DEDENT);
+        MethodDefNode methodDefNode = new MethodDefNode(functionName,statements);
+        node.add(methodDefNode);
     }
 
     private void parseExpression() throws VipCompilerException {
