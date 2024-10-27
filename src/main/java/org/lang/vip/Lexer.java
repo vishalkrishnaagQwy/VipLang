@@ -18,6 +18,7 @@ public class Lexer {
     private int currentIndentation = 0;
 
     private final Set<String> keywords = new HashSet<String>();
+    private final Set<String> dataTypes = new HashSet<String>();
 
     // Define symbols and their types
     private final Map<String, Token.TokenType> symbols = new HashMap<>();
@@ -97,6 +98,11 @@ public class Lexer {
         keywords.add("True");
         keywords.add("False");
         keywords.add("None");
+        dataTypes.add("int");
+        dataTypes.add("float");
+        dataTypes.add("Array");
+        dataTypes.add("string");
+        dataTypes.add("Object");
     }
 
     private int calculateIndent(String line) {
@@ -182,8 +188,9 @@ public class Lexer {
         if(keywords.contains(currentToken.toString()))
         {
             tokens.add(new Token(Token.TokenType.KEYWORD, currentToken.toString(), lineNumber));
-        }
-        else {
+        } else if (dataTypes.contains(currentToken.toString())) {
+            tokens.add(new Token(Token.TokenType.DATA_TYPE,currentToken.toString(),lineNumber));
+        } else {
             tokens.add(new Token(Token.TokenType.IDENTIFIER, currentToken.toString(), lineNumber));
         }
 

@@ -1,6 +1,7 @@
 package org.lang.vip;
 
 public enum ParsingType {
+    SYSTEM("system"),
     CLASS("class"),
     IF("if"),
     ELSE("else"),
@@ -10,6 +11,7 @@ public enum ParsingType {
     R_PARENTHESIS(")"),
     L_BRACE("{"),
     R_BRACE("}"),
+    DOT("."),
     DEF("def");
 
 

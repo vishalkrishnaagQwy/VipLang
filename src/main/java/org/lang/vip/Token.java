@@ -13,6 +13,7 @@ public class Token {
         IDENTIFIER,
         INDENT,
         DEDENT,
+        DATA_TYPE,
         NEW_LINE,
         ERROR
     }
