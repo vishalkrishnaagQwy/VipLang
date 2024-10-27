@@ -30,4 +30,9 @@ public class ASTPrinter implements AST{
     public void visitExperNode(ExprNode exprNode) {
         System.out.println("--> Reached Expression");
     }
+
+    @Override
+    public void visitBooleanExprNode(BooleanExpr booleanExpr) {
+
+    }
 }

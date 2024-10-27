@@ -68,6 +68,12 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
     public void visitExperNode(ExprNode exprNode) {
 
     }
+
+    @Override
+    public void visitBooleanExprNode(BooleanExpr booleanExpr) {
+
+    }
+
     public void writeClassToFile() {
         try {
             FileOutputStream fos = new FileOutputStream(className + ".class");

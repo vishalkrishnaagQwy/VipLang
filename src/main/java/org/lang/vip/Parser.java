@@ -2,18 +2,15 @@ package org.lang.vip;
 
 import org.lang.exceptions.VipCompilerException;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static java.lang.System.exit;
 
 
 public class Parser {
-    private Lexer lexer;
+    private final Lexer lexer;
     private Token currentToken;
     private List<Token> LineTokens;
     String className = "";
@@ -47,7 +44,7 @@ public class Parser {
             currentToken = LineTokens.get(readIndex);
         } else {
             LineTokens = lexer.getNextLine();
-            if (LineTokens != null && LineTokens.size() != 0) {
+            if (LineTokens != null && !LineTokens.isEmpty()) {
                 readIndex = 0;
                 currentToken = LineTokens.getFirst();
             } else {
@@ -71,12 +68,13 @@ public class Parser {
     private boolean match(String lexeme) {
         return (currentToken.getLexme().equals(lexeme));
     }
+
     private boolean match(Token.TokenType type) {
-        return (currentToken.getType()==type);
+        return (currentToken.getType() == type);
     }
 
-    private boolean eitherMatch(Token.TokenType type,Token.TokenType type1) {
-        return (currentToken.getType()==type || currentToken.getType()==type1);
+    private boolean eitherMatch(Token.TokenType type, Token.TokenType type1) {
+        return (currentToken.getType() == type || currentToken.getType() == type1);
     }
 
     private boolean isEol() {
@@ -147,7 +145,7 @@ public class Parser {
                     consume(Token.TokenType.DEDENT);
                     break;
                 default:
-                    System.out.println("jinki jink jin ji");
+                    System.out.println("something went wrong");
                     exit(-1);
                     break;
             }
@@ -162,17 +160,30 @@ public class Parser {
                 parseAssignment();
                 break;
             case KEYWORD:
-                if (match(ParsingType.IF.getValue())) {
-
-                } else if (match(ParsingType.WHILE.getValue())) {
-
-                } else {
+                if (match("if")) {
+                   this.parseIfStatement();
+                } else if (match("while")) {
+                   this.parseWhileStatement();
+                }
+                else if (match("for")) {
+                    this.parseForStatement();
+                }
+                else {
                     // Handle other keywords like if, for, etc.
                 }
                 break;
             default:
                 throw new RuntimeException("Unexpected token in statement: " + currentToken);
         }
+    }
+
+    private void parseForStatement() {
+    }
+
+    private void parseWhileStatement() {
+    }
+
+    private void parseIfStatement() {
     }
 
     private void parseBuiltInClassMethods() {
@@ -190,7 +201,7 @@ public class Parser {
     private void parseAssignment() throws VipCompilerException {
         String identifier = currentToken.getLexme();
         consume(Token.TokenType.IDENTIFIER);
-        consume(Token.TokenType.OPERATOR); // Expect '='
+        consume(Token.TokenType.OPERATOR,"="); // Expect '='
         parseExpression();
     }
 
@@ -220,14 +231,6 @@ public class Parser {
             if (match("(") || match(")")) {
                 return;
             }
-            // a = 10 format
-
-            // a : b will be valid
-                    /* a[i] : b is invalid in vip if you want to
-                    do it will be like var a : array()
-                                           a.assign(i,b)
-                     */
-
             parseTerminal();
         }
 
@@ -295,41 +298,44 @@ public class Parser {
 
 
     private void compileExpressionList(boolean strict) throws VipCompilerException {
-        if (nextToken().getLexme().equals("(")) {
+        if (Objects.requireNonNull(nextToken()).getLexme().equals("(")) {
             consume(Token.TokenType.OPERATOR);// eat left parenthesis
             consume(Token.TokenType.OPERATOR);// eat right parenthesis
             return;
         }
+        if (strict) {
+            consume(Token.TokenType.OPERATOR, "(");
+        }
 
-          consume(Token.TokenType.OPERATOR,"(");
 
         while (readIndex < LineTokens.size()) {
-            if (match("(")||match(")")) {
+            if (match("(") || match(")")) {
                 break;
             }
 
             this.parseExpression();
-            consume(Token.TokenType.OPERATOR,".");
+            consume(Token.TokenType.OPERATOR, ".");
         }
-        consume(Token.TokenType.OPERATOR,")");
+        if (strict) {
+            consume(Token.TokenType.OPERATOR, ")");
+        }
     }
 
     private void parseTerminal() throws VipCompilerException {
         switch (currentToken.getType()) {
             case IDENTIFIER:
-
-                if (nextToken().getType() == Token.TokenType.OPERATOR) {
-                    if (nextToken().getLexme() == "(") {
+                if (Objects.requireNonNull(nextToken()).getType() == Token.TokenType.OPERATOR) {
+                    if (Objects.requireNonNull(nextToken()).getLexme().equals("(")) {
                         this.parseMethodCall();
-                    } else if (nextToken().getLexme() == ".") {
+                    } else if (Objects.requireNonNull(nextToken()).getLexme().equals(".")) {
                         this.compileChainMethod();
-                    } else if (nextToken().getLexme() == "=") {
+                    } else if (Objects.requireNonNull(nextToken()).getLexme().equals("=")) {
                         parseAssignment();
                     }
 
                     break;
                 } else {
-                      getNextToken();
+                    getNextToken();
                     break;
                 }
 
@@ -341,7 +347,7 @@ public class Parser {
             case OPERATOR:
                 this.compileExpressionList(true);
 
-                if (nextToken().getLexme().equals("=")) {
+                if (Objects.requireNonNull(nextToken()).getLexme().equals("=")) {
                     nextToken();
                     this.parseTerminal();
                 } else {
@@ -364,7 +370,7 @@ public class Parser {
     private boolean isOperator(Token token) throws VipCompilerException {
         switch (token.getLexme()) {
             case "+", "-", "/", "and", "or", "equals", "less--than", "less--than--or--equal",
-                 "greater--than--or--equal", "GREATER_THAN","=","*","not", "not_equal" -> {
+                 "greater--than--or--equal", "GREATER_THAN", "=", "*", "not", "not_equal" -> {
                 return true;
             }
             default -> {

@@ -7,4 +7,5 @@ public interface AST {
    void visitIFNode(IFNode ifNode);
    void visitWhileNode(WhileNode whileNode);
    void visitExperNode(ExprNode exprNode);
+   void visitBooleanExprNode(BooleanExpr booleanExpr);
 }

@@ -37,4 +37,9 @@ public class ASTAnalyser implements AST{
     public void visitExperNode(ExprNode exprNode) {
 
     }
+
+    @Override
+    public void visitBooleanExprNode(BooleanExpr booleanExpr) {
+
+    }
 }
