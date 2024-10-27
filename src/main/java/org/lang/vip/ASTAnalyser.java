@@ -4,6 +4,10 @@ import org.lang.memmory.SymbolTable;
 
 public class ASTAnalyser implements AST{
     private SymbolTable symbolTable;
+    public ASTAnalyser(SymbolTable _symbolTable){
+        this.symbolTable = _symbolTable;
+    }
+
     @Override
     public void visitMethodDefNode(MethodDefNode methodDefNode) {
 
