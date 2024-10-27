@@ -1,5 +1,8 @@
 package org.lang.vip;
 
+import org.lang.exceptions.VipCompilerException;
+import org.lang.memmory.SymbolTable;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -41,7 +44,7 @@ public class Main {
             if (isVipFile(file)) {
                 try {
                     processFile(file);
-                } catch (IOException e) {
+                } catch (IOException | VipCompilerException e) {
                     System.err.println("Error processing file: " + file.getName());
                     e.printStackTrace();
                 }
@@ -65,20 +68,23 @@ public class Main {
      * @param file the .vp file to process
      * @throws IOException if an error occurs while reading the file
      */
-    private static void processFile(File file) throws IOException {
+    private static void processFile(File file) throws IOException, VipCompilerException {
         System.out.println("Processing file: " + file.getName());
         Lexer lexer = new Lexer(file.getPath());
         Parser parser = new Parser(lexer);
+        SymbolTable symbolTable = new SymbolTable();
         List<ASTNode> astNodes = parser.getParseTree();
-        ASTAnalyser astAnalyser = new ASTAnalyser();
+        ASTAnalyser astAnalyser = new ASTAnalyser(symbolTable);
         ASTPrinter astPrinter = new ASTPrinter();
-        CodeGen codeGen = new CodeGen();
+        JavaBytecodeGenerator codeGen = new JavaBytecodeGenerator(symbolTable);
+        codeGen.writeClassToFile();
         if (astNodes != null) {
             for (ASTNode nodes : astNodes) {
                 nodes.accept(astPrinter);
                 nodes.accept(astAnalyser);
                 nodes.accept(codeGen);
             }
+
         }
 
 
