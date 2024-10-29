@@ -33,6 +33,6 @@ public class ASTPrinter implements AST{
 
     @Override
     public void visitBooleanExprNode(BooleanExpr booleanExpr) {
-
+        System.out.println("---> Reached Boolean Expression");
     }
 }

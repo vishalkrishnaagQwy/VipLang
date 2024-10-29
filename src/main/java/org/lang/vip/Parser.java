@@ -65,6 +65,13 @@ public class Parser {
         }
     }
 
+    private void consumeSilent(Token.TokenType expectedType,String expected) {
+        System.out.println("silent = " + currentToken);
+        if (currentToken.getType() == expectedType && currentToken.getLexme().equals(expected)) {
+            getNextToken();
+        }
+    }
+
     private boolean match(String lexeme) {
         return (currentToken.getLexme().equals(lexeme));
     }
@@ -158,6 +165,15 @@ public class Parser {
         List<ASTNode> astList=new ArrayList<>();
         switch (currentToken.getType()) {
             case IDENTIFIER:
+                if(nextTokenIs(Token.TokenType.IDENTIFIER))
+                {
+
+                } else if (nextTokenIs(Token.TokenType.OPERATOR,"(")) {
+
+                }
+                else if (nextTokenIs(Token.TokenType.OPERATOR,"[")) {
+
+                }
                 parseAssignment();
                 break;
             case KEYWORD:
@@ -177,6 +193,30 @@ public class Parser {
                 throw new RuntimeException("Unexpected token in statement: " + currentToken);
         }
         return new BlockNode();
+    }
+
+    private boolean nextTokenIs(Token.TokenType tokenType, String s) {
+       if(nextToken()!=null)
+       {
+           return nextToken().getType() == tokenType && nextToken().getLexme().equals(s);
+       }
+       return false;
+    }
+
+    private boolean nextTokenIs(Token.TokenType tokenType) {
+        if(nextToken()!=null)
+        {
+            return nextToken().getType() == tokenType;
+        }
+        return false;
+    }
+
+    private boolean nextTokenIs(String lexme) {
+        if(nextToken()!=null)
+        {
+            return nextToken().getLexme().equals(lexme);
+        }
+        return false;
     }
 
     private ASTNode parseForStatement() {
@@ -226,28 +266,28 @@ public class Parser {
         node.add(methodDefNode);
     }
 
-    private void parseExpression() throws VipCompilerException {
-
+    private ASTNode parseExpression() throws VipCompilerException {
         if (isEol()) {
-            return;
+            return null;
         }
 
         parseTerminal();
         while (isOperator(currentToken)) {
             nextToken();
             if (match("(") || match(")")) {
-                return;
+                return null;
             }
             parseTerminal();
         }
 
+        return null;
     }
 
     private void compileChainStatements(String methodName) throws VipCompilerException {
         List<String> tokenList = new ArrayList<>(100);
         String output;
         tokenList.add(currentToken.getLexme());
-        nextToken();
+        getNextToken();
         if (match(".")) {
 
             while (match(".") || currentToken.getType() == Token.TokenType.IDENTIFIER) {
@@ -297,15 +337,15 @@ public class Parser {
         output += currentToken.getLexme();
         String offset2 = currentToken.getLexme();
         consume(Token.TokenType.IDENTIFIER);
-        if (currentToken.getLexme().equals(".") && nextToken().getType() == Token.TokenType.IDENTIFIER) {
-            throw new VipCompilerException("cannot invoke  field '" + output + "." + nextToken().getLexme());
+        if (currentToken.getLexme().equals(".") && nextTokenIs(Token.TokenType.IDENTIFIER)) {
+            throw new VipCompilerException("chain method exception '" + output + ".");
         }
         compileExpressionList(true);
     }
 
 
     private void compileExpressionList(boolean strict) throws VipCompilerException {
-        if (Objects.requireNonNull(nextToken()).getLexme().equals("(")) {
+        if (nextTokenIs("(")) {
             consume(Token.TokenType.OPERATOR);// eat left parenthesis
             consume(Token.TokenType.OPERATOR);// eat right parenthesis
             return;
@@ -331,12 +371,12 @@ public class Parser {
     private void parseTerminal() throws VipCompilerException {
         switch (currentToken.getType()) {
             case IDENTIFIER:
-                if (Objects.requireNonNull(nextToken()).getType() == Token.TokenType.OPERATOR) {
-                    if (Objects.requireNonNull(nextToken()).getLexme().equals("(")) {
+                if (nextTokenIs(Token.TokenType.OPERATOR)) {
+                    if (nextTokenIs("(")) {
                         this.parseMethodCall();
-                    } else if (Objects.requireNonNull(nextToken()).getLexme().equals(".")) {
+                    } else if (nextTokenIs(".")) {
                         this.compileChainMethod();
-                    } else if (Objects.requireNonNull(nextToken()).getLexme().equals("=")) {
+                    } else if (nextTokenIs("=")) {
                         parseAssignment();
                     }
 
@@ -354,7 +394,7 @@ public class Parser {
             case OPERATOR:
                 this.compileExpressionList(true);
 
-                if (Objects.requireNonNull(nextToken()).getLexme().equals("=")) {
+                if (nextTokenIs("=")) {
                     nextToken();
                     this.parseTerminal();
                 } else {
@@ -371,7 +411,13 @@ public class Parser {
         }
     }
 
-    private void parseMethodCall() {
+    private ASTNode parseMethodCall() throws VipCompilerException {
+        String methodCall = currentToken.getLexme();
+        consume(Token.TokenType.IDENTIFIER);
+        consumeSilent(Token.TokenType.OPERATOR,"(");
+        ASTNode expression=this.parseExpression();
+        consumeSilent(Token.TokenType.OPERATOR,")");
+        return new MethodCallNode(methodCall,expression);
     }
 
     private boolean isOperator(Token token) throws VipCompilerException {

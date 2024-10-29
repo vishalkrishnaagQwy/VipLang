@@ -28,7 +28,7 @@ public class Lexer {
         this.encoding = "UTF-8"; // Change as needed
         this.path = fileName;
         this.file = new File(path);
-        this.lineNumber = 1;
+        this.lineNumber = 0;
         initSymbols();
         initLocalFile(); // Read file content
     }
@@ -143,7 +143,10 @@ public class Lexer {
 
     List<Token> lexLine(String input_line) {
         List<Token> tokens = new ArrayList<>();
-
+        if(input_line.isEmpty())
+        {
+            return getNextLine();
+        }
         int indentationLevel = calculateIndent(input_line);
         handleIndentation(tokens, indentationLevel);
 

@@ -46,12 +46,12 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
 
     @Override
     public void visitBlockNode(BlockNode blockNode) {
-
+        
     }
 
     @Override
     public void visitMethodCallNode(MethodCallNode methodCallNode) {
-
+      methodCallNode.body.accept(this);
     }
 
     @Override

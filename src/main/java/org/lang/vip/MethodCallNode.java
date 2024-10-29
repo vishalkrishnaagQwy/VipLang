@@ -1,8 +1,11 @@
 package org.lang.vip;
 
 public class MethodCallNode extends ASTNode{
-    public MethodCallNode(){
-
+    String methodName;
+    ASTNode body;
+    public MethodCallNode(String methodName,ASTNode expression){
+        this.methodName = methodName;
+        this.body = expression;
     }
 
     @Override
