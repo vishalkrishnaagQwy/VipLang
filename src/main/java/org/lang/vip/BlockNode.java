@@ -1,8 +1,12 @@
 package org.lang.vip;
 
+import java.util.List;
+
 public class BlockNode extends ASTNode{
-    public BlockNode(){
-        System.out.println("blockNode ...");
+    List<ASTNode> list;
+    public BlockNode(List<ASTNode> expr){
+
+        this.list = expr;
     }
 
     @Override

@@ -91,18 +91,16 @@ public class Lexer {
         keywords.add("import");
         keywords.add("from");
         keywords.add("global");
-        keywords.add("nonlocal");
+        keywords.add("static");
         keywords.add("lambda");
         keywords.add("pass");
         keywords.add("yield");
         keywords.add("True");
         keywords.add("False");
         keywords.add("None");
-        dataTypes.add("int");
-        dataTypes.add("float");
-        dataTypes.add("Array");
-        dataTypes.add("string");
-        dataTypes.add("Object");
+        keywords.add("package");
+        keywords.add("version");
+        keywords.add("implements");
     }
 
     private int calculateIndent(String line) {
@@ -191,9 +189,8 @@ public class Lexer {
         if(keywords.contains(currentToken.toString()))
         {
             tokens.add(new Token(Token.TokenType.KEYWORD, currentToken.toString(), lineNumber));
-        } else if (dataTypes.contains(currentToken.toString())) {
-            tokens.add(new Token(Token.TokenType.DATA_TYPE,currentToken.toString(),lineNumber));
-        } else {
+        }
+        else {
             tokens.add(new Token(Token.TokenType.IDENTIFIER, currentToken.toString(), lineNumber));
         }
 
@@ -217,6 +214,7 @@ public class Lexer {
         currentToken.append('"'); // Append the closing quote
         tokens.add(new Token(Token.TokenType.STRING, currentToken.toString(), lineNumber));
         currentToken.setLength(0); // Clear the token
+        i = i+1;
         return i;
     }
 

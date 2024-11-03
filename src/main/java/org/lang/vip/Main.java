@@ -73,18 +73,15 @@ public class Main {
         Lexer lexer = new Lexer(file.getPath());
         Parser parser = new Parser(lexer);
         SymbolTable symbolTable = new SymbolTable();
-        List<ASTNode> astNodes = parser.getParseTree();
+        ASTNode astNodes = parser.getParseTree();
         ASTAnalyser astAnalyser = new ASTAnalyser(symbolTable);
         ASTPrinter astPrinter = new ASTPrinter();
         JavaBytecodeGenerator codeGen = new JavaBytecodeGenerator(symbolTable);
 //        codeGen.writeClassToFile();
         if (astNodes != null) {
-            for (ASTNode nodes : astNodes) {
-                nodes.accept(astPrinter);
-                nodes.accept(astAnalyser);
-                nodes.accept(codeGen);
-            }
-
+                astNodes.accept(astPrinter);
+                astNodes.accept(astAnalyser);
+                astNodes.accept(codeGen);
         }
 
 
