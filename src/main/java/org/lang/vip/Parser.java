@@ -133,7 +133,7 @@ public class Parser {
 
     private ASTNode parsePackage() throws VipCompilerException {
         consume(Token.TokenType.KEYWORD, "package");
-        ASTNode pack = new PackageDeclNode(parseChainString());
+        ASTNode pack = new PackageDeclNode(parseChainString(false));
         consumeSilent(Token.TokenType.DEDENT);
         return  pack;
     }
@@ -159,7 +159,7 @@ public class Parser {
                     }
                     break;
                 case IDENTIFIER:
-                    astNodes.add(parseAssignment());
+                    astNodes.add(parseIdentifier());
                     // assignment a = 20 or a , b = 10 , 20
                     break;
                 case INDENT:
@@ -182,18 +182,7 @@ public class Parser {
         List<ASTNode> astList = new ArrayList<>();
         switch (currentToken.getType()) {
             case IDENTIFIER:
-                if (nextTokenIs(Token.TokenType.IDENTIFIER)) {
-
-                } else if (nextTokenIs(Token.TokenType.OPERATOR, "(")) {
-
-                } else if (nextTokenIs(Token.TokenType.OPERATOR, "[")) {
-
-                }
-                else if (nextTokenIs(Token.TokenType.IDENTIFIER)) {
-                 return parseObjectCreation();
-                }
-               return parseAssignment();
-
+               return parseIdentifier();
             case KEYWORD:
                 if (match("if")) {
                     astList.add(this.parseIfStatement());
@@ -211,10 +200,32 @@ public class Parser {
         return new BlockNode(astList);
     }
 
-    private ASTNode parseObjectCreation() {
-       String objectName= currentToken.getLexme();
+    private ASTNode parseIdentifier() throws VipCompilerException {
+        String currentId = currentToken.getLexme();
+        getNextToken();
+        if (match(Token.TokenType.IDENTIFIER)) {
+            return parseObjectCreation(currentId);
+        }
+        else if (match("=")) {
+            return parseAssignment(currentId);
+        }
+        else {
+            throw new VipCompilerException(("compilationFault()"));
+        }
+    }
 
-        return null;
+    private ASTNode parseObjectCreation(String identifier) throws VipCompilerException {
+        if(match("."))
+        {
+            List<String> parsedOutput= this.parseChainString(true);
+            return new ObjectDeclNode(parsedOutput,identifier);
+        }
+        else {
+            String instanceName= currentToken.getLexme();
+            consume(Token.TokenType.IDENTIFIER);
+            return new ObjectDeclNode(identifier,instanceName);
+        }
+
     }
 
     private boolean nextTokenIs(Token.TokenType tokenType, String s) {
@@ -262,8 +273,7 @@ public class Parser {
 
 
     // Parse an assignment statement
-    private ASTNode parseAssignment() throws VipCompilerException {
-        String identifier = currentToken.getLexme();
+    private ASTNode parseAssignment(String identifier) throws VipCompilerException {
         ASTNode variable =new VariableNode(identifier);
         consume(Token.TokenType.IDENTIFIER);
         consume(Token.TokenType.OPERATOR, "="); // Expect '='
@@ -326,11 +336,14 @@ public class Parser {
     }
 
     // like a.b.c.d string means this type of combination not the actual string
-    private List<String> parseChainString() throws VipCompilerException {
+    private List<String> parseChainString(boolean stringAlreadYCaught) throws VipCompilerException {
         List<String> tokenList = new ArrayList<>(100);
+         if(!stringAlreadYCaught)
+         {
+             tokenList.add(currentToken.getLexme());
+             consume(Token.TokenType.IDENTIFIER);
+         }
 
-        tokenList.add(currentToken.getLexme());
-        consume(Token.TokenType.IDENTIFIER);
         if (match(".")) {
 
             while (((match(".") || match(Token.TokenType.IDENTIFIER))) && !isEol()) {
@@ -442,21 +455,7 @@ public class Parser {
     private ASTNode parseTerminal() throws VipCompilerException {
         switch (currentToken.getType()) {
             case IDENTIFIER:
-                if (nextTokenIs(Token.TokenType.OPERATOR)) {
-                    if (nextTokenIs("(")) {
-                    return  this.parseMethodCall();
-                    } else if (nextTokenIs(".")) {
-                        return  this.compileChainMethod();
-                    } else if (nextTokenIs("=")) {
-                        return   parseAssignment();
-                    }
-
-                    break;
-                } else {
-                    getNextToken();
-                    break;
-                }
-
+                        return  parseIdentifier();
             case STRING:
                 getNextToken();
                 break;
