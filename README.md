@@ -108,7 +108,7 @@ for i in range(5)
 
 VIPL supports object-oriented programming. Here’s an example of defining a simple class:
 
-```groovy
+```python
 class Person
     def Person(name, age)
         this.name = name
