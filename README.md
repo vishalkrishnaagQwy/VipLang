@@ -84,7 +84,7 @@ var age = 18
 
 if age >= 18
     print("You are eligible to vote.")
-else:
+else
     print("You are not eligible to vote.")
 ```
 
@@ -114,7 +114,7 @@ class Person
         this.name = name
         this.age = age
 
-    def introduce():
+    def introduce()
         print("Hi, I am " + this.name + " and I am " + str(this.age) + " years old.")
 
 # Create an instance of the Person class
