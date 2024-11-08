@@ -14,7 +14,6 @@ public class Token {
         INDENT,
         DEDENT,
         NEW_LINE,
-        VAR,
         ERROR
     }
 

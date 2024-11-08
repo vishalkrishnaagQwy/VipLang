@@ -94,13 +94,14 @@ public class Lexer {
         keywords.add("static");
         keywords.add("lambda");
         keywords.add("pass");
-        keywords.add("yield");
         keywords.add("True");
         keywords.add("False");
         keywords.add("None");
         keywords.add("package");
         keywords.add("version");
         keywords.add("implements");
+        keywords.add("var");
+        keywords.add("obj");
     }
 
     private int calculateIndent(String line) {
