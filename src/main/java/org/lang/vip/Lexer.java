@@ -160,7 +160,7 @@ public class Lexer {
                 continue; // Ignore whitespace
             }
 
-            if (Character.isLetter(c)) {
+            if (Character.isLetter(c)||c == '_') {
                 currentToken.append(c);
                 i = readIdentifier(tokens, chars, i, currentToken); // Read identifier/keyword
             } else if (Character.isDigit(c)) {
