@@ -72,7 +72,7 @@ public class SymbolTable {
 
     // find will only look up local scope
     public Object find(String name) {
-            Map<String, Object> scope = scopes.getLast();
+            Map<String, Object> scope = scopes.peek();
             if (scope.containsKey(name)) {
                 return scope.get(name);
             }

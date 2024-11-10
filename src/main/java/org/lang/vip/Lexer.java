@@ -102,6 +102,7 @@ public class Lexer {
         keywords.add("implements");
         keywords.add("var");
         keywords.add("obj");
+        keywords.add("new");
     }
 
     private int calculateIndent(String line) {

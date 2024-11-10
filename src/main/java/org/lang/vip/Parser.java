@@ -46,7 +46,7 @@ public class Parser {
             LineTokens = lexer.getNextLine();
             if (LineTokens != null && !LineTokens.isEmpty()) {
                 readIndex = 0;
-                currentToken = LineTokens.getFirst();
+                currentToken = LineTokens.get(0);
             } else {
                 if (LineTokens != null) {
                     eof_reached = true;
@@ -229,23 +229,12 @@ public class Parser {
         consume(Token.TokenType.KEYWORD);
         String identifier = currentToken.getLexme();
         consume(Token.TokenType.IDENTIFIER);
-        if (match(".")) {
-            List<String> parsedOutput = this.parseChainString(true);
-            if (match("=")) {
+            if (!isEol()) {
                 getNextToken();
-                return new ObjectDeclNode(parsedOutput, identifier, this.parseExpression());
+                consume(Token.TokenType.OPERATOR,"=");
+                return new ObjectDeclNode(identifier, this.parseExpression());
             }
-            return new ObjectDeclNode(parsedOutput, identifier, null);
-        } else {
-            String instanceName = currentToken.getLexme();
-            consume(Token.TokenType.IDENTIFIER);
-            if (match("=")) {
-                getNextToken();
-                return new ObjectDeclNode(identifier, instanceName, this.parseExpression());
-            }
-            return new ObjectDeclNode(identifier, instanceName, null);
-
-        }
+            return new ParserExceptionNode("unexpected_end_of_line","E10");
 
     }
 
@@ -409,7 +398,7 @@ public class Parser {
             output = convertListToString(tokenList);
             if (match("(")) {
                 // a.b.c.d.method call
-                this.compileExpressionList(true);
+                this.parseExpressionList(true);
             } else if (match("=")) {
                 consume(Token.TokenType.OPERATOR);
                 // a = 10 format
@@ -442,10 +431,10 @@ public class Parser {
         if (currentToken.getLexme().equals(".") && nextTokenIs(Token.TokenType.IDENTIFIER)) {
             throw new VipCompilerException("chain method exception '" + output + ".");
         }
-        return compileExpressionList(true);
+        return parseExpressionList(true);
     }
 
-    private ASTNode compileExpressionList(boolean strict) throws VipCompilerException {
+    private ASTNode parseExpressionList(boolean strict) throws VipCompilerException {
         List<ASTNode> exprNode = new ArrayList<>();
         if (nextTokenIs("(")) {
             consume(Token.TokenType.OPERATOR);// eat left parenthesis
@@ -462,8 +451,12 @@ public class Parser {
                 break;
             }
 
+            if (match(","))
+            {
+                consume(Token.TokenType.OPERATOR,",");
+            }
+
             exprNode.add(this.parseExpression());
-            consume(Token.TokenType.OPERATOR, ".");
         }
         if (strict) {
             consume(Token.TokenType.OPERATOR, ")");
@@ -480,11 +473,15 @@ public class Parser {
             case NUMBER:
                 return this.parseNumber();
             case KEYWORD:
-                break;
+                if(match("new"))
+                {
+                  return this.parseInstance();
+                }
+                return new ParserExceptionNode("no returns found","E09");
             case OPERATOR:
                 if(match("("))
                 {
-                   return this.compileExpressionList(true);
+                   return this.parseExpressionList(true);
                 }
                 break;
             default:
@@ -494,6 +491,16 @@ public class Parser {
                 throw new VipCompilerException("unknown token " + currentToken);
         }
         return new ParserExceptionNode("broken_from_parse_terminal","E01");
+    }
+
+    private ASTNode parseInstance() throws VipCompilerException {
+        consume(Token.TokenType.KEYWORD);
+        String className = currentToken.getLexme();
+        consume(Token.TokenType.IDENTIFIER);
+        InstanceClassNode instanceClassNode = new InstanceClassNode();
+        instanceClassNode.setClassName(className);
+        instanceClassNode.setParams(this.parseExpressionList(true));
+        return instanceClassNode;
     }
 
     private ASTNode parseString() {
