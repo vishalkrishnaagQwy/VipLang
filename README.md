@@ -139,7 +139,7 @@ VIPL is in the beta stage, and contributions are welcome! Please follow these st
    ```bash
    git checkout -b feature-or-fix-name
    ```
-3. Commit your changes and push to your branch.
+3. Commit your changes and push into your branch.
 4. Open a pull request and describe your changes.
 
 ## License
