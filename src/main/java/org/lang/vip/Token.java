@@ -7,6 +7,8 @@ public class Token {
         KEYWORD,
         EOF,
         NUMBER,
+        DOUBLE,
+        FLOAT,
         STRING,
         BYTE_STRING,
         FORMATTED_STRING,

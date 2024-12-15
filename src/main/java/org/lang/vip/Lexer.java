@@ -214,14 +214,52 @@ public class Lexer {
         return i;
     }
 
+
+//    private int readNumber(List<Token> tokens, char[] chars, int i, StringBuilder currentToken) {
+//        while (i + 1 < chars.length && Character.isDigit(chars[i + 1])) {
+//            currentToken.append(chars[++i]);
+//        }
+//        tokens.add(new Token(Token.TokenType.NUMBER, currentToken.toString(), lineNumber));
+//        currentToken.setLength(0); // Clear the token
+//        return i;
+//    }
+
     private int readNumber(List<Token> tokens, char[] chars, int i, StringBuilder currentToken) {
+        // Start by handling the integer part (digits before any decimal point)
         while (i + 1 < chars.length && Character.isDigit(chars[i + 1])) {
             currentToken.append(chars[++i]);
         }
+
+        // Check if there's a decimal point for float or double
+        if (i + 1 < chars.length && chars[i + 1] == '.') {
+            currentToken.append(chars[++i]); // Append the decimal point
+
+            // Handle the fractional part (digits after the decimal point)
+            while (i + 1 < chars.length && Character.isDigit(chars[i + 1])) {
+                currentToken.append(chars[++i]);
+            }
+
+            // After a decimal, the number is typically a float or double, so we mark it as such
+            tokens.add(new Token(Token.TokenType.DOUBLE, currentToken.toString(), lineNumber));
+            currentToken.setLength(0); // Clear the token
+            return i;
+        }
+
+        // Now check for the 'f' or 'd' suffix for floats or doubles (after integer or decimal)
+        if (i + 1 < chars.length && (chars[i + 1] == 'f' || chars[i + 1] == 'd')) {
+            currentToken.append(chars[++i]); // Append the suffix ('f' or 'd')
+            tokens.add(new Token(Token.TokenType.FLOAT, currentToken.toString(), lineNumber));
+            currentToken.setLength(0); // Clear the token
+            return i;
+        }
+
+        // If there was no decimal, suffix, or float handling, it's an integer
         tokens.add(new Token(Token.TokenType.NUMBER, currentToken.toString(), lineNumber));
         currentToken.setLength(0); // Clear the token
         return i;
     }
+
+
 
     private int readString(List<Token> tokens, char[] chars, int i, StringBuilder currentToken) {
         while (i + 1 < chars.length && chars[i + 1] != '"') {

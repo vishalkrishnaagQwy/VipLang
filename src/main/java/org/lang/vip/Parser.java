@@ -172,18 +172,17 @@ public class Parser {
     }
 
     // Parse a single statement
-    private ASTNode parseStatement() throws VipCompilerException {
-        List<ASTNode> astList = new ArrayList<>();
+    private void parseStatement() throws VipCompilerException {
         switch (currentToken.getType()) {
             case IDENTIFIER:
                 parseIdentifier();
             case KEYWORD:
                 if (match("if")) {
-                    astList.add(this.parseIfStatement());
+                    this.parseIfStatement();
                 } else if (match("while")) {
-                    astList.add(this.parseWhileStatement());
+                    this.parseWhileStatement();
                 } else if (match("for")) {
-                    astList.add(this.parseForStatement());
+                    this.parseForStatement();
                 }
                 else {
                     // Handle other keywords like if, for, etc.
@@ -192,7 +191,6 @@ public class Parser {
             default:
                 throw new RuntimeException("Unexpected token in statement: " + currentToken);
         }
-        return new BlockNode(astList);
     }
 
 
@@ -268,10 +266,14 @@ public class Parser {
 
     // Parse an assignment if assignment else declaration
     private void parseAssignment(String identifier) throws VipCompilerException {
-        ASTNode variable = new VariableNode(identifier);
-        consume(Token.TokenType.IDENTIFIER);
-        consume(Token.TokenType.OPERATOR, "="); // Expect '='
-        parseExpression();
+        getNextToken();
+        if (match("new")) {
+         parseObjectCreation();
+      }
+      else {
+            parseExpression();
+      }
+
     }
 
 
@@ -290,25 +292,18 @@ public class Parser {
             System.out.println("looping ...");
             parseStatement();
         }
+        getNextToken();
         codeGenerator.write("}");
     }
 
     private void parseExpression() throws VipCompilerException {
          parseTerminal();
         String operator = "";
-        while (isArithematicOperator(currentToken) || isLogicalOperator(currentToken)) {
-            if (isArithematicOperator(currentToken)) {
+        while (isArithematicOperator(currentToken)) {
                 operator = currentToken.getLexme();
-                nextToken();
+                getNextToken();
                 parseTerminal();
                 codeGenerator.write(operator);
-            }
-            if (isLogicalOperator(currentToken)) {
-                operator = currentToken.getLexme();
-                nextToken();
-                parseTerminal();
-            }
-
         }
     }
 
@@ -434,16 +429,26 @@ public class Parser {
     private void parseTerminal() throws VipCompilerException {
         switch (currentToken.getType()) {
             case IDENTIFIER:
-                parseIdentifier();
+                this.parseId();
+                break;
             case STRING:
                 this.parseString();
+                break;
             case NUMBER:
                 this.parseNumber();
+                break;
+            case FLOAT:
+                this.parseFloat();
+                break;
+            case DOUBLE:
+                this.parseDouble();
+                break;
             case KEYWORD:
                 if(match("new"))
                 {
                     this.parseInstance();
                 }
+                break;
             case OPERATOR:
                 if(match("("))
                 {
@@ -455,6 +460,14 @@ public class Parser {
         }
     }
 
+    private void parseId() {
+        //look up on symbol table
+        // if found then allow the variable
+        //else throw error
+        codeGenerator.write(currentToken.getLexme());
+        getNextToken();
+    }
+
     private ASTNode parseInstance() throws VipCompilerException {
         consume(Token.TokenType.KEYWORD);
         InstanceClassNode instanceClassNode = new InstanceClassNode();
@@ -464,17 +477,42 @@ public class Parser {
         return instanceClassNode;
     }
 
-    private ASTNode parseString() {
+    private void parseString() {
         String StringToken = currentToken.getLexme();
-        return new StringLiteralNode(StringToken);
+        codeGenerator.write(StringToken);
+        getNextToken();
     }
 
-    private ASTNode parseNumber() throws VipCompilerException {
+    private void parseNumber() throws VipCompilerException {
 
         try {
             int number = Integer.parseInt(currentToken.getLexme());
+            codeGenerator.write(number+";");
             getNextToken();
-            return new NumberNode(number);
+        } catch (NumberFormatException e) {
+            throw new VipCompilerException("Please enter a valid Number in expression");
+        }
+
+    }
+
+    private void parseFloat() throws VipCompilerException {
+
+        try {
+            float number = Float.parseFloat(currentToken.getLexme());
+            codeGenerator.write(number+";");
+            getNextToken();
+        } catch (NumberFormatException e) {
+            throw new VipCompilerException("Please enter a valid Number in expression");
+        }
+
+    }
+
+    private void parseDouble() throws VipCompilerException {
+
+        try {
+            double number = Double.parseDouble(currentToken.getLexme());
+            codeGenerator.write(number+";");
+            getNextToken();
         } catch (NumberFormatException e) {
             throw new VipCompilerException("Please enter a valid Number in expression");
         }
@@ -490,19 +528,8 @@ public class Parser {
 
     private boolean isArithematicOperator(Token token) throws VipCompilerException {
         switch (token.getLexme()) {
-            case "+", "-", "/", "=", "*" -> {
-                return true;
-            }
-            default -> {
-                return false;
-            }
-        }
-    }
-
-    private boolean isLogicalOperator(Token token) throws VipCompilerException {
-        switch (token.getLexme()) {
-            case "and", "or", "equals", "less than", "less than or equal",
-                    "greater than or equal", "greater than", "not", "not equal" -> {
+            case "+", "-", "/", "=", "*", "and", "or", "equals", "less than", "less than or equal",
+                 "greater than or equal", "greater than", "not", "not equal" -> {
                 return true;
             }
             default -> {

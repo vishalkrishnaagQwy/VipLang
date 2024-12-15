@@ -24,9 +24,11 @@ public class CodeGenerator {
     public void writeFile() {
         try {
             FileOutputStream fos = new FileOutputStream(className + ".java");
+            fos.write(("class "+className+"{").getBytes(StandardCharsets.UTF_8));
             String content = String.join("\n", code);
             byte[] bytes = content.getBytes();
             fos.write(bytes);
+            fos.write("}".getBytes(StandardCharsets.UTF_8));
             fos.close();
         } catch (IOException e) {
             e.printStackTrace();
