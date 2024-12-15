@@ -96,7 +96,6 @@ public class Lexer {
         keywords.add("package");
         keywords.add("version");
         keywords.add("implements");
-        keywords.add("var");
         keywords.add("obj");
         keywords.add("new");
         specialKeywords.add("if");
@@ -200,6 +199,11 @@ public class Lexer {
         }
         if(keywords.contains(currentToken.toString()))
         {
+            tokens.add(new Token(Token.TokenType.KEYWORD, currentToken.toString(), lineNumber));
+        }
+       else if(specialKeywords.contains(currentToken.toString()))
+        {
+            this.NewLineCheckEnabled =true;
             tokens.add(new Token(Token.TokenType.KEYWORD, currentToken.toString(), lineNumber));
         }
         else {

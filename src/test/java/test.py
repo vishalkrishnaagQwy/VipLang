@@ -4,7 +4,7 @@ package vip_1.built_in
 version "v1"
 
 class test
-    def main()
+   def main()
        #some Comment
       a =new(10)
       ci = new satiate("hello world" , 80 + 13 , 14)

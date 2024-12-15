@@ -4,6 +4,7 @@ import org.lang.memmory.SymbolTable;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CodeGenerator {
@@ -13,6 +14,7 @@ public class CodeGenerator {
 
     public CodeGenerator(){
         this.className = className.replace('.', '/');
+        this.code = new ArrayList<>();
     }
     public void write(String code)
     {

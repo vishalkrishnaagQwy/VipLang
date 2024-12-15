@@ -69,7 +69,7 @@ public class Main {
     private static void processFile(File file) throws IOException, VipCompilerException {
         System.out.println("Processing file: " + file.getName());
         Lexer lexer = new Lexer(file.getPath());
-        ASTParser ASTParser = new ASTParser(lexer);
+        Parser parser = new Parser(lexer);
 //        SymbolTable symbolTable = new SymbolTable();
 //        ASTNode astNodes = parser.getParseTree();
 //        ASTAnalyser astAnalyser = new ASTAnalyser(symbolTable);
