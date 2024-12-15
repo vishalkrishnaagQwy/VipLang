@@ -4,20 +4,27 @@ import org.lang.memmory.SymbolTable;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 public class CodeGenerator {
     private SymbolTable symbolTable;
+    private List<String> code;
     private String className = "dev_main";
 
-    public CodeGenerator(SymbolTable _symbolTable){
-       this.symbolTable = _symbolTable;
+    public CodeGenerator(){
         this.className = className.replace('.', '/');
     }
+    public void write(String code)
+    {
+        this.code.add(code);
+    }
 
-    public void writeClassToFile() {
+    public void writeFile() {
         try {
             FileOutputStream fos = new FileOutputStream(className + ".java");
-            fos.write("hello world".getBytes(StandardCharsets.UTF_8));
+            String content = String.join("\n", code);
+            byte[] bytes = content.getBytes();
+            fos.write(bytes);
             fos.close();
         } catch (IOException e) {
             e.printStackTrace();

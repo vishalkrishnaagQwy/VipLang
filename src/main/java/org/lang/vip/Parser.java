@@ -1,10 +1,10 @@
 package org.lang.vip;
 
 import org.lang.exceptions.VipCompilerException;
+import org.lang.memmory.SymbolTable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static java.lang.System.exit;
 
@@ -17,12 +17,16 @@ public class Parser {
     int readIndex = 0;
     ASTNode astNode;
     boolean eof_reached = false;
+    private SymbolTable symbolTable;
+    private CodeGenerator codeGenerator;
 
     public Parser(Lexer lexer) throws VipCompilerException {
         this.lexer = lexer;
         this.LineTokens = lexer.getNextLine();
+        this.symbolTable = new SymbolTable();
+        this.codeGenerator = new CodeGenerator();
         getNextToken();// Initialize the current token
-        astNode = parseProgram();
+        parseProgram();
     }
 
     ASTNode getParseTree() {
@@ -115,47 +119,42 @@ public class Parser {
     }
 
     // Parse a program consisting of statements
-    public ASTNode parseProgram() throws VipCompilerException {
-        ClassDeclNode classDeclNode = new ClassDeclNode();
-        classDeclNode.setPackage(parsePackage());
-        classDeclNode.setVersion(parseVersion());
+    public void parseProgram() throws VipCompilerException {
+        parsePackage();
+        parseVersion();
         ASTNode classIn = null;
         consume(Token.TokenType.KEYWORD, ParsingType.CLASS);
         String vipClasName = currentToken.getLexme();
         consume(Token.TokenType.IDENTIFIER);
         this.className = vipClasName;
-        classDeclNode.setClassName(this.className);
-        classDeclNode.setClassBody(parseClassBody());
-        return classDeclNode;
+        parseClassBody();
     }
 
-    private ASTNode parsePackage() throws VipCompilerException {
+    private void parsePackage() throws VipCompilerException {
         consume(Token.TokenType.KEYWORD, "package");
-        ASTNode pack = new PackageDeclNode(parseChainString(false));
-        return pack;
+        String result = String.join(".",parseChainString(false));
     }
 
-    private ASTNode parseVersion() throws VipCompilerException {
+    private void parseVersion() throws VipCompilerException {
+        // implement it full-fledged
         consume(Token.TokenType.KEYWORD, "version");
         String version = currentToken.getLexme();
         consume(Token.TokenType.STRING);
-        return new VesionNode(version);
     }
 
-    private ASTNode parseClassBody() throws VipCompilerException {
-        List<ASTNode> astNodes = new ArrayList<>();
+    private void parseClassBody() throws VipCompilerException {
         while (LineTokens != null || eof_reached) {
             switch (currentToken.getType()) {
                 case KEYWORD:
                     if (match(ParsingType.DEF.getValue())) {
-                        astNodes.add(parseMethodDefinition());
+                        parseMethodDefinition();
                     } else {
                         // Handle other keywords like if, for, etc.
                         throw new RuntimeException("Illegal codes inside class body of '" + className + "' .vp");
                     }
                     break;
                 case IDENTIFIER:
-                    astNodes.add(parseIdentifier());
+                    parseIdentifier();
                     // assignment a = 20 or a , b = 10 , 20
                     break;
 //                case INDENT:
@@ -170,7 +169,6 @@ public class Parser {
                     break;
             }
         }
-        return new BlockNode(astNodes);
     }
 
     // Parse a single statement
@@ -288,10 +286,9 @@ public class Parser {
 
 
     // Parse a function definition
-    private ASTNode parseMethodDefinition() throws VipCompilerException {
+    private void parseMethodDefinition() throws VipCompilerException {
         consume(Token.TokenType.KEYWORD, ParsingType.DEF); // Consume 'def'
         String functionName = currentToken.getLexme();
-        List<ASTNode> statements =new ArrayList<>();
         consume(Token.TokenType.IDENTIFIER);
         consumeSilent(Token.TokenType.OPERATOR,"(");
         // Optionally parse parameters
@@ -300,9 +297,8 @@ public class Parser {
         while (!match("return"))
         {
             System.out.println("looping ...");
-            statements.add(parseStatement());
+            parseStatement();
         }
-        return new MethodDefNode(functionName,statements);
     }
 
     private ASTNode parseExpression() throws VipCompilerException {

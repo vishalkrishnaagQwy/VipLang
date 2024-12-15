@@ -8,7 +8,7 @@ import java.util.List;
 import static java.lang.System.exit;
 
 
-public class ParserCopy {
+public class ASTParser {
     private final Lexer lexer;
     private Token currentToken;
     private List<Token> LineTokens;
@@ -17,7 +17,7 @@ public class ParserCopy {
     ASTNode astNode;
     boolean eof_reached = false;
 
-    public ParserCopy(Lexer lexer) throws VipCompilerException {
+    public ASTParser(Lexer lexer) throws VipCompilerException {
         this.lexer = lexer;
         this.LineTokens = lexer.getNextLine();
         getNextToken();// Initialize the current token
