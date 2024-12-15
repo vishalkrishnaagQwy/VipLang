@@ -4,12 +4,11 @@ import org.lang.exceptions.VipCompilerException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static java.lang.System.exit;
 
 
-public class Parser {
+public class ParserCopy {
     private final Lexer lexer;
     private Token currentToken;
     private List<Token> LineTokens;
@@ -18,7 +17,7 @@ public class Parser {
     ASTNode astNode;
     boolean eof_reached = false;
 
-    public Parser(Lexer lexer) throws VipCompilerException {
+    public ParserCopy(Lexer lexer) throws VipCompilerException {
         this.lexer = lexer;
         this.LineTokens = lexer.getNextLine();
         getNextToken();// Initialize the current token

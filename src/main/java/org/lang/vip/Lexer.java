@@ -16,8 +16,10 @@ public class Lexer {
     private List<String> textContent;
     private int index;
     private int currentIndentation = 0;
+    boolean NewLineCheckEnabled = false;
 
     private final Set<String> keywords = new HashSet<String>();
+    private final Set<String> specialKeywords = new HashSet<String>();
     private final Set<String> dataTypes = new HashSet<String>();
 
     // Define symbols and their types
@@ -74,17 +76,11 @@ public class Lexer {
         symbols.put("not", Token.TokenType.OPERATOR);
         keywords.add("def");
         keywords.add("class");
-        keywords.add("if");
-        keywords.add("elif");
-        keywords.add("else");
-        keywords.add("while");
-        keywords.add("for");
         keywords.add("in");
         keywords.add("break");
         keywords.add("continue");
         keywords.add("return");
         keywords.add("try");
-        keywords.add("except");
         keywords.add("finally");
         keywords.add("with");
         keywords.add("as");
@@ -103,6 +99,12 @@ public class Lexer {
         keywords.add("var");
         keywords.add("obj");
         keywords.add("new");
+        specialKeywords.add("if");
+        specialKeywords.add("elif");;
+        specialKeywords.add("else");
+        specialKeywords.add("while");
+        specialKeywords.add("for");
+        specialKeywords.add("except");
     }
 
     private int calculateIndent(String line) {
@@ -118,15 +120,15 @@ public class Lexer {
     }
 
 
-    private void handleIndentation(List<Token> tokens, int indentLevel) {
-
-        if (indentLevel > currentIndentation) {
-            tokens.add(new Token(Token.TokenType.INDENT, "", lineNumber));
-        } else if (indentLevel < currentIndentation) {
-            tokens.add(new Token(Token.TokenType.DEDENT, "", lineNumber));
-        }
-        currentIndentation = indentLevel;
-    }
+//    private void handleIndentation(List<Token> tokens, int indentLevel) {
+//
+//        if (indentLevel > currentIndentation) {
+//            tokens.add(new Token(Token.TokenType.INDENT, "", lineNumber));
+//        } else if (indentLevel < currentIndentation) {
+//            tokens.add(new Token(Token.TokenType.DEDENT, "", lineNumber));
+//        }
+//        currentIndentation = indentLevel;
+//    }
 
 
     public List<Token> getNextLine() {
@@ -145,10 +147,18 @@ public class Lexer {
         List<Token> tokens = new ArrayList<>();
         if(input_line.isEmpty())
         {
-            return getNextLine();
+            if(NewLineCheckEnabled)
+            {
+                tokens.add(new Token(Token.TokenType.NEW_LINE,"NEW_LINE",lineNumber));
+                return tokens;
+            }
+            else {
+                return getNextLine();
+            }
+
         }
-        int indentationLevel = calculateIndent(input_line);
-        handleIndentation(tokens, indentationLevel);
+//        int indentationLevel = calculateIndent(input_line);
+//        handleIndentation(tokens, indentationLevel);
 
         // Now lex the actual content of the line
         char[] chars = input_line.trim().toCharArray(); // Ignore leading whitespace
