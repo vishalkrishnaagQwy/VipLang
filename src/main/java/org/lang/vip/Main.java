@@ -1,6 +1,7 @@
 package org.lang.vip;
 
 import org.lang.exceptions.VipCompilerException;
+import org.lang.memmory.SymbolTable;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,18 +71,17 @@ public class Main {
         System.out.println("Processing file: " + file.getName());
         Lexer lexer = new Lexer(file.getPath());
         Parser parser = new Parser(lexer);
-//        SymbolTable symbolTable = new SymbolTable();
-//        ASTNode astNodes = parser.getParseTree();
-//        ASTAnalyser astAnalyser = new ASTAnalyser(symbolTable);
-//        ASTPrinter astPrinter = new ASTPrinter();
-//        JavaBytecodeGenerator codeGen = new JavaBytecodeGenerator(symbolTable);
-//        codeGen.writeClassToFile();
-//        if (astNodes != null) {
-//                astNodes.accept(astPrinter);
-//                astNodes.accept(astAnalyser);
-//                astNodes.accept(codeGen);
-//        }
-        // we set it whole for future
+        SymbolTable symbolTable = new SymbolTable();
+        ASTNode astNodes = parser.getParseTree();
+        ASTAnalyser astAnalyser = new ASTAnalyser(symbolTable);
+        ASTPrinter astPrinter = new ASTPrinter();
+        JavaBytecodeGenerator codeGen = new JavaBytecodeGenerator(symbolTable);
+        codeGen.writeClassToFile();
+        if (astNodes != null) {
+                astNodes.accept(astPrinter);
+                astNodes.accept(astAnalyser);
+                astNodes.accept(codeGen);
+        }
 
 
         // Perform further actions like semantic analysis and VM code generation here
