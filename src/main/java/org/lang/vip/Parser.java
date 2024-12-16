@@ -309,14 +309,27 @@ public class Parser {
         ASTNode left = parseTerminal();
         String operator = "";
         while (isArithematicOperator(currentToken) || isLogicalOperator(currentToken)) {
-            List<ASTNode> right = new ArrayList<>();
-            operator = currentToken.getLexme();
-            if (match("(") || match(")")) {
-                return new ParserExceptionNode("broken_from_expression","E06");
+            if(isArithematicOperator(currentToken))
+            {
+                List<ASTNode> right = new ArrayList<>();
+                operator = currentToken.getLexme();
+                if (match("(") || match(")")) {
+                    return new ParserExceptionNode("broken_from_expression","E06");
+                }
+                right.add(parseTerminal());
+                list.add(new ArithematicExpr(operator, left, right));
+                left = null;
+            } else if (isLogicalOperator(currentToken)) {
+                List<ASTNode> right = new ArrayList<>();
+                operator = currentToken.getLexme();
+                if (match("(") || match(")")) {
+                    return new ParserExceptionNode("broken_from_expression","E06");
+                }
+                right.add(parseTerminal());
+                list.add(new BooleanExpr(operator, left, right));
+                left = null;
             }
-            right.add(parseTerminal());
-            list.add(new ArithematicExpr(operator, left, right));
-            left = null;
+
         }
         return new BlockNode(list);
     }
