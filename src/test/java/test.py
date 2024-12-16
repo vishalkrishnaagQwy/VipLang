@@ -6,9 +6,9 @@ version "v1"
 class test
    def main()
        #some Comment
-      a = 10
-      b = 23 + 223
-      c = "hello world"
+#       a = 10
+#       b = 23 + 223
+#       c = "hello world"
       d = a * b - c + 1.20
       print c + d
     return

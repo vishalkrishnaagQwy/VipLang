@@ -287,8 +287,7 @@ public class Parser {
         consumeSilent(Token.TokenType.OPERATOR,")");
         codeGenerator.write("void "+functionName+"(){");
         // Parse method body
-        while (!match("return"))
-        {
+        while (!match("return")) {
             System.out.println("looping ...");
             parseStatement();
         }
@@ -487,7 +486,6 @@ public class Parser {
 
         try {
             int number = Integer.parseInt(currentToken.getLexme());
-            codeGenerator.write(number+";");
             getNextToken();
         } catch (NumberFormatException e) {
             throw new VipCompilerException("Please enter a valid Number in expression");
@@ -499,7 +497,6 @@ public class Parser {
 
         try {
             float number = Float.parseFloat(currentToken.getLexme());
-            codeGenerator.write(number+";");
             getNextToken();
         } catch (NumberFormatException e) {
             throw new VipCompilerException("Please enter a valid Number in expression");
@@ -511,7 +508,6 @@ public class Parser {
 
         try {
             double number = Double.parseDouble(currentToken.getLexme());
-            codeGenerator.write(number+";");
             getNextToken();
         } catch (NumberFormatException e) {
             throw new VipCompilerException("Please enter a valid Number in expression");
