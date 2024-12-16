@@ -313,6 +313,7 @@ public class Parser {
             {
                 List<ASTNode> right = new ArrayList<>();
                 operator = currentToken.getLexme();
+                getNextToken();
                 if (match("(") || match(")")) {
                     return new ParserExceptionNode("broken_from_expression","E06");
                 }
@@ -322,6 +323,7 @@ public class Parser {
             } else if (isLogicalOperator(currentToken)) {
                 List<ASTNode> right = new ArrayList<>();
                 operator = currentToken.getLexme();
+                getNextToken();
                 if (match("(") || match(")")) {
                     return new ParserExceptionNode("broken_from_expression","E06");
                 }
