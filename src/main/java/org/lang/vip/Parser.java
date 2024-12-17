@@ -139,7 +139,7 @@ public class Parser {
         consume(Token.TokenType.KEYWORD, "version");
         String version = currentToken.getLexme();
         consume(Token.TokenType.STRING);
-        return new VesionNode(version);
+        return new VersionNode(version);
     }
 
     private ASTNode parseClassBody() throws VipCompilerException {

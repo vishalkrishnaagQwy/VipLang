@@ -1,6 +1,6 @@
 package org.lang.vip;
 
-class ExprNode extends ASTNode {
+public class ExprNode extends ASTNode {
     String value;
 
     public ExprNode(String value) {

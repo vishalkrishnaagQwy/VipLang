@@ -10,6 +10,6 @@ public class PackageDeclNode extends ASTNode{
 
     @Override
     public void accept(AST visitor) {
-
+        visitor.visitPackageDeclNode(this);
     }
 }

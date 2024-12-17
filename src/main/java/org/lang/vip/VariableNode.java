@@ -9,7 +9,7 @@ class VariableNode extends ASTNode {
 
     @Override
     public void accept(AST visitor) {
-
+     visitor.visitVariableNode(this);
     }
 }
 

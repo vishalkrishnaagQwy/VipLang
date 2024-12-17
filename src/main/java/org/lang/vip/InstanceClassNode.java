@@ -17,6 +17,6 @@ public class InstanceClassNode extends ASTNode{
 
     @Override
     public void accept(AST visitor) {
-
+        visitor.visitInstanceClassNode(this);
     }
 }

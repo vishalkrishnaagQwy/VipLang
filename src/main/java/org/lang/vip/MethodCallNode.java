@@ -11,5 +11,6 @@ public class MethodCallNode extends ASTNode{
     @Override
     public void accept(AST visitor) {
        visitor.visitMethodCallNode(this);
+        body.accept(visitor);
     }
 }

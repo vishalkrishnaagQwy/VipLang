@@ -10,4 +10,10 @@ public interface AST {
    void visitBooleanExprNode(BooleanExpr booleanExpr);
    void visitParserExceptionNode(ParserExceptionNode parserExceptionNode);
    void visitClassDeclNode(ClassDeclNode classDeclNode);
+   void visitInstanceClassNode(InstanceClassNode instanceClassNode);
+   void visitObjectDeclNode(ObjectDeclNode objectDeclNode);
+   void visitPackageDeclNode(PackageDeclNode packageDeclNode);
+   void visitStringLiteralNode(StringLiteralNode stringLiteralNode);
+   void visitVersionNode(VersionNode versionNode);
+   void visitVariableNode(VariableNode variableNode);
 }

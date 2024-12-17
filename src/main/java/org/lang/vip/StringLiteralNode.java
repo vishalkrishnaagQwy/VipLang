@@ -13,6 +13,6 @@ class StringLiteralNode extends ASTNode {
 
     @Override
     public void accept(AST visitor) {
-
+      visitor.visitStringLiteralNode(this);
     }
 }

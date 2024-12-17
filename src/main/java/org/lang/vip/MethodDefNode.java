@@ -14,5 +14,9 @@ class MethodDefNode extends ASTNode {
     @Override
     public void accept(AST visitor) {
       visitor.visitMethodDefNode(this);
+        for(ASTNode statement : body)
+        {
+            statement.accept(visitor);
+        }
     }
 }
