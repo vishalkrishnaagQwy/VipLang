@@ -1,5 +1,6 @@
 package org.lang.vip;
 
+import org.lang.exceptions.ExceptionOnCodeReading;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -204,6 +205,10 @@ public class Lexer {
         }
        else if(specialKeywords.contains(currentToken.toString()))
         {
+            if(this.NewLineCheckEnabled>=20)
+            {
+                throw new ExceptionOnCodeReading("Line fault  found , please have a check");
+            }
             this.NewLineCheckEnabled++;
             tokens.add(new Token(Token.TokenType.KEYWORD, currentToken.toString(), lineNumber));
         }

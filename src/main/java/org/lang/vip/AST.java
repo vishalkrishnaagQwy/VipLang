@@ -16,4 +16,5 @@ public interface AST {
    void visitStringLiteralNode(StringLiteralNode stringLiteralNode);
    void visitVersionNode(VersionNode versionNode);
    void visitVariableNode(VariableNode variableNode);
+   void visitArithematicExpr(ArithematicExpr arithematicExpr);
 }

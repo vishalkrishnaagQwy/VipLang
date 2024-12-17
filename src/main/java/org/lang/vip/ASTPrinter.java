@@ -87,4 +87,9 @@ public class ASTPrinter implements AST{
     public void visitVariableNode(VariableNode variableNode) {
         System.out.println("---> Reached variable node");
     }
+
+    @Override
+    public void visitArithematicExpr(ArithematicExpr arithematicExpr) {
+
+    }
 }

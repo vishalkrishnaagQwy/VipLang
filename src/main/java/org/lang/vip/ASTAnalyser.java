@@ -82,4 +82,9 @@ public class ASTAnalyser implements AST{
     public void visitVariableNode(VariableNode variableNode) {
 
     }
+
+    @Override
+    public void visitArithematicExpr(ArithematicExpr arithematicExpr) {
+
+    }
 }

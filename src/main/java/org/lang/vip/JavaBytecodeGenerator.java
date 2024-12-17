@@ -12,6 +12,7 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
     private ClassWriter classWriter;
     private String className = "dev_main";
 
+
     public JavaBytecodeGenerator(SymbolTable _symbolTable){
         this.symbolTable = _symbolTable;
         this.className = className.replace('.', '/');
@@ -46,7 +47,10 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
 
     @Override
     public void visitBlockNode(BlockNode blockNode) {
-
+      for(ASTNode block : blockNode.list)
+      {
+         block.accept(this);
+      }
     }
 
     @Override
@@ -66,12 +70,19 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
 
     @Override
     public void visitExperNode(ExprNode exprNode) {
-
+        exprNode.accept(this);
     }
 
     @Override
     public void visitBooleanExprNode(BooleanExpr booleanExpr) {
-
+        MethodVisitor methodVisitor = classWriter.visitMethod(
+                ACC_PUBLIC + ACC_STATIC,
+                "evaluate",
+                "()I",
+                null,
+                null
+        );
+        methodVisitor.visitCode();
     }
 
     @Override
@@ -83,7 +94,7 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
     public void visitClassDeclNode(ClassDeclNode classDeclNode) {
         System.out.println("reached code gen or class decl");
         classDeclNode.classBody.accept(this);
-    }
+   }
 
     @Override
     public void visitInstanceClassNode(InstanceClassNode instanceClassNode) {
@@ -113,6 +124,30 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
     @Override
     public void visitVariableNode(VariableNode variableNode) {
 
+    }
+
+    @Override
+    public void visitArithematicExpr(ArithematicExpr arithematicExpr) {
+        arithematicExpr.getLeft().accept(this);
+        for (ASTNode right : arithematicExpr.getRight()) {
+            right.accept(this);
+        }
+
+        MethodVisitor methodVisitor = classWriter.visitMethod(
+                ACC_PUBLIC + ACC_STATIC,
+                "evaluate",
+                "()I",
+                null,
+                null
+        );
+        methodVisitor.visitCode();
+        switch (arithematicExpr.getOperator()) {
+            case "+" -> methodVisitor.visitInsn(IADD);
+            case "-" -> methodVisitor.visitInsn(ISUB);
+            case "*" -> methodVisitor.visitInsn(IMUL);
+            case "/" -> methodVisitor.visitInsn(IDIV);
+            default -> throw new IllegalArgumentException("Unsupported operator: " + arithematicExpr.getOperator());
+        }
     }
 
 
