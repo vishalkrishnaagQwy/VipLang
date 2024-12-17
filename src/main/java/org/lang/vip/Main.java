@@ -76,12 +76,12 @@ public class Main {
         ASTAnalyser astAnalyser = new ASTAnalyser(symbolTable);
         ASTPrinter astPrinter = new ASTPrinter();
         JavaBytecodeGenerator codeGen = new JavaBytecodeGenerator(symbolTable);
-        codeGen.writeClassToFile();
         if (astNodes != null) {
                 astNodes.accept(astPrinter);
                 astNodes.accept(astAnalyser);
                 astNodes.accept(codeGen);
         }
+        codeGen.writeClassToFile();
 
 
         // Perform further actions like semantic analysis and VM code generation here

@@ -11,6 +11,6 @@ public class ParserExceptionNode extends ASTNode{
     String errorCode;
     @Override
     public void accept(AST visitor) {
-
+       visitor.visitParserExceptionNode(this);
     }
 }

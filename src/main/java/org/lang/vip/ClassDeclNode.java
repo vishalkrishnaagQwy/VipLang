@@ -26,6 +26,6 @@ public class ClassDeclNode extends ASTNode{
 
     @Override
     public void accept(AST visitor) {
-
+        visitor.visitClassDeclNode(this);
     }
 }

@@ -47,4 +47,9 @@ public class ASTAnalyser implements AST{
     public void visitParserExceptionNode(ParserExceptionNode parserExceptionNode) {
         System.out.println("error catched"+parserExceptionNode.errorCode);
     }
+
+    @Override
+    public void visitClassDeclNode(ClassDeclNode classDeclNode) {
+        System.out.println("class decl need analysis");
+    }
 }
