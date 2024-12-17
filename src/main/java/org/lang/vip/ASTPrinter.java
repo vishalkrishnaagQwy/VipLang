@@ -53,36 +53,38 @@ public class ASTPrinter implements AST{
     @Override
     public void visitClassDeclNode(ClassDeclNode classDeclNode) {
         System.out.println("---> Reached class Declaration");
+        classDeclNode.getPackage().accept(this);
+        classDeclNode.getVersion().accept(this);
         classDeclNode.classBody.accept(this);
     }
 
     @Override
     public void visitInstanceClassNode(InstanceClassNode instanceClassNode) {
-
+        System.out.println("---> Reached class instantiation");
     }
 
     @Override
     public void visitObjectDeclNode(ObjectDeclNode objectDeclNode) {
-
+        System.out.println("---> Reached object declaration Node");
     }
 
     @Override
     public void visitPackageDeclNode(PackageDeclNode packageDeclNode) {
-
+        System.out.println("---> Reached package declaration Node");
     }
 
     @Override
     public void visitStringLiteralNode(StringLiteralNode stringLiteralNode) {
-
+        System.out.println("---> Reached String literal node");
     }
 
     @Override
     public void visitVersionNode(VersionNode versionNode) {
-
+        System.out.println("---> Reached version node");
     }
 
     @Override
     public void visitVariableNode(VariableNode variableNode) {
-
+        System.out.println("---> Reached variable node");
     }
 }

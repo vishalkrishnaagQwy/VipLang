@@ -2,7 +2,24 @@ package org.lang.vip;
 
 public class ClassDeclNode extends ASTNode{
     private String className;
-   private ASTNode pack_age;
+
+    public String getClassName() {
+        return className;
+    }
+
+    public ASTNode getPackage() {
+        return pack_age;
+    }
+
+    public ASTNode getVersion() {
+        return version;
+    }
+
+    public ASTNode getClassBody() {
+        return classBody;
+    }
+
+    private ASTNode pack_age;
    private ASTNode version;
    public ASTNode classBody;
     public ClassDeclNode() {

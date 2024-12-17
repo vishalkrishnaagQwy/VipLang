@@ -1,6 +1,6 @@
 package org.lang.vip;
 
-class StringLiteralNode extends ASTNode {
+public class StringLiteralNode extends ASTNode {
     String value;
     /*
     * string literal which means "<data>"
