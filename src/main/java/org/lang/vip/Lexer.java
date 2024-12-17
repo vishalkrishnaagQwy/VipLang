@@ -16,7 +16,7 @@ public class Lexer {
     private List<String> textContent;
     private int index;
 //    private int currentIndentation = 0;
-    boolean NewLineCheckEnabled = false;
+    private int NewLineCheckEnabled = 0;
 
     private final Set<String> keywords = new HashSet<String>();
     private final Set<String> specialKeywords = new HashSet<String>();
@@ -146,9 +146,9 @@ public class Lexer {
         List<Token> tokens = new ArrayList<>();
         if(input_line.isEmpty())
         {
-            if(NewLineCheckEnabled)
+            if(NewLineCheckEnabled!=0)
             {
-                NewLineCheckEnabled = false;
+                NewLineCheckEnabled --;
                 tokens.add(new Token(Token.TokenType.NEW_LINE,"NEW_LINE",lineNumber));
                 return tokens;
             }
@@ -204,7 +204,7 @@ public class Lexer {
         }
        else if(specialKeywords.contains(currentToken.toString()))
         {
-            this.NewLineCheckEnabled =true;
+            this.NewLineCheckEnabled++;
             tokens.add(new Token(Token.TokenType.KEYWORD, currentToken.toString(), lineNumber));
         }
         else {
