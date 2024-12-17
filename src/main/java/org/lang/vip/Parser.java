@@ -143,18 +143,19 @@ public class Parser {
     }
 
     private ASTNode parseClassBody() throws VipCompilerException {
+        List<ASTNode> body =new ArrayList<>();
         while (LineTokens != null || eof_reached) {
             switch (currentToken.getType()) {
                 case KEYWORD:
                     if (match(ParsingType.DEF.getValue())) {
-                        parseMethodDefinition();
+                        body.add(parseMethodDefinition());
                     } else {
                         // Handle other keywords like if, for, etc.
                         throw new RuntimeException("Illegal codes inside class body of '" + className + "' .vp");
                     }
                     break;
                 case IDENTIFIER:
-                    parseIdentifier();
+                    body.add(parseIdentifier());
                     // assignment a = 20 or a , b = 10 , 20
                     break;
 //                case INDENT:
@@ -169,7 +170,7 @@ public class Parser {
                     break;
             }
         }
-        return null;
+        return new BlockNode(body);
     }
 
     // Parse a single statement
@@ -201,14 +202,10 @@ public class Parser {
     private ASTNode parseIdentifier() throws VipCompilerException {
         String currentId = currentToken.getLexme();
         getNextToken();
-        if (match(Token.TokenType.IDENTIFIER)) {
-          return parseMethodCall(currentId);
-        } else if (match("=")) {
+       if (match("=")) {
            return parseAssignment(currentId);
-        } else if (match("(")) {
-           return parseMethodCall(currentId);
         } else {
-            throw new VipCompilerException(("compilationFault()"));
+            return parseMethodCall(currentId);
         }
     }
 
@@ -483,7 +480,7 @@ public class Parser {
     private ASTNode parseId() {
        String remap = currentToken.getLexme();
         getNextToken();
-        return null;
+       return new VariableNode(remap);
     }
 
     private ASTNode parseInstance() throws VipCompilerException {
@@ -520,7 +517,6 @@ public class Parser {
     }
 
     private ASTNode parseMethodCall(String methodCall) throws VipCompilerException {
-        consume(Token.TokenType.IDENTIFIER);
         consumeSilent(Token.TokenType.OPERATOR, "(");
         ASTNode expression = this.parseExpression();
         consumeSilent(Token.TokenType.OPERATOR, ")");
