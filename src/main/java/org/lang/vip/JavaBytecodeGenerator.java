@@ -85,6 +85,36 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
         classDeclNode.classBody.accept(this);
     }
 
+    @Override
+    public void visitInstanceClassNode(InstanceClassNode instanceClassNode) {
+
+    }
+
+    @Override
+    public void visitObjectDeclNode(ObjectDeclNode objectDeclNode) {
+
+    }
+
+    @Override
+    public void visitPackageDeclNode(PackageDeclNode packageDeclNode) {
+
+    }
+
+    @Override
+    public void visitStringLiteralNode(StringLiteralNode stringLiteralNode) {
+
+    }
+
+    @Override
+    public void visitVersionNode(VersionNode versionNode) {
+
+    }
+
+    @Override
+    public void visitVariableNode(VariableNode variableNode) {
+
+    }
+
 
     public void writeClassToFile() {
         try {
