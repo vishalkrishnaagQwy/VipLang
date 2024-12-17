@@ -35,4 +35,9 @@ public class ASTPrinter implements AST{
     public void visitBooleanExprNode(BooleanExpr booleanExpr) {
         System.out.println("---> Reached Boolean Expression");
     }
+
+    @Override
+    public void visitParserExceptionNode(ParserExceptionNode parserExceptionNode) {
+        System.out.println("error catched"+parserExceptionNode.errorCode);
+    }
 }

@@ -74,6 +74,11 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
 
     }
 
+    @Override
+    public void visitParserExceptionNode(ParserExceptionNode parserExceptionNode) {
+        System.out.println("error catched"+parserExceptionNode.errorCode);
+    }
+
     public void writeClassToFile() {
         try {
             FileOutputStream fos = new FileOutputStream(className + ".class");

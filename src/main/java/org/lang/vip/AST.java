@@ -8,4 +8,5 @@ public interface AST {
    void visitWhileNode(WhileNode whileNode);
    void visitExperNode(ExprNode exprNode);
    void visitBooleanExprNode(BooleanExpr booleanExpr);
+   void visitParserExceptionNode(ParserExceptionNode parserExceptionNode);
 }
