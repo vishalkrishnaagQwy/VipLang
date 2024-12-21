@@ -2,7 +2,7 @@ package org.lang.vip;
 
 import java.util.List;
 
-class IFNode extends ASTNode {
+public class IFNode extends ASTNode {
     ASTNode condition;
     List<ASTNode> body;
 

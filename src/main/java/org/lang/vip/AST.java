@@ -17,7 +17,7 @@ public interface AST {
    void visitPackageDeclNode(PackageDeclNode packageDeclNode);
    void visitStringLiteralNode(StringLiteralNode stringLiteralNode);
    void visitVersionNode(VersionNode versionNode);
-   void visitVariableNode(VariableNode variableNode);
+   String visitVariableNode(VariableNode variableNode);
    void visitArithematicExpr(ArithematicExpr arithematicExpr);
    void visitForEachNode(ForEachNode forEachNode);
    void visitForNode(ForNode forEachNode);

@@ -80,8 +80,8 @@ public class ASTAnalyser implements AST{
     }
 
     @Override
-    public void visitVariableNode(VariableNode variableNode) {
-
+    public String visitVariableNode(VariableNode variableNode) {
+       return "";
     }
 
     @Override

@@ -6,25 +6,19 @@ public class ASTPrinter implements AST{
     @Override
     public void visitMethodDefNode(MethodDefNode methodDefNode) {
         System.out.println("--> Reached Method Declaration");
-        for(ASTNode statement : methodDefNode.body)
-        {
-            statement.accept(this);
-        }
+        methodDefNode.body.forEach(statement->statement.accept(this));
     }
 
     @Override
     public void visitBlockNode(BlockNode blockNode) {
         System.out.println("--> Reached statements : "+ blockNode.list.size());
-        for(ASTNode body : blockNode.list)
-        {
-            body.accept(this);
-        }
+        blockNode.list.forEach(body->body.accept(this));
     }
 
     @Override
     public void visitMethodCallNode(MethodCallNode methodCallNode) {
         System.out.println("--> Reached Method Call");
-        methodCallNode.body.accept(this);
+        methodCallNode.expr.accept(this);
     }
 
     @Override
@@ -86,8 +80,9 @@ public class ASTPrinter implements AST{
     }
 
     @Override
-    public void visitVariableNode(VariableNode variableNode) {
+    public String visitVariableNode(VariableNode variableNode) {
         System.out.println("[var] "+variableNode.name);
+        return variableNode.name;
     }
 
     @Override

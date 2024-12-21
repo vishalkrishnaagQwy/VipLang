@@ -39,10 +39,7 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
 
     @Override
     public void visitBlockNode(BlockNode blockNode) {
-      for(ASTNode block : blockNode.list)
-      {
-         block.accept(this);
-      }
+       blockNode.list.forEach(block -> block.accept(this));
     }
 
     @Override
@@ -70,7 +67,7 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
             Method.visitMaxs(2, 1);
             Method.visitEnd();
         }
-        methodCallNode.body.accept(this);
+        methodCallNode.expr.accept(this);
     }
 
     @Override
@@ -171,10 +168,11 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
         mv.visitCode();
         mv.visitVarInsn(ALOAD, 0);
         mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
+        classDeclNode.classBody.accept(this);
         mv.visitInsn(RETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
-        classDeclNode.classBody.accept(this);
+
    }
 
     @Override
@@ -203,16 +201,14 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
     }
 
     @Override
-    public void visitVariableNode(VariableNode variableNode) {
-
+    public String visitVariableNode(VariableNode variableNode) {
+          return variableNode.name;
     }
 
     @Override
     public void visitArithematicExpr(ArithematicExpr arithematicExpr) {
         arithematicExpr.getLeft().accept(this);
-        for (ASTNode right : arithematicExpr.getRight()) {
-            right.accept(this);
-        }
+        arithematicExpr.getRight().forEach(right -> right.accept(this));
 
         MethodVisitor methodVisitor = classWriter.visitMethod(
                 ACC_PUBLIC + ACC_STATIC,

@@ -77,8 +77,8 @@ public class Main {
         ASTPrinter astPrinter = new ASTPrinter();
         JavaBytecodeGenerator codeGen = new JavaBytecodeGenerator(symbolTable);
         if (astNodes != null) {
-                astNodes.accept(astPrinter);
-                astNodes.accept(astAnalyser);
+//                astNodes.accept(astPrinter);
+//                astNodes.accept(astAnalyser);
                 astNodes.accept(codeGen);
         }
         codeGen.writeClassToFile();
