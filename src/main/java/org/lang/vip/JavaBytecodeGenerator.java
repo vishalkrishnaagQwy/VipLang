@@ -1,4 +1,5 @@
 package org.lang.vip;
+import org.lang.utils.Pair;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -11,7 +12,7 @@ import java.io.IOException;
 public class JavaBytecodeGenerator implements AST, Opcodes {
     private SymbolTable symbolTable;
     private ClassWriter classWriter;
-    private String className = "dev_main";
+    private String className = "_dev_";
 
 
     public JavaBytecodeGenerator(SymbolTable _symbolTable){
@@ -239,6 +240,11 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
     @Override
     public void visitForNode(ForNode forEachNode) {
 
+    }
+
+    @Override
+    public Pair<String,NumberNode.Type> visitNumberNode(NumberNode numberNode) {
+        return new Pair<>(numberNode.value,numberNode.type);
     }
 
 

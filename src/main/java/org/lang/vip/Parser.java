@@ -123,6 +123,7 @@ public class Parser {
         consume(Token.TokenType.KEYWORD, ParsingType.CLASS);
         String vipClasName = currentToken.getLexme();
         consume(Token.TokenType.IDENTIFIER);
+        consume(Token.TokenType.OPERATOR,":");
         this.className = vipClasName;
         classDeclNode.setClassName(this.className);
         classDeclNode.setClassBody(parseClassBody());
@@ -131,12 +132,15 @@ public class Parser {
 
     private ASTNode parsePackage() throws VipCompilerException {
         consume(Token.TokenType.KEYWORD, "package");
-        ASTNode pack = new PackageDeclNode(parseChainString(false));
+        consume(Token.TokenType.OPERATOR,"=");
+        ASTNode pack = new PackageDeclNode(currentToken.getLexme());
+        consume(Token.TokenType.STRING);
         return pack;
     }
 
     private ASTNode parseVersion() throws VipCompilerException {
         consume(Token.TokenType.KEYWORD, "version");
+        consume(Token.TokenType.OPERATOR,"=");
         String version = currentToken.getLexme();
         consume(Token.TokenType.STRING);
         return new VersionNode(version);
@@ -289,6 +293,7 @@ public class Parser {
         consumeSilent(Token.TokenType.OPERATOR,"(");
         // Optionally parse parameters
         consumeSilent(Token.TokenType.OPERATOR,")");
+        consume(Token.TokenType.OPERATOR,":");
         // Parse method body
         while (!match("return")) {
             System.out.println("looping ...");

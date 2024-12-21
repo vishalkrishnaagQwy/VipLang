@@ -1,6 +1,7 @@
 package org.lang.vip;
 
 import org.lang.memmory.SymbolTable;
+import org.lang.utils.Pair;
 
 public class ASTAnalyser implements AST{
     private SymbolTable symbolTable;
@@ -96,5 +97,10 @@ public class ASTAnalyser implements AST{
     @Override
     public void visitForNode(ForNode forEachNode) {
 
+    }
+
+    @Override
+    public Pair<String,NumberNode.Type> visitNumberNode(NumberNode numberNode) {
+        return new Pair<>(numberNode.value,numberNode.type);
     }
 }

@@ -2,8 +2,8 @@ package org.lang.vip;
 
 
 
-class NumberNode extends ASTNode {
-    enum Type {
+public class NumberNode extends ASTNode {
+  public  enum Type {
         INT,
         DOUBLE,
         FLOAT,

@@ -1,5 +1,7 @@
 package org.lang.vip;
 
+import org.lang.utils.Pair;
+
 public interface AST {
    void visitMethodDefNode(MethodDefNode methodDefNode);
    void visitBlockNode(BlockNode blockNode);
@@ -19,4 +21,5 @@ public interface AST {
    void visitArithematicExpr(ArithematicExpr arithematicExpr);
    void visitForEachNode(ForEachNode forEachNode);
    void visitForNode(ForNode forEachNode);
+   Pair<String,NumberNode.Type> visitNumberNode(NumberNode numberNode);
 }

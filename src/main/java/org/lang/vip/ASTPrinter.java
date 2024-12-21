@@ -1,5 +1,7 @@
 package org.lang.vip;
 
+import org.lang.utils.Pair;
+
 public class ASTPrinter implements AST{
     @Override
     public void visitMethodDefNode(MethodDefNode methodDefNode) {
@@ -101,5 +103,11 @@ public class ASTPrinter implements AST{
     @Override
     public void visitForNode(ForNode forEachNode) {
 
+    }
+
+    @Override
+    public Pair<String,NumberNode.Type> visitNumberNode(NumberNode numberNode) {
+        System.out.println("val : "+numberNode.value+"  type : "+numberNode.type);
+        return new Pair<>(numberNode.value,numberNode.type);
     }
 }
