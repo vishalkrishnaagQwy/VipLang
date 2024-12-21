@@ -87,7 +87,7 @@ public class ASTPrinter implements AST{
 
     @Override
     public void visitVariableNode(VariableNode variableNode) {
-        System.out.println("---> Reached variable node");
+        System.out.println("[var] "+variableNode.name);
     }
 
     @Override
@@ -109,5 +109,10 @@ public class ASTPrinter implements AST{
     public Pair<String,NumberNode.Type> visitNumberNode(NumberNode numberNode) {
         System.out.println("val : "+numberNode.value+"  type : "+numberNode.type);
         return new Pair<>(numberNode.value,numberNode.type);
+    }
+
+    @Override
+    public void visitAssignmentNode(AssignmentNode assignmentNode) {
+        System.out.println("reached assignment node");
     }
 }

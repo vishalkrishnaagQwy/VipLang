@@ -247,6 +247,12 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
         return new Pair<>(numberNode.value,numberNode.type);
     }
 
+    @Override
+    public void visitAssignmentNode(AssignmentNode assignmentNode) {
+        assignmentNode.variable.accept(this);
+        assignmentNode.expr.accept(this);
+    }
+
 
     public void writeClassToFile() {
         try {

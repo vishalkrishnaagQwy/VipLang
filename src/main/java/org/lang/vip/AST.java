@@ -22,4 +22,5 @@ public interface AST {
    void visitForEachNode(ForEachNode forEachNode);
    void visitForNode(ForNode forEachNode);
    Pair<String,NumberNode.Type> visitNumberNode(NumberNode numberNode);
+   void visitAssignmentNode(AssignmentNode assignmentNode);
 }

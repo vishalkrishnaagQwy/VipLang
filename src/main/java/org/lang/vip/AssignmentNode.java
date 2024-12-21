@@ -11,6 +11,6 @@ public class AssignmentNode extends ASTNode {
     ASTNode expr;
     @Override
     public void accept(AST visitor) {
-
+       visitor.visitAssignmentNode(this);
     }
 }
