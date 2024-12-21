@@ -87,4 +87,14 @@ public class ASTAnalyser implements AST{
     public void visitArithematicExpr(ArithematicExpr arithematicExpr) {
 
     }
+
+    @Override
+    public void visitForEachNode(ForEachNode forEachNode) {
+
+    }
+
+    @Override
+    public void visitForNode(ForNode forEachNode) {
+
+    }
 }

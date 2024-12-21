@@ -17,4 +17,6 @@ public interface AST {
    void visitVersionNode(VersionNode versionNode);
    void visitVariableNode(VariableNode variableNode);
    void visitArithematicExpr(ArithematicExpr arithematicExpr);
+   void visitForEachNode(ForEachNode forEachNode);
+   void visitForNode(ForNode forEachNode);
 }
