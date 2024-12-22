@@ -18,6 +18,6 @@ public class BlockNode extends ASTNode{
 
     @Override
     public void accept(AST visitor, MethodVisitor methodVisitor) {
-
+        visitor.visitBlockNode(this,methodVisitor);
     }
 }

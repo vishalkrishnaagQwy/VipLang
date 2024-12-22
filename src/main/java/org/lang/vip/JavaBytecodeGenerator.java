@@ -25,6 +25,17 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
     @Override
     public void visitMethodDefNode(MethodDefNode methodDefNode) {
         String descriptor = "()V";
+        MethodVisitor mv = classWriter.visitMethod(ACC_PUBLIC | ACC_STATIC, methodDefNode.functionName, descriptor, null, null);
+        mv.visitCode();
+        methodDefNode.body.forEach(element -> element.accept(this,mv));
+        mv.visitInsn(RETURN);
+        mv.visitMaxs(2, 1);
+        mv.visitEnd();
+    }
+
+    @Override
+    public void visitMethodDefNode(MethodDefNode methodDefNode,MethodVisitor methodVisitor) {
+        String descriptor = "()V";
         if(methodDefNode.functionName.equals("main"))
         {
             descriptor= "([Ljava/lang/String;)V";
@@ -43,6 +54,11 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
     }
 
     @Override
+    public void visitBlockNode(BlockNode blockNode,MethodVisitor methodVisitor) {
+        blockNode.list.forEach(block -> block.accept(this,methodVisitor));
+    }
+
+    @Override
     public void visitMethodCallNode(MethodCallNode methodCallNode,MethodVisitor Method) {
         Method.visitCode();
 
@@ -50,6 +66,7 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
         {
             // Add bytecode for System.out.println("Hello");
             Method.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+            methodCallNode.expr.accept(this,Method);
             Method.visitLdcInsn("Hello");
             Method.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
             // Return from the main method
@@ -59,12 +76,15 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
             Method.visitMaxs(2, 1);
             Method.visitEnd();
         }
-        methodCallNode.expr.accept(this,Method);
+        else {
+            methodCallNode.expr.accept(this,Method);
+        }
+
     }
 
     @Override
     public void visitMethodCallNode(MethodCallNode methodCallNode) {
-
+       //method call node
     }
 
     @Override
@@ -173,7 +193,7 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
         mv.visitCode();
         mv.visitVarInsn(ALOAD, 0);
         mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
-        classDeclNode.classBody.accept(this);
+        classDeclNode.classBody.accept(this,mv);
         mv.visitInsn(RETURN);
         mv.visitMaxs(1, 1);
         mv.visitEnd();
@@ -196,8 +216,8 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
     }
 
     @Override
-    public void visitStringLiteralNode(StringLiteralNode stringLiteralNode) {
-
+    public String visitStringLiteralNode(StringLiteralNode stringLiteralNode) {
+        return stringLiteralNode.value;
     }
 
     @Override

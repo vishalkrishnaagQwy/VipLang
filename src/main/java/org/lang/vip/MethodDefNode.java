@@ -20,6 +20,6 @@ public class MethodDefNode extends ASTNode {
 
     @Override
     public void accept(AST visitor, MethodVisitor methodVisitor) {
-
+        visitor.visitMethodDefNode(this,methodVisitor);
     }
 }

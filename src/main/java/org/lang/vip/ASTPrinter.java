@@ -11,9 +11,19 @@ public class ASTPrinter implements AST{
     }
 
     @Override
+    public void visitMethodDefNode(MethodDefNode methodDefNode, MethodVisitor methodVisitor) {
+
+    }
+
+    @Override
     public void visitBlockNode(BlockNode blockNode) {
         System.out.println("--> Reached statements : "+ blockNode.list.size());
         blockNode.list.forEach(body->body.accept(this));
+    }
+
+    @Override
+    public void visitBlockNode(BlockNode blockNode, MethodVisitor methodVisitor) {
+
     }
 
     @Override
@@ -81,8 +91,9 @@ public class ASTPrinter implements AST{
     }
 
     @Override
-    public void visitStringLiteralNode(StringLiteralNode stringLiteralNode) {
+    public String visitStringLiteralNode(StringLiteralNode stringLiteralNode) {
         System.out.println("---> Reached String literal node");
+        return   stringLiteralNode.value;
     }
 
     @Override

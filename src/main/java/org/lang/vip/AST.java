@@ -5,7 +5,9 @@ import org.objectweb.asm.MethodVisitor;
 
 public interface AST {
    void visitMethodDefNode(MethodDefNode methodDefNode);
+   void visitMethodDefNode(MethodDefNode methodDefNode,MethodVisitor methodVisitor);
    void visitBlockNode(BlockNode blockNode);
+   void visitBlockNode(BlockNode blockNode,MethodVisitor methodVisitor);
    void visitMethodCallNode(MethodCallNode methodCallNode, MethodVisitor methodVisitor);
    void visitMethodCallNode(MethodCallNode methodCallNode);
    void visitIFNode(IFNode ifNode);
@@ -18,7 +20,7 @@ public interface AST {
    void visitInstanceClassNode(InstanceClassNode instanceClassNode);
    void visitObjectDeclNode(ObjectDeclNode objectDeclNode);
    void visitPackageDeclNode(PackageDeclNode packageDeclNode);
-   void visitStringLiteralNode(StringLiteralNode stringLiteralNode);
+   String visitStringLiteralNode(StringLiteralNode stringLiteralNode);
    void visitVersionNode(VersionNode versionNode);
    String visitVariableNode(VariableNode variableNode);
    void visitArithematicExpr(ArithematicExpr arithematicExpr);
