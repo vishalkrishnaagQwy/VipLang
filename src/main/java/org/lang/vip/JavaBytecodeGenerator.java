@@ -67,12 +67,8 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
             // Add bytecode for System.out.println("Hello");
             Method.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
             methodCallNode.expr.accept(this,Method);
-            Method.visitLdcInsn("Hello");
             Method.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false);
-            // Return from the main method
             Method.visitInsn(RETURN);
-
-            // Specify stack size and local variables for main method
             Method.visitMaxs(2, 1);
             Method.visitEnd();
         }
@@ -216,8 +212,11 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
     }
 
     @Override
-    public String visitStringLiteralNode(StringLiteralNode stringLiteralNode) {
-        return stringLiteralNode.value;
+    public void visitStringLiteralNode(StringLiteralNode stringLiteralNode) {
+    }
+    @Override
+    public void visitStringLiteralNode(StringLiteralNode stringLiteralNode,MethodVisitor methodVisitor) {
+        methodVisitor.visitLdcInsn(stringLiteralNode.value);
     }
 
     @Override

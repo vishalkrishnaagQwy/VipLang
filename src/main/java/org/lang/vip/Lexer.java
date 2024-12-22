@@ -179,7 +179,6 @@ public class Lexer {
                 currentToken.append(c);
                 i = readNumber(tokens, chars, i, currentToken); // Read number
             } else if (c == '"') {
-                currentToken.append(c);
                 i = readString(tokens, chars, i, currentToken); // Read string
             } else if (isOperator(c)) {
                 tokens.add(new Token(Token.TokenType.OPERATOR, String.valueOf(c), lineNumber)); // Add operator token
@@ -271,7 +270,6 @@ public class Lexer {
         while (i + 1 < chars.length && chars[i + 1] != '"') {
             currentToken.append(chars[++i]);
         }
-        currentToken.append('"'); // Append the closing quote
         tokens.add(new Token(Token.TokenType.STRING, currentToken.toString(), lineNumber));
         currentToken.setLength(0); // Clear the token
         i = i+1;

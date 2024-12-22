@@ -20,7 +20,8 @@ public interface AST {
    void visitInstanceClassNode(InstanceClassNode instanceClassNode);
    void visitObjectDeclNode(ObjectDeclNode objectDeclNode);
    void visitPackageDeclNode(PackageDeclNode packageDeclNode);
-   String visitStringLiteralNode(StringLiteralNode stringLiteralNode);
+   void visitStringLiteralNode(StringLiteralNode stringLiteralNode);
+   void visitStringLiteralNode(StringLiteralNode stringLiteralNode,MethodVisitor methodVisitor);
    void visitVersionNode(VersionNode versionNode);
    String visitVariableNode(VariableNode variableNode);
    void visitArithematicExpr(ArithematicExpr arithematicExpr);

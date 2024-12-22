@@ -91,8 +91,12 @@ public class ASTAnalyser implements AST{
     }
 
     @Override
-    public String visitStringLiteralNode(StringLiteralNode stringLiteralNode) {
-       return   stringLiteralNode.value;
+    public void visitStringLiteralNode(StringLiteralNode stringLiteralNode) {
+    }
+
+    @Override
+    public void visitStringLiteralNode(StringLiteralNode stringLiteralNode, MethodVisitor methodVisitor) {
+
     }
 
     @Override

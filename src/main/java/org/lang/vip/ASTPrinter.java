@@ -91,9 +91,13 @@ public class ASTPrinter implements AST{
     }
 
     @Override
-    public String visitStringLiteralNode(StringLiteralNode stringLiteralNode) {
+    public void visitStringLiteralNode(StringLiteralNode stringLiteralNode) {
         System.out.println("---> Reached String literal node");
-        return   stringLiteralNode.value;
+    }
+
+    @Override
+    public void visitStringLiteralNode(StringLiteralNode stringLiteralNode, MethodVisitor methodVisitor) {
+
     }
 
     @Override
