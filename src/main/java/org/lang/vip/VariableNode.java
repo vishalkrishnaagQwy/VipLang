@@ -1,5 +1,7 @@
 package org.lang.vip;
 
+import org.objectweb.asm.MethodVisitor;
+
 public class VariableNode extends ASTNode {
     String name;
 
@@ -10,6 +12,11 @@ public class VariableNode extends ASTNode {
     @Override
     public void accept(AST visitor) {
      visitor.visitVariableNode(this);
+    }
+
+    @Override
+    public void accept(AST visitor, MethodVisitor methodVisitor) {
+
     }
 }
 

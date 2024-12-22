@@ -1,10 +1,12 @@
 package org.lang.vip;
 
 import org.lang.utils.Pair;
+import org.objectweb.asm.MethodVisitor;
 
 public interface AST {
    void visitMethodDefNode(MethodDefNode methodDefNode);
    void visitBlockNode(BlockNode blockNode);
+   void visitMethodCallNode(MethodCallNode methodCallNode, MethodVisitor methodVisitor);
    void visitMethodCallNode(MethodCallNode methodCallNode);
    void visitIFNode(IFNode ifNode);
    void visitWhileNode(WhileNode whileNode);

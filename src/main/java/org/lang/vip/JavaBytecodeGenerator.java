@@ -43,15 +43,7 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
     }
 
     @Override
-    public void visitMethodCallNode(MethodCallNode methodCallNode) {
-        MethodVisitor Method = classWriter.visitMethod(
-                ACC_PUBLIC + ACC_STATIC,      // public static
-                "main",                       // method name
-                "([Ljava/lang/String;)V",     // descriptor (main(String[] args))
-                null,
-                null
-        );
-
+    public void visitMethodCallNode(MethodCallNode methodCallNode,MethodVisitor Method) {
         Method.visitCode();
 
         if(methodCallNode.methodName.equals("print"))
@@ -68,6 +60,11 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
             Method.visitEnd();
         }
         methodCallNode.expr.accept(this);
+    }
+
+    @Override
+    public void visitMethodCallNode(MethodCallNode methodCallNode) {
+
     }
 
     @Override
@@ -160,7 +157,6 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
 
     @Override
     public void visitClassDeclNode(ClassDeclNode classDeclNode) {
-        System.out.println("reached code gen or class decl");
         this.className = classDeclNode.getClassName();
         classWriter.visit(V1_8, ACC_PUBLIC, this.className, null, "java/lang/Object", null);
         // Add default constructor

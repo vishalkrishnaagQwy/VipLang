@@ -1,6 +1,8 @@
 package org.lang.vip;
 
 
+import org.objectweb.asm.MethodVisitor;
+
 import java.util.List;
 
 public class ArithematicExpr extends ASTNode{
@@ -39,5 +41,10 @@ public class ArithematicExpr extends ASTNode{
     @Override
     public void accept(AST visitor) {
         visitor.visitArithematicExpr(this);
+    }
+
+    @Override
+    public void accept(AST visitor, MethodVisitor methodVisitor) {
+
     }
 }

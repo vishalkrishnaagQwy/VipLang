@@ -1,6 +1,7 @@
 package org.lang.vip;
 
 import org.lang.utils.Pair;
+import org.objectweb.asm.MethodVisitor;
 
 public class ASTPrinter implements AST{
     @Override
@@ -13,6 +14,11 @@ public class ASTPrinter implements AST{
     public void visitBlockNode(BlockNode blockNode) {
         System.out.println("--> Reached statements : "+ blockNode.list.size());
         blockNode.list.forEach(body->body.accept(this));
+    }
+
+    @Override
+    public void visitMethodCallNode(MethodCallNode methodCallNode, MethodVisitor methodVisitor) {
+
     }
 
     @Override

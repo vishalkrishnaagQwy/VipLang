@@ -2,6 +2,7 @@ package org.lang.vip;
 
 import org.lang.memmory.SymbolTable;
 import org.lang.utils.Pair;
+import org.objectweb.asm.MethodVisitor;
 
 public class ASTAnalyser implements AST{
     private SymbolTable symbolTable;
@@ -16,6 +17,11 @@ public class ASTAnalyser implements AST{
 
     @Override
     public void visitBlockNode(BlockNode blockNode) {
+
+    }
+
+    @Override
+    public void visitMethodCallNode(MethodCallNode methodCallNode, MethodVisitor methodVisitor) {
 
     }
 

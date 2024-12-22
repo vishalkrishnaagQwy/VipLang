@@ -335,6 +335,10 @@ public class Parser {
             }
 
         }
+        if(list.isEmpty() && left!=null)
+        {
+            return left;
+        }
         return new BlockNode(list);
     }
 

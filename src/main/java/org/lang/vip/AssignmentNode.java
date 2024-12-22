@@ -1,5 +1,7 @@
 package org.lang.vip;
 
+import org.objectweb.asm.MethodVisitor;
+
 public class AssignmentNode extends ASTNode {
     ASTNode variable;
 
@@ -12,5 +14,10 @@ public class AssignmentNode extends ASTNode {
     @Override
     public void accept(AST visitor) {
        visitor.visitAssignmentNode(this);
+    }
+
+    @Override
+    public void accept(AST visitor, MethodVisitor methodVisitor) {
+
     }
 }

@@ -1,6 +1,7 @@
 package org.lang.vip;
 
 
+import org.objectweb.asm.MethodVisitor;
 
 public class NumberNode extends ASTNode {
   public  enum Type {
@@ -19,6 +20,11 @@ public class NumberNode extends ASTNode {
 
     @Override
     public void accept(AST visitor) {
+
+    }
+
+    @Override
+    public void accept(AST visitor, MethodVisitor methodVisitor) {
 
     }
 }

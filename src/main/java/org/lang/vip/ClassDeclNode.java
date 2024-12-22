@@ -1,5 +1,7 @@
 package org.lang.vip;
 
+import org.objectweb.asm.MethodVisitor;
+
 public class ClassDeclNode extends ASTNode{
     private String className;
 
@@ -44,5 +46,10 @@ public class ClassDeclNode extends ASTNode{
     @Override
     public void accept(AST visitor) {
         visitor.visitClassDeclNode(this);
+    }
+
+    @Override
+    public void accept(AST visitor, MethodVisitor methodVisitor) {
+
     }
 }
