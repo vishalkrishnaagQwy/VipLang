@@ -138,6 +138,11 @@ public class ASTPrinter implements AST{
     }
 
     @Override
+    public void visitNumberNode(NumberNode numberNode, MethodVisitor methodVisitor) {
+        System.out.println("[number("+numberNode.value+")]");
+    }
+
+    @Override
     public void visitAssignmentNode(AssignmentNode assignmentNode) {
         System.out.println("reached assignment node");
     }

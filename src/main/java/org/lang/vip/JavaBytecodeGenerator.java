@@ -10,13 +10,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class JavaBytecodeGenerator implements AST, Opcodes {
-    private SymbolTable symbolTable;
+    private SymbolTable symbolTab;
     private ClassWriter classWriter;
     private String className = "_dev_";
 
 
     public JavaBytecodeGenerator(SymbolTable _symbolTable){
-        this.symbolTable = _symbolTable;
+        this.symbolTab = _symbolTable;
         this.className = className.replace('.', '/');
         this.classWriter = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
@@ -262,6 +262,26 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
     @Override
     public Pair<String,NumberNode.Type> visitNumberNode(NumberNode numberNode) {
         return new Pair<>(numberNode.value,numberNode.type);
+    }
+
+    @Override
+    public void visitNumberNode(NumberNode numberNode, MethodVisitor methodVisitor) {
+        switch (numberNode.type)
+        {
+            case INT -> {
+                methodVisitor.visitLdcInsn(Integer.parseInt(numberNode.value));
+                methodVisitor.visitVarInsn(Opcodes.ISTORE, 1);
+            }
+            case FLOAT -> {
+                methodVisitor.visitLdcInsn(Float.parseFloat(numberNode.value));
+                methodVisitor.visitVarInsn(Opcodes.FSTORE, 1);
+            }
+            case DOUBLE -> {
+                methodVisitor.visitLdcInsn(Double.parseDouble(numberNode.value));
+                methodVisitor.visitVarInsn(Opcodes.DSTORE, 1);
+            }
+        }
+
     }
 
     @Override

@@ -4,6 +4,11 @@ import org.objectweb.asm.MethodVisitor;
 
 public class ClassDeclNode extends ASTNode{
     private String className;
+    private int classId;
+
+    public int getClassId(){
+        return this.classId;
+    }
 
     public String getClassName() {
         return className;
@@ -24,8 +29,8 @@ public class ClassDeclNode extends ASTNode{
     private ASTNode pack_age;
    private ASTNode version;
    public ASTNode classBody;
-    public ClassDeclNode() {
-
+    public ClassDeclNode(int ClassId) {
+        this.classId = ClassId;
     }
 
     public void setClassName(String className){

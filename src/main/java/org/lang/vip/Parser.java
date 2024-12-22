@@ -13,14 +13,16 @@ public class Parser {
     private Token currentToken;
     private List<Token> LineTokens;
     String className = "";
+    int classId=0;
     int readIndex = 0;
     ASTNode astNode;
     boolean eof_reached = false;
 
 
-    public Parser(Lexer lexer) throws VipCompilerException {
+    public Parser(Lexer lexer,int mClassId) throws VipCompilerException {
         this.lexer = lexer;
         this.LineTokens = lexer.getNextLine();
+        this.classId = mClassId;
         getNextToken();// Initialize the current token
         astNode = parseProgram();
     }
@@ -116,7 +118,7 @@ public class Parser {
 
     // Parse a program consisting of statements
     public ASTNode parseProgram() throws VipCompilerException {
-        ClassDeclNode classDeclNode = new ClassDeclNode();
+        ClassDeclNode classDeclNode = new ClassDeclNode(this.classId);
         classDeclNode.setPackage(parsePackage());
         classDeclNode.setVersion(parseVersion());
         ASTNode classIn = null;
@@ -294,6 +296,7 @@ public class Parser {
         // Optionally parse parameters
         consumeSilent(Token.TokenType.OPERATOR,")");
         consume(Token.TokenType.OPERATOR,":");
+        consume(Token.TokenType.INDENT);
         // Parse method body
         while (!match("return")) {
             System.out.println("looping ...");
@@ -310,6 +313,10 @@ public class Parser {
         List<ASTNode> list = new ArrayList<>();
         ASTNode left = parseTerminal();
         String operator = "";
+        if(match(")"))
+        {
+            return left;
+        }
         while (isArithematicOperator(currentToken) || isLogicalOperator(currentToken)) {
             if(isArithematicOperator(currentToken))
             {

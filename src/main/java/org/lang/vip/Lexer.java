@@ -16,7 +16,7 @@ public class Lexer {
     private int lineNumber;
     private List<String> textContent;
     private int index;
-//    private int currentIndentation = 0;
+    private int currentIndentation = 0;
     private int NewLineCheckEnabled = 0;
 
     private final Set<String> keywords = new HashSet<String>();
@@ -120,15 +120,15 @@ public class Lexer {
     }
 
 
-//    private void handleIndentation(List<Token> tokens, int indentLevel) {
-//
-//        if (indentLevel > currentIndentation) {
-//            tokens.add(new Token(Token.TokenType.INDENT, "", lineNumber));
-//        } else if (indentLevel < currentIndentation) {
-//            tokens.add(new Token(Token.TokenType.DEDENT, "", lineNumber));
-//        }
-//        currentIndentation = indentLevel;
-//    }
+    private void handleIndentation(List<Token> tokens, int indentLevel) {
+
+        if (indentLevel > currentIndentation) {
+            tokens.add(new Token(Token.TokenType.INDENT, "", lineNumber));
+        } else if (indentLevel < currentIndentation) {
+            tokens.add(new Token(Token.TokenType.DEDENT, "", lineNumber));
+        }
+        currentIndentation = indentLevel;
+    }
 
 
     public List<Token> getNextLine() {
@@ -147,19 +147,10 @@ public class Lexer {
         List<Token> tokens = new ArrayList<>();
         if(input_line.isEmpty())
         {
-            if(NewLineCheckEnabled!=0)
-            {
-                NewLineCheckEnabled --;
-                tokens.add(new Token(Token.TokenType.NEW_LINE,"NEW_LINE",lineNumber));
-                return tokens;
-            }
-            else {
                 return getNextLine();
-            }
-
         }
-//        int indentationLevel = calculateIndent(input_line);
-//        handleIndentation(tokens, indentationLevel);
+        int indentationLevel = calculateIndent(input_line);
+        handleIndentation(tokens, indentationLevel);
 
         // Now lex the actual content of the line
         char[] chars = input_line.trim().toCharArray(); // Ignore leading whitespace
@@ -170,6 +161,10 @@ public class Lexer {
 
             if (Character.isWhitespace(c)) {
                 continue; // Ignore whitespace
+            }
+            else  if (c == '#') {
+
+                return getNextLine();
             }
 
             if (Character.isLetter(c)||c == '_') {
@@ -182,8 +177,6 @@ public class Lexer {
                 i = readString(tokens, chars, i, currentToken); // Read string
             } else if (isOperator(c)) {
                 tokens.add(new Token(Token.TokenType.OPERATOR, String.valueOf(c), lineNumber)); // Add operator token
-            } else if (c == '#') {
-                return getNextLine();
             }
         }
         return tokens;
