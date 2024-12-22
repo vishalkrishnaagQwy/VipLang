@@ -12,6 +12,7 @@ public interface AST {
    void visitWhileNode(WhileNode whileNode);
    void visitExperNode(ExprNode exprNode);
    void visitBooleanExprNode(BooleanExpr booleanExpr);
+   void visitBooleanExprNode(BooleanExpr booleanExpr,MethodVisitor methodVisitor);
    void visitParserExceptionNode(ParserExceptionNode parserExceptionNode);
    void visitClassDeclNode(ClassDeclNode classDeclNode);
    void visitInstanceClassNode(InstanceClassNode instanceClassNode);

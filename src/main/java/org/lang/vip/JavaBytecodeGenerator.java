@@ -140,14 +140,23 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
 
     @Override
     public void visitBooleanExprNode(BooleanExpr booleanExpr) {
-        MethodVisitor methodVisitor = classWriter.visitMethod(
-                ACC_PUBLIC + ACC_STATIC,
-                "evaluate",
-                "()I",
-                null,
-                null
-        );
+
+    }
+
+    @Override
+    public void visitBooleanExprNode(BooleanExpr booleanExpr,MethodVisitor methodVisitor) {
+        booleanExpr.getLeft().accept(this);
+        booleanExpr.getRight().forEach(right -> right.accept(this));
         methodVisitor.visitCode();
+        switch (booleanExpr.getOperator()) {
+            case "+" -> methodVisitor.visitInsn(IADD);
+            case "-" -> methodVisitor.visitInsn(ISUB);
+            case "*" -> methodVisitor.visitInsn(IMUL);
+            case "/" -> methodVisitor.visitInsn(IDIV);
+            default -> throw new IllegalArgumentException("Unsupported operator: " + booleanExpr.getOperator());
+        }
+        methodVisitor.visitEnd();
+
     }
 
     @Override

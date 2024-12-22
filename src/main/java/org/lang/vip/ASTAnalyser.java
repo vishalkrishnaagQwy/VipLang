@@ -51,6 +51,11 @@ public class ASTAnalyser implements AST{
     }
 
     @Override
+    public void visitBooleanExprNode(BooleanExpr booleanExpr, MethodVisitor methodVisitor) {
+
+    }
+
+    @Override
     public void visitParserExceptionNode(ParserExceptionNode parserExceptionNode) {
         System.out.println("error catched"+parserExceptionNode.errorCode);
     }
