@@ -7,10 +7,12 @@ import java.util.List;
 public class MethodDefNode extends ASTNode {
     String functionName;
     List<ASTNode> body;
+    List<HintType> hints;
 
-    public MethodDefNode(String functionName,List<ASTNode> body) {
+    public MethodDefNode(String functionName,List<ASTNode> body,List<HintType> hint) {
         this.functionName = functionName;
         this.body = body;
+        this.hints = hint;
     }
 
     @Override

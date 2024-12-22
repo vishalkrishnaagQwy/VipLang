@@ -67,6 +67,8 @@ public class Lexer {
         symbols.put("}", Token.TokenType.OPERATOR);
         symbols.put("[", Token.TokenType.OPERATOR);
         symbols.put("]", Token.TokenType.OPERATOR);
+        symbols.put("<", Token.TokenType.OPERATOR);
+        symbols.put(">", Token.TokenType.OPERATOR);
         symbols.put("=", Token.TokenType.OPERATOR);
         symbols.put("+", Token.TokenType.OPERATOR);
         symbols.put("-", Token.TokenType.OPERATOR);
@@ -75,6 +77,7 @@ public class Lexer {
         symbols.put(":", Token.TokenType.OPERATOR);
         symbols.put(",", Token.TokenType.OPERATOR);
         symbols.put(".", Token.TokenType.OPERATOR);
+        symbols.put("|", Token.TokenType.OPERATOR);
         symbols.put("and", Token.TokenType.OPERATOR);
         symbols.put("or", Token.TokenType.OPERATOR);
         symbols.put("not", Token.TokenType.OPERATOR);
@@ -101,6 +104,13 @@ public class Lexer {
         keywords.add("version");
         keywords.add("implements");
         keywords.add("obj");
+        keywords.add("str");
+        keywords.add("float");
+        keywords.add("chr");
+        keywords.add("bool");
+        keywords.add("Optional");
+        keywords.add("int");
+        keywords.add("any");
         keywords.add("new");
         specialKeywords.add("if");
         specialKeywords.add("elif");
