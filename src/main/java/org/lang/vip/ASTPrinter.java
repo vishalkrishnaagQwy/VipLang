@@ -97,6 +97,11 @@ public class ASTPrinter implements AST{
     }
 
     @Override
+    public void visitArithematicExpr(ArithematicExpr arithematicExpr, MethodVisitor methodVisitor) {
+
+    }
+
+    @Override
     public void visitForEachNode(ForEachNode forEachNode) {
 
     }

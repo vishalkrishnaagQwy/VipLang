@@ -31,7 +31,7 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
         }
         MethodVisitor mv = classWriter.visitMethod(ACC_PUBLIC | ACC_STATIC, methodDefNode.functionName, descriptor, null, null);
         mv.visitCode();
-        methodDefNode.body.forEach(element -> element.accept(this));
+        methodDefNode.body.forEach(element -> element.accept(this,mv));
         mv.visitInsn(RETURN);
         mv.visitMaxs(2, 1);
         mv.visitEnd();
@@ -59,7 +59,7 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
             Method.visitMaxs(2, 1);
             Method.visitEnd();
         }
-        methodCallNode.expr.accept(this);
+        methodCallNode.expr.accept(this,Method);
     }
 
     @Override
@@ -203,16 +203,13 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
 
     @Override
     public void visitArithematicExpr(ArithematicExpr arithematicExpr) {
+
+    }
+
+    @Override
+    public void visitArithematicExpr(ArithematicExpr arithematicExpr,MethodVisitor methodVisitor) {
         arithematicExpr.getLeft().accept(this);
         arithematicExpr.getRight().forEach(right -> right.accept(this));
-
-        MethodVisitor methodVisitor = classWriter.visitMethod(
-                ACC_PUBLIC + ACC_STATIC,
-                "evaluate",
-                "()I",
-                null,
-                null
-        );
         methodVisitor.visitCode();
         switch (arithematicExpr.getOperator()) {
             case "+" -> methodVisitor.visitInsn(IADD);

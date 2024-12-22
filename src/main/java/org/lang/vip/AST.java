@@ -21,6 +21,7 @@ public interface AST {
    void visitVersionNode(VersionNode versionNode);
    String visitVariableNode(VariableNode variableNode);
    void visitArithematicExpr(ArithematicExpr arithematicExpr);
+   void visitArithematicExpr(ArithematicExpr arithematicExpr,MethodVisitor methodVisitor);
    void visitForEachNode(ForEachNode forEachNode);
    void visitForNode(ForNode forEachNode);
    Pair<String,NumberNode.Type> visitNumberNode(NumberNode numberNode);
