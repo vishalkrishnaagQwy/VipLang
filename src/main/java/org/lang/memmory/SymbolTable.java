@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Stack;
 
 public class SymbolTable {
-    private Stack<Map<String,Object>> scopes;
+    private Stack<Map<Integer,Object>> scopes;
 
     public SymbolTable() {
         scopes = new Stack<>();
@@ -22,16 +22,16 @@ public class SymbolTable {
         }
     }
 
-    public void define(String name,Object value) {
-        scopes.peek().put(name, value);
+    public void define(Integer id,Object value) {
+        scopes.peek().put(id, value);
     }
-    public void undefine(String name){
-        scopes.peek().remove(name);
+    public void undefine(int id){
+        scopes.peek().remove(id);
     }
 
     public Object lookup(String name) {
         for (int i = scopes.size() - 1; i >= 0; i--) {
-            Map<String, Object> scope = scopes.get(i);
+            Map<Integer, Object> scope = scopes.get(i);
             if (scope.containsKey(name)) {
                 return scope.get(name);
             }
@@ -39,68 +39,70 @@ public class SymbolTable {
         return null; // Not found
     }
 
-    public Object findClass(String name,Object object) {
+    public Object findClass(Integer id,Object object) {
         for (int i = scopes.size() - 1; i >= 0; i--) {
-            Map<String, Object> scope = scopes.get(i);
-            if (scope.containsKey(name) && scope.get(name) instanceof Classes) {
-                return scope.get(name);
+            Map<Integer, Object> scope = scopes.get(i);
+            if (scope.containsKey(id) && scope.get(id) instanceof Classes) {
+                return scope.get(id);
             }
         }
         return null; // Not found
     }
 
-    public Object findMethod(String name,Object object) {
+    public Object findMethod(Integer id,Object object) {
         for (int i = scopes.size() - 1; i >= 0; i--) {
-            Map<String, Object> scope = scopes.get(i);
-            if (scope.containsKey(name) && scope.get(name) instanceof Methods) {
-                return scope.get(name);
+            Map<Integer, Object> scope = scopes.get(i);
+            if (scope.containsKey(id) && scope.get(id) instanceof Methods) {
+                return scope.get(id);
             }
         }
         return null; // Not found
     }
 
 
-    public Object findField(String name,Object object) {
+    public Object findField(Integer id,Object object) {
         for (int i = scopes.size() - 1; i >= 0; i--) {
-            Map<String, Object> scope = scopes.get(i);
-            if (scope.containsKey(name) && scope.get(name) instanceof Fields) {
-                return scope.get(name);
+            Map<Integer, Object> scope = scopes.get(i);
+            if (scope.containsKey(id) && scope.get(id) instanceof Fields) {
+                return scope.get(id);
             }
         }
         return null; // Not found
     }
 
     // find will only look up local scope
-    public Object find(String name) {
-            Map<String, Object> scope = scopes.peek();
-            if (scope.containsKey(name)) {
-                return scope.get(name);
+    public Object find(Integer id) {
+            Map<Integer, Object> scope = scopes.peek();
+            if (scope.containsKey(id)) {
+                return scope.get(id);
             }
         return null; // Not found
     }
 
-    public void defineClass(String className) {
-        define(className, new Classes(className));
+    public void defineClass(int classId,String className) {
+        define(classId, new Classes(className));
         enterScope();
     }
 
     public void defineMethod(int ClassId, String methodName) {
-        define(methodName, new Methods(methodName,ClassId));
+        define(ClassId, new Methods(methodName,ClassId));
     }
-    public void undefineMethod(String methodName) {
-        undefine(methodName);
-    }
-
-    public void defineField(String className, String fieldName, Object initialValue) {
-        define(fieldName, new Fields(fieldName));
+    public void undefineMethod(int methodid) {
+        undefine(methodid);
     }
 
-    public void undefineField(String className, String fieldName, Object initialValue) {
-        undefine(fieldName);
+    public void defineField(Integer classId, String fieldName, Object initialValue) {
+        define(classId, new Fields(fieldName));
+    }
+
+    public void undefineField(int classId, String fieldName, Object initialValue) {
+
+        undefine(classId);
     }
 
 
     public void exitClassScope() {
+
         exitScope(); // Exit the class scope when done defining methods and fields
     }
 
