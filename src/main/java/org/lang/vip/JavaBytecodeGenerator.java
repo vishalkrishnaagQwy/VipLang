@@ -197,9 +197,15 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
    }
 
     @Override
-    public void visitInstanceClassNode(InstanceClassNode instanceClassNode) {
+    public void visitClassObjectNode(ClassObjectDeclNode objClassNode) {
 
     }
+
+    @Override
+    public void visitClassObjectNode(ClassObjectDeclNode objClassNode, MethodVisitor methodVisitor) {
+
+    }
+
 
     @Override
     public void visitObjectDeclNode(ObjectDeclNode objectDeclNode) {
@@ -288,6 +294,16 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
     public void visitAssignmentNode(AssignmentNode assignmentNode) {
         assignmentNode.variable.accept(this);
         assignmentNode.expr.accept(this);
+    }
+
+    @Override
+    public void visitVarDeclNode(VarDeclNode varDeclNode) {
+
+    }
+
+    @Override
+    public void visitVarDeclNode(VarDeclNode varDeclNode, MethodVisitor methodVisitor) {
+
     }
 
 

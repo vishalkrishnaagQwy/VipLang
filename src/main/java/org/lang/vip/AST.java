@@ -17,7 +17,8 @@ public interface AST {
    void visitBooleanExprNode(BooleanExpr booleanExpr,MethodVisitor methodVisitor);
    void visitParserExceptionNode(ParserExceptionNode parserExceptionNode);
    void visitClassDeclNode(ClassDeclNode classDeclNode);
-   void visitInstanceClassNode(InstanceClassNode instanceClassNode);
+   void visitClassObjectNode(ClassObjectDeclNode objClassNode);
+   void visitClassObjectNode(ClassObjectDeclNode objClassNode,MethodVisitor methodVisitor);
    void visitObjectDeclNode(ObjectDeclNode objectDeclNode);
    void visitPackageDeclNode(PackageDeclNode packageDeclNode);
    void visitStringLiteralNode(StringLiteralNode stringLiteralNode);
@@ -31,4 +32,6 @@ public interface AST {
    Pair<String,NumberNode.Type> visitNumberNode(NumberNode numberNode);
    void visitNumberNode(NumberNode numberNode,MethodVisitor methodVisitor);
    void visitAssignmentNode(AssignmentNode assignmentNode);
+   void visitVarDeclNode(VarDeclNode varDeclNode);
+   void visitVarDeclNode(VarDeclNode varDeclNode,MethodVisitor methodVisitor);
 }

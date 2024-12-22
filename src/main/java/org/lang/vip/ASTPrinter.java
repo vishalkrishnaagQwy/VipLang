@@ -76,9 +76,15 @@ public class ASTPrinter implements AST{
     }
 
     @Override
-    public void visitInstanceClassNode(InstanceClassNode instanceClassNode) {
-        System.out.println("---> Reached class instantiation");
+    public void visitClassObjectNode(ClassObjectDeclNode objClassNode) {
+
     }
+
+    @Override
+    public void visitClassObjectNode(ClassObjectDeclNode objClassNode, MethodVisitor methodVisitor) {
+
+    }
+
 
     @Override
     public void visitObjectDeclNode(ObjectDeclNode objectDeclNode) {
@@ -145,5 +151,15 @@ public class ASTPrinter implements AST{
     @Override
     public void visitAssignmentNode(AssignmentNode assignmentNode) {
         System.out.println("reached assignment node");
+    }
+
+    @Override
+    public void visitVarDeclNode(VarDeclNode varDeclNode) {
+
+    }
+
+    @Override
+    public void visitVarDeclNode(VarDeclNode varDeclNode, MethodVisitor methodVisitor) {
+
     }
 }

@@ -77,9 +77,15 @@ public class ASTAnalyser implements AST{
     }
 
     @Override
-    public void visitInstanceClassNode(InstanceClassNode instanceClassNode) {
+    public void visitClassObjectNode(ClassObjectDeclNode objClassNode) {
 
     }
+
+    @Override
+    public void visitClassObjectNode(ClassObjectDeclNode objClassNode, MethodVisitor methodVisitor) {
+
+    }
+
 
     @Override
     public void visitObjectDeclNode(ObjectDeclNode objectDeclNode) {
@@ -142,6 +148,16 @@ public class ASTAnalyser implements AST{
 
     @Override
     public void visitAssignmentNode(AssignmentNode assignmentNode) {
+
+    }
+
+    @Override
+    public void visitVarDeclNode(VarDeclNode varDeclNode) {
+
+    }
+
+    @Override
+    public void visitVarDeclNode(VarDeclNode varDeclNode, MethodVisitor methodVisitor) {
 
     }
 }

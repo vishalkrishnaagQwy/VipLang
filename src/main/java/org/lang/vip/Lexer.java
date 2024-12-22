@@ -1,6 +1,7 @@
 package org.lang.vip;
 
 import org.lang.exceptions.ExceptionOnCodeReading;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,6 +19,8 @@ public class Lexer {
     private int index;
     private int currentIndentation = 0;
     private int NewLineCheckEnabled = 0;
+    private boolean usesTabs = false;   // Track if the file uses tabs
+    private boolean usesSpaces = false;
 
     private final Set<String> keywords = new HashSet<String>();
     private final Set<String> specialKeywords = new HashSet<String>();
@@ -100,7 +103,8 @@ public class Lexer {
         keywords.add("obj");
         keywords.add("new");
         specialKeywords.add("if");
-        specialKeywords.add("elif");;
+        specialKeywords.add("elif");
+        ;
         specialKeywords.add("else");
         specialKeywords.add("while");
         specialKeywords.add("for");
@@ -109,34 +113,69 @@ public class Lexer {
 
     private int calculateIndent(String line) {
         int indentLevel = 0;
+        boolean foundIndentation = false;
         for (char c : line.toCharArray()) {
             if (c == ' ') {
                 indentLevel++;
+                if (!foundIndentation) {
+                    usesSpaces = true;
+                    foundIndentation = true;
+                }
+            } else if (c == '\t') {
+                indentLevel += 4;
+                if (!foundIndentation) {
+                    usesTabs = true;
+                    foundIndentation = true;
+                }
             } else {
                 break;
             }
         }
-        return indentLevel / 4; // Assuming 4 spaces per indent
-    }
 
-
-    private void handleIndentation(List<Token> tokens, int indentLevel) {
-
-        if (indentLevel > currentIndentation) {
-            tokens.add(new Token(Token.TokenType.INDENT, "", lineNumber));
-        } else if (indentLevel < currentIndentation) {
-            tokens.add(new Token(Token.TokenType.DEDENT, "", lineNumber));
+        // Check if the file is mixing tabs and spaces
+        if (usesTabs && usesSpaces) {
+            throw new IllegalArgumentException("IndentationError: Mixed tabs and spaces detected in the file!");
         }
-        currentIndentation = indentLevel;
+        return indentLevel / 4;
     }
+
+
+//    private void handleIndentation(List<Token> tokens, int indentLevel) {
+//
+//        if (indentLevel > currentIndentation) {
+//            tokens.add(new Token(Token.TokenType.INDENT, "INDENT", lineNumber));
+//        } else if (indentLevel < currentIndentation) {
+//            tokens.add(new Token(Token.TokenType.DEDENT, "DEDENT", lineNumber));
+//        }
+//        currentIndentation = indentLevel;
+//    }
+
+    private void handleIndentation(List<Token> tokens, String line) {
+        int newIndentation = calculateIndent(line);
+
+        if (newIndentation > currentIndentation) {
+            // Emit an INDENT token
+            tokens.add(new Token(Token.TokenType.INDENT, "", lineNumber));
+        } else if (newIndentation < currentIndentation) {
+            // Emit multiple DEDENT tokens based on the difference
+            int dedentCount = currentIndentation - newIndentation;
+            for (int i = 0; i < dedentCount; i++) {
+                tokens.add(new Token(Token.TokenType.DEDENT, "", lineNumber));
+            }
+        }
+
+        // Update the current indentation level
+        currentIndentation = newIndentation;
+    }
+
+
 
 
     public List<Token> getNextLine() {
         lineNumber++;
         if (lineNumber < textContent.size()) {
             return lexLine(textContent.get(lineNumber));
-        }
-        else {
+        } else {
 //            ArrayList<Token> last_token = new ArrayList<>();
 //            last_token.add(new Token(Token.TokenType.EOF,"EOF",lineNumber));
             return null;
@@ -145,12 +184,11 @@ public class Lexer {
 
     List<Token> lexLine(String input_line) {
         List<Token> tokens = new ArrayList<>();
-        if(input_line.isEmpty())
-        {
-                return getNextLine();
+        if (input_line.isEmpty()) {
+            return getNextLine();
         }
-        int indentationLevel = calculateIndent(input_line);
-        handleIndentation(tokens, indentationLevel);
+
+        handleIndentation(tokens, input_line);
 
         // Now lex the actual content of the line
         char[] chars = input_line.trim().toCharArray(); // Ignore leading whitespace
@@ -161,13 +199,16 @@ public class Lexer {
 
             if (Character.isWhitespace(c)) {
                 continue; // Ignore whitespace
-            }
-            else  if (c == '#') {
+            } else if (c == '#') {
+                if (tokens.isEmpty()) {
+                    return getNextLine();
+                } else {
+                    return tokens;
+                }
 
-                return getNextLine();
             }
 
-            if (Character.isLetter(c)||c == '_') {
+            if (Character.isLetter(c) || c == '_') {
                 currentToken.append(c);
                 i = readIdentifier(tokens, chars, i, currentToken); // Read identifier/keyword
             } else if (Character.isDigit(c)) {
@@ -177,6 +218,8 @@ public class Lexer {
                 i = readString(tokens, chars, i, currentToken); // Read string
             } else if (isOperator(c)) {
                 tokens.add(new Token(Token.TokenType.OPERATOR, String.valueOf(c), lineNumber)); // Add operator token
+            } else {
+                throw new IllegalStateException("something went wrong on compiler");
             }
         }
         return tokens;
@@ -191,20 +234,15 @@ public class Lexer {
         while (i + 1 < chars.length && (Character.isLetterOrDigit(chars[i + 1]) || chars[i + 1] == '_')) {
             currentToken.append(chars[++i]);
         }
-        if(keywords.contains(currentToken.toString()))
-        {
+        if (keywords.contains(currentToken.toString())) {
             tokens.add(new Token(Token.TokenType.KEYWORD, currentToken.toString(), lineNumber));
-        }
-       else if(specialKeywords.contains(currentToken.toString()))
-        {
-            if(this.NewLineCheckEnabled>=20)
-            {
+        } else if (specialKeywords.contains(currentToken.toString())) {
+            if (this.NewLineCheckEnabled >= 20) {
                 throw new ExceptionOnCodeReading("Line fault  found , please have a check");
             }
             this.NewLineCheckEnabled++;
             tokens.add(new Token(Token.TokenType.KEYWORD, currentToken.toString(), lineNumber));
-        }
-        else {
+        } else {
             tokens.add(new Token(Token.TokenType.IDENTIFIER, currentToken.toString(), lineNumber));
         }
 
@@ -258,14 +296,13 @@ public class Lexer {
     }
 
 
-
     private int readString(List<Token> tokens, char[] chars, int i, StringBuilder currentToken) {
         while (i + 1 < chars.length && chars[i + 1] != '"') {
             currentToken.append(chars[++i]);
         }
         tokens.add(new Token(Token.TokenType.STRING, currentToken.toString(), lineNumber));
         currentToken.setLength(0); // Clear the token
-        i = i+1;
+        i = i + 1;
         return i;
     }
 
