@@ -15,7 +15,7 @@ public class Parser {
     String className = "";
     int classId = 0;
     int readIndex = 0;
-    ASTNode astNode;
+    ASTNode VipAstNodeBASE;
     boolean eof_reached = false;
 
 
@@ -24,11 +24,11 @@ public class Parser {
         this.LineTokens = lexer.getNextLine();
         this.classId = mClassId;
         getNextToken();// Initialize the current token
-        astNode = parseProgram();
+        VipAstNodeBASE = parseProgram();
     }
 
     ASTNode getParseTree() {
-        return this.astNode;
+        return VipAstNodeBASE;
     }
 
     // Advance to the next token
@@ -258,6 +258,52 @@ public class Parser {
         return hintList;
     }
 
+    /**
+     *   list<int> or params : Map<int,Pair<Integer,Pair<String,SomeClass>>>
+     *    Array<int>
+     *
+     * */
+    private ASTNode calculateCollectiveHints(){
+         while (match("|") || match(Token.TokenType.IDENTIFIER)|| match("<") || match(">")|| match(",")|| match(Token.TokenType.KEYWORD))
+         {
+             
+         }
+    }
+
+    /*
+    // someMethod(param1,param2) , someMethod(param1:tuple<int,str,int> , param2:map<str,pair<int,char>)
+    * */
+    private ASTNode parseParams() throws VipCompilerException {
+        BlockNode blockNode = new BlockNode(null);
+        consumeSilent(Token.TokenType.OPERATOR,"(");
+        while (!match(")") || !match("=")) {
+
+            if(match(Token.TokenType.IDENTIFIER))
+            {
+                DefParams defParams = new DefParams();
+                defParams.setParam(currentToken.getLexme());
+                getNextToken();
+                if(match(":"))
+                {
+                    defParams.setValue(this.calculateCollectiveHints());
+                }
+                else if(match(",")) {
+                    getNextToken();
+                }
+                else {
+                    break;
+                }
+
+            }
+            else {
+                break;
+            }
+        }
+
+        consumeSilent(Token.TokenType.OPERATOR,")");
+        return blockNode;
+    }
+
     private HintType toHint(String lexeme) throws VipCompilerException {
         switch (lexeme.toLowerCase()) {
             case "int" -> {
@@ -363,9 +409,7 @@ public class Parser {
         String functionName = currentToken.getLexme();
         List<ASTNode> statements = new ArrayList<>();
         consume(Token.TokenType.IDENTIFIER);
-        consumeSilent(Token.TokenType.OPERATOR, "(");
-        // Optionally parse parameters
-        consumeSilent(Token.TokenType.OPERATOR, ")");
+       ASTNode params = this.parseParams();
         if(match("-"))
         {
             getNextToken();
