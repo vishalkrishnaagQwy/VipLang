@@ -50,12 +50,12 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
 
     @Override
     public void visitBlockNode(BlockNode blockNode) {
-       blockNode.list.forEach(block -> block.accept(this));
+       blockNode.getList().forEach(block -> block.accept(this));
     }
 
     @Override
     public void visitBlockNode(BlockNode blockNode,MethodVisitor methodVisitor) {
-        blockNode.list.forEach(block -> block.accept(this,methodVisitor));
+        blockNode.getList().forEach(block -> block.accept(this,methodVisitor));
     }
 
     @Override
