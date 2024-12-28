@@ -106,7 +106,7 @@ public class Lexer {
         keywords.add("obj");
         keywords.add("str");
         keywords.add("float");
-        keywords.add("chr");
+        keywords.add("char");
         keywords.add("bool");
         keywords.add("Optional");
         keywords.add("int");
