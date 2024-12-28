@@ -335,12 +335,12 @@ public class Parser {
     // someMethod(param1,param2) , someMethod(param1:tuple<int,str,int> , param2:map<str,pair<int,char>)
     * */
     private ASTNode parseParams() throws VipCompilerException {
-        BlockNode blockNode = new BlockNode(null);
         consume(Token.TokenType.OPERATOR, "(");
+        List<ASTNode> astList = new ArrayList<>();
         while (!match(")")) {
-
+            DefParams defParams = new DefParams();
             if (match(Token.TokenType.IDENTIFIER)) {
-                DefParams defParams = new DefParams();
+
                 defParams.setParam(currentToken.getLexme());
                 getNextToken();
                 if (match(":")) {
@@ -354,15 +354,16 @@ public class Parser {
             }
             else if (match("=")) {
                 getNextToken();
-                blockNode.setAssignExpr(parseExpression());
+                defParams.setAssignExpr(parseExpression());
             }
             else {
                 break;
             }
+            astList.add(defParams);
         }
 
         consume(Token.TokenType.OPERATOR, ")");
-        return blockNode;
+        return new BlockNode(astList);
     }
 
     private HintType toHint(String lexeme) throws VipCompilerException {
@@ -489,7 +490,7 @@ public class Parser {
         }
         consume(Token.TokenType.INDENT);
         // Parse method body
-        while (!match("return") || !match(Token.TokenType.DEDENT)) {
+        while (!match("return")) {
             System.out.println("looping ...");
             statements.add(parseStatement());
         }

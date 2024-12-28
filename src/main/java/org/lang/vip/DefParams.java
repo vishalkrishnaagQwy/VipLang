@@ -20,8 +20,18 @@ public class DefParams extends ASTNode{
         this.param = param;
     }
 
+    public ASTNode getAssignExpr() {
+        return assignExpr;
+    }
+
+    public void setAssignExpr(ASTNode assignExpr) {
+        this.assignExpr = assignExpr;
+    }
+
+
     private ASTNode value;
     private String param;
+    private ASTNode assignExpr;
 
 
 
