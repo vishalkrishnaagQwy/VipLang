@@ -9,6 +9,7 @@ public class TypeBucket extends ASTNode{
     List<HintType> hintBucket;
     List<Token> IdBucket=null;
     public List<HintType> getHintBucket() {
+
         return hintBucket;
     }
 
