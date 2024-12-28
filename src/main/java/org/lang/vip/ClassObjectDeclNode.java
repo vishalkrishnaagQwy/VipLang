@@ -2,8 +2,10 @@ package org.lang.vip;
 
 import org.objectweb.asm.MethodVisitor;
 
+import java.util.List;
+
 public class ClassObjectDeclNode extends ASTNode{
-  private   String className;
+    private   String className;
 
     public ASTNode getParams() {
         return params;
@@ -14,9 +16,11 @@ public class ClassObjectDeclNode extends ASTNode{
     }
 
     private   ASTNode params;
+    private List<Token> objectHint=null;
 
-    public ClassObjectDeclNode(String identifier, ASTNode astNode) {
+    public ClassObjectDeclNode(String identifier,List<Token> hints, ASTNode astNode) {
         this.className = identifier;
+        this.objectHint = hints;
         this.params = astNode;
     }
 

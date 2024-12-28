@@ -17,8 +17,8 @@ public class ASTPrinter implements AST{
 
     @Override
     public void visitBlockNode(BlockNode blockNode) {
-        System.out.println("--> Reached statements : "+ blockNode.list.size());
-        blockNode.list.forEach(body->body.accept(this));
+        System.out.println("--> Reached statements : "+ blockNode.getList().size());
+        blockNode.getList().forEach(body->body.accept(this));
     }
 
     @Override

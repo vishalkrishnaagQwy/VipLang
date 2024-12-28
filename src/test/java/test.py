@@ -1,7 +1,7 @@
 # Inputs some numbers and computes their average
-package = "vip_1.built_in"
+package "vip_1.built_in"
 #compilerVersion.fileVersion
-version = "v1"
+version "v1"
 
 class test (inheritedClass1,inheritedClass2=None):
  def main(operant1:Map<str,list<int>>,operant2,operant3) -> None:
