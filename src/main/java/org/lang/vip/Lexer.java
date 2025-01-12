@@ -113,6 +113,7 @@ public class Lexer {
         hints.add("Optional");
         hints.add("int");
         hints.add("any");
+        hints.add("Either");
         specialKeywords.add("if");
         specialKeywords.add("elif");
         specialKeywords.add("else");

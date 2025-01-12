@@ -6,13 +6,13 @@ import java.util.List;
 
 public class TypeBucket extends ASTNode{
     // only support int | str etc
-    List<HintType> hintBucket;
+    List<Token> hintBucket;
     List<Token> IdBucket=null;
-    public List<HintType> getHintBucket() {
+    public List<Token> getHintBucket() {
         return hintBucket;
     }
 
-    public void setHintBucket(List<HintType> hintBucket) {
+    public void setHintBucket(List<Token> hintBucket) {
         this.hintBucket = hintBucket;
     }
 

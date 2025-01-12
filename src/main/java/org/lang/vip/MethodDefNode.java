@@ -8,9 +8,9 @@ public class MethodDefNode extends ASTNode {
     ASTNode params =null;
     String functionName;
     List<ASTNode> body;
-    List<HintType> hints;
+    ASTNode hints;
 
-    public MethodDefNode(String functionName,ASTNode paramList,List<ASTNode> body,List<HintType> ReturnType) {
+    public MethodDefNode(String functionName,ASTNode paramList,List<ASTNode> body,ASTNode ReturnType) {
         this.functionName = functionName;
         this.params = paramList;
         this.body = body;

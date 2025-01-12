@@ -79,6 +79,11 @@ public class Parser {
         return (currentToken.getLexme().equals(lexeme));
     }
 
+    private boolean isHint()
+    {
+        return currentToken.getType() == Token.TokenType.HINT;
+    }
+
     private boolean match(Token.TokenType type) {
         return (currentToken.getType() == type);
     }
@@ -157,8 +162,8 @@ public class Parser {
                         throw new RuntimeException("Illegal codes inside class body of '" + className + "' .vp");
                     }
                     break;
-                case IDENTIFIER:
-                    body.add(parseIdentifier());
+                case HINT:
+                    body.add(parseVarDecl());
                     // assignment a = 20 or a , b = 10 , 20
                     break;
 //                case INDENT:
@@ -180,6 +185,8 @@ public class Parser {
     private ASTNode parseStatement() throws VipCompilerException {
         List<ASTNode> astList = new ArrayList<>();
         switch (currentToken.getType()) {
+            case HINT:
+                astList.add(parseVarDecl());
             case IDENTIFIER:
                 astList.add(parseIdentifier());
                 break;
@@ -204,9 +211,7 @@ public class Parser {
     private ASTNode parseIdentifier() throws VipCompilerException {
         String currentId = currentToken.getLexme();
         getNextToken();
-        if (match(":")) {
-            return parseVarDecl(currentId);
-        } else if (match("=")) {
+        if (match("=")) {
             /*
              * note: assignment node may contain variable declaration . in the case of no hints given
              * a = 10 for example ,here a will be considered as any or a: any = 10
@@ -217,10 +222,11 @@ public class Parser {
         }
     }
 
-    private ASTNode parseVarDecl(String currentId) throws VipCompilerException {
-        VarDeclNode varDeclNode = new VarDeclNode(currentId);
-        consume(Token.TokenType.OPERATOR,":"); //eat :
+    private ASTNode parseVarDecl() throws VipCompilerException {
+        VarDeclNode varDeclNode = new VarDeclNode();
         varDeclNode.setHints(this.calculateHintsForVariable());
+        varDeclNode.setVariableName(currentToken.getLexme());
+        // todo : need more implmentations like int a; int a, b , c
         consume(Token.TokenType.OPERATOR, "=");
         varDeclNode.setExpr(parseExpression());
         return varDeclNode;
@@ -228,23 +234,8 @@ public class Parser {
 
     private List<HintType> calculateHintsForVariable() throws VipCompilerException {
         List<HintType> hintList = new ArrayList<>(100);
-        while (((match("|") || match(Token.TokenType.KEYWORD))) && !isEol() && !match("=")) {
-            if (match(Token.TokenType.KEYWORD)) {
-                hintList.add(toHint(currentToken.getLexme()));
-                getNextToken();
-            }
-
-            if (match("|")) {
-                getNextToken();
-            }
-        }
-        return hintList;
-    }
-
-    private List<HintType> calcHintsForMethod() throws VipCompilerException {
-        List<HintType> hintList = new ArrayList<>(100);
-        while (((match("|") || match(Token.TokenType.KEYWORD))) && !isEol()) {
-            if (match(Token.TokenType.KEYWORD)) {
+        while (((match("|") || isHint())) && !isEol() && !match("=") && !match(Token.TokenType.IDENTIFIER)) {
+            if (match(Token.TokenType.HINT)) {
                 hintList.add(toHint(currentToken.getLexme()));
                 getNextToken();
             }
@@ -280,8 +271,8 @@ public class Parser {
      */
 
     private ASTNode calculateCollectiveHints() throws VipCompilerException {
+        // type <xyz | p q r s >
         TypeBucket typeBucket = new TypeBucket();
-        if (match(Token.TokenType.IDENTIFIER)) {
             List<Token> values = new ArrayList<>();
             values.add(currentToken);
             getNextToken();
@@ -298,22 +289,6 @@ public class Parser {
             }
 
             typeBucket.setIdBucket(values);
-        }
-        if (getHint(currentToken.getLexme().toLowerCase())) {
-            List<HintType> hintList = new ArrayList<>();
-            hintList.add(toHint(currentToken.getLexme()));
-            getNextToken();
-            while (match("|")) {
-                if (getHint(currentToken.getLexme())) {
-                    hintList.add(convertToHint(currentToken.getLexme()));
-                } else if (match("|")) {
-                    getNextToken();
-                } else {
-                    break;
-                }
-            }
-            typeBucket.setHintBucket(hintList);
-        }
         return typeBucket;
     }
 
@@ -339,15 +314,11 @@ public class Parser {
         List<ASTNode> astList = new ArrayList<>();
         while (!match(")")) {
             DefParams defParams = new DefParams();
-            if (match(Token.TokenType.IDENTIFIER)) {
-
-                defParams.setParam(currentToken.getLexme());
+            // (int param, any something ...remaining)
+            if (isHint()) {
+                defParams.setValue(this.calculateCollectiveHints());
                 getNextToken();
-                if (match(":")) {
-                    getNextToken();
-                    defParams.setValue(this.calculateCollectiveHints());
-                }
-
+                defParams.setParam(currentToken.getLexme());
             }
             else if (match(",")) {
                 getNextToken();
@@ -474,7 +445,7 @@ public class Parser {
     private ASTNode parseMethodDefinition() throws VipCompilerException {
         consume(Token.TokenType.KEYWORD, ParsingType.DEF); // Consume 'def'
         ASTNode params =null;
-        List<HintType> ReturnType = new ArrayList<>();
+        ASTNode ReturnType =null;
         String functionName = currentToken.getLexme();
         List<ASTNode> statements = new ArrayList<>();
         consume(Token.TokenType.IDENTIFIER);
@@ -486,7 +457,7 @@ public class Parser {
         if (match("-")) {
             getNextToken();
             consume(Token.TokenType.OPERATOR, ">");
-            ReturnType = calcHintsForMethod();
+            ReturnType = calculateCollectiveHints();
         }
         consume(Token.TokenType.INDENT);
         // Parse method body

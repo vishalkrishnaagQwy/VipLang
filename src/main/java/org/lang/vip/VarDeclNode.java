@@ -38,8 +38,7 @@ public class VarDeclNode extends ASTNode{
         visitor.visitVarDeclNode(this);
     }
 
-    public VarDeclNode(String currentId) {
-        this.VariableName = currentId;
+    public VarDeclNode() {
     }
 
     @Override
