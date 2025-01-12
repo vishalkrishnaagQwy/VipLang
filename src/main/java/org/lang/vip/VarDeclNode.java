@@ -7,6 +7,7 @@ import java.util.List;
 public class VarDeclNode extends ASTNode{
    private String VariableName;
    private ASTNode expr;
+   ASTNode hints;
 
     public ASTNode getExpr() {
         return expr;
@@ -16,11 +17,11 @@ public class VarDeclNode extends ASTNode{
         this.expr = expr;
     }
 
-    public List<HintType> getHints() {
+    public ASTNode getHints() {
         return hints;
     }
 
-    public void setHints(List<HintType> hints) {
+    public void setHints(ASTNode hints) {
         this.hints = hints;
     }
 
@@ -32,7 +33,6 @@ public class VarDeclNode extends ASTNode{
         VariableName = variableName;
     }
 
-    List<HintType> hints;
     @Override
     public void accept(AST visitor) {
         visitor.visitVarDeclNode(this);

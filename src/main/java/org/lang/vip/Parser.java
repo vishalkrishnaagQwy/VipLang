@@ -224,27 +224,13 @@ public class Parser {
 
     private ASTNode parseVarDecl() throws VipCompilerException {
         VarDeclNode varDeclNode = new VarDeclNode();
-        varDeclNode.setHints(this.calculateHintsForVariable());
+        varDeclNode.setHints(this.calculateCollectiveHints());
         varDeclNode.setVariableName(currentToken.getLexme());
+        consume(Token.TokenType.IDENTIFIER);
         // todo : need more implmentations like int a; int a, b , c
         consume(Token.TokenType.OPERATOR, "=");
         varDeclNode.setExpr(parseExpression());
         return varDeclNode;
-    }
-
-    private List<HintType> calculateHintsForVariable() throws VipCompilerException {
-        List<HintType> hintList = new ArrayList<>(100);
-        while (((match("|") || isHint())) && !isEol() && !match("=") && !match(Token.TokenType.IDENTIFIER)) {
-            if (match(Token.TokenType.HINT)) {
-                hintList.add(toHint(currentToken.getLexme()));
-                getNextToken();
-            }
-
-            if (match("|")) {
-                getNextToken();
-            }
-        }
-        return hintList;
     }
 
 
@@ -315,7 +301,7 @@ public class Parser {
         while (!match(")")) {
             DefParams defParams = new DefParams();
             // (int param, any something ...remaining)
-            if (isHint()) {
+            if (isHint() || match(Token.TokenType.IDENTIFIER)) {
                 defParams.setValue(this.calculateCollectiveHints());
                 getNextToken();
                 defParams.setParam(currentToken.getLexme());
