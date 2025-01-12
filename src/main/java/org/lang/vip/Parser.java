@@ -243,7 +243,7 @@ public class Parser {
 
     private List<HintType> calcHintsForMethod() throws VipCompilerException {
         List<HintType> hintList = new ArrayList<>(100);
-        while (((match("|") || match(Token.TokenType.KEYWORD))) && !isEol() && !match(":")) {
+        while (((match("|") || match(Token.TokenType.KEYWORD))) && !isEol()) {
             if (match(Token.TokenType.KEYWORD)) {
                 hintList.add(toHint(currentToken.getLexme()));
                 getNextToken();

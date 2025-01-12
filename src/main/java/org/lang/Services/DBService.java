@@ -9,6 +9,8 @@ import org.jooq.Record;
 import org.jooq.impl.DSL;
 import org.sqlite.SQLiteDataSource;
 
+import static org.jooq.impl.DSL.*;
+
 public class DBService {
     private static final String DB_URL = "jdbc:sqlite:software.db";
 
@@ -24,50 +26,128 @@ public class DBService {
         }
     }
 
-    public static void createTable(String tableName) {
+    public static void createPackage(String PackageName){
         DSLContext create = createContext();
-        String createTableSql = String.format("CREATE TABLE IF NOT EXISTS %s (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, age INTEGER)", tableName);
+        String createTableSql = String.format(
+                "CREATE TABLE IF NOT EXISTS %s (" +
+                        "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                        "class_name TEXT, " +
+                        "package_name TEXT, " +
+                        "fields JSON, " +
+                        "methods JSON" +
+                        ")",
+                PackageName
+        );
+
         create.execute(createTableSql);
     }
 
-    public static void insert(String tableName, String name, int age) {
+    public static void insert(String tableName, String className, String packageName, String fields, String methods) {
         DSLContext create = createContext();
-        Table<?> table = DSL.table(DSL.name(tableName)); // Dynamically reference the table
-        Field<?> nameField = DSL.field("name", String.class);
-        Field<?> ageField = DSL.field("age", Integer.class);
+        Table<?> table = table(name(tableName));
 
-        create.insertInto(table, nameField, ageField)
-                .values(name, age)
+        Field<String> classNameField = field("class_name", String.class);
+        Field<String> packageNameField = field("package_name", String.class);
+        Field<String> fieldsField = field("fields", String.class);
+        Field<String> methodsField = field("methods", String.class);
+
+        create.insertInto(table, classNameField, packageNameField, fieldsField, methodsField)
+                .values(className, packageName, fields, methods)
                 .execute();
     }
 
     public static List<Record> select(String tableName) {
         DSLContext create = createContext();
-        Table<?> table = DSL.table(DSL.name(tableName)); // Dynamically reference the table
+        Table<?> table = table(name(tableName));
         return create.select().from(table).fetch();
     }
 
-    public static void update(String tableName, int id, String newName, int newAge) {
+    public static Result<Record4<String, String, String, String>> read(String tableName, int id) {
         DSLContext create = createContext();
-        Table<?> table = DSL.table(DSL.name(tableName)); // Dynamically reference the table
-        Field<?> idField = DSL.field("id", Integer.class);
-        Field<?> nameField = DSL.field("name", String.class);
-        Field<?> ageField = DSL.field("age", Integer.class);
+        Table<?> table = table(name(tableName));
+
+        Field<Integer> idField = field("id", Integer.class);
+        Field<String> classNameField = field("class_name", String.class);
+        Field<String> packageNameField = field("package_name", String.class);
+        Field<String> fieldsField = field("fields", String.class);
+        Field<String> methodsField = field("methods", String.class);
+
+        return create.select(classNameField, packageNameField, fieldsField, methodsField)
+                .from(table)
+                .where(idField.eq(id))
+                .fetch();
+    }
+
+
+    public static Result<Record1<String>> readOnly(String tableName, int id,String specificField) {
+        DSLContext create = createContext();
+        Table<?> table = table(name(tableName));
+        Field<Integer> idField = field("id", Integer.class);
+        switch (specificField) {
+            case "class_name" -> {
+                Field<String> classNameField = field("class_name", String.class);
+                return create.select(classNameField)
+                        .from(table)
+                        .where(idField.eq(id))
+                        .fetch();
+            }
+            case "package_name" -> {
+                Field<String> packageNameField = field("package_name", String.class);
+                return create.select(packageNameField)
+                        .from(table)
+                        .where(idField.eq(id))
+                        .fetch();
+            }
+            case "fields" -> {
+                Field<String> fieldsField = field("fields", String.class);
+                return create.select(fieldsField)
+                        .from(table)
+                        .where(idField.eq(id))
+                        .fetch();
+            }
+            case "methods" -> {
+                Field<String> methodsField = field("methods", String.class);
+                return create.select(methodsField)
+                        .from(table)
+                        .where(idField.eq(id))
+                        .fetch();
+            }
+            default -> {
+                return null;
+            }
+        }
+    }
+
+
+    public static void update(String tableName, int id, String className, String packageName, String fields, String methods) {
+        DSLContext create = createContext();
+        Table<?> table = table(name(tableName));
+
+        Field<Integer> idField = field("id", Integer.class);
+        Field<String> classNameField = field("class_name", String.class);
+        Field<String> packageNameField = field("package_name", String.class);
+        Field<String> fieldsField = field("fields", String.class);
+        Field<String> methodsField = field("methods", String.class);
 
         create.update(table)
-                .set(nameField, newName)
-                .set(ageField, newAge)
+                .set(classNameField, className)
+                .set(packageNameField, packageName)
+                .set(fieldsField, fields)
+                .set(methodsField, methods)
                 .where(idField.eq(id))
                 .execute();
     }
 
-    public static <Table> void delete(String tableName, int id) {
+
+    public static void delete(String tableName, int id) {
         DSLContext create = createContext();
-        Table<?> table = DSL.table(DSL.name(tableName)); // Dynamically reference the table
-        Field<?> idField = DSL.field("id", Integer.class);
+        Table<?> table = table(name(tableName));
+
+        Field<Integer> idField = field("id", Integer.class);
 
         create.deleteFrom(table)
                 .where(idField.eq(id))
                 .execute();
     }
+
 }
