@@ -130,6 +130,7 @@ public class Parser {
         consume(Token.TokenType.KEYWORD, ParsingType.CLASS);
         String vipClasName = currentToken.getLexme();
         consume(Token.TokenType.IDENTIFIER);
+        consume(Token.TokenType.INDENT);
         this.className = vipClasName;
         classDeclNode.setClassName(this.className);
         classDeclNode.setClassBody(parseClassBody());
@@ -187,6 +188,7 @@ public class Parser {
         switch (currentToken.getType()) {
             case HINT:
                 astList.add(parseVarDecl());
+                break;
             case IDENTIFIER:
                 astList.add(parseIdentifier());
                 break;
@@ -634,7 +636,12 @@ public class Parser {
     }
 
     private ASTNode parseExprKeyword() throws VipCompilerException {
-        if(currentToken.getLexme().toLowerCase().equals("none"))
+        System.out.println(currentToken);
+        if (currentToken.getLexme().equals("new"))
+        {
+          return parseObjectCreation();
+        }
+       else if(currentToken.getLexme().toLowerCase().equals("none"))
         {
             return new NoneNode();
         }
