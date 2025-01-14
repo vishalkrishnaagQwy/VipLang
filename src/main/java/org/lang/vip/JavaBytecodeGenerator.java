@@ -183,6 +183,7 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
     @Override
     public void visitClassDeclNode(ClassDeclNode classDeclNode) {
         this.className = classDeclNode.getClassName();
+        classDeclNode.getPackage().accept(this);
         symbolTab.defineClass(classDeclNode.getClassId(),className);
         classWriter.visit(V1_8, ACC_PUBLIC, this.className, null, "java/lang/Object", null);
         // Add default constructor

@@ -70,9 +70,6 @@ public class ASTPrinter implements AST{
     @Override
     public void visitClassDeclNode(ClassDeclNode classDeclNode) {
         System.out.println("---> Reached class Declaration");
-        classDeclNode.getPackage().accept(this);
-        classDeclNode.getVersion().accept(this);
-        classDeclNode.classBody.accept(this);
     }
 
     @Override

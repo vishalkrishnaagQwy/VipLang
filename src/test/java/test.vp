@@ -1,5 +1,5 @@
 # Inputs some numbers and computes their average
-package "vip_1.built_in"
+package "firstProject"
 #compilerVersion.fileVersion
 version "v1"
 

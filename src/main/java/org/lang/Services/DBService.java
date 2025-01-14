@@ -12,9 +12,9 @@ import org.sqlite.SQLiteDataSource;
 import static org.jooq.impl.DSL.*;
 
 public class DBService {
-    private static final String DB_URL = "jdbc:sqlite:software.db";
+    private static final String DB_URL = "jdbc:sqlite:src\\test\\java\\db.sqlite";
 
-    private static DSLContext createContext() {
+    public static DSLContext createContext() {
         SQLiteDataSource dataSource = new SQLiteDataSource();
         dataSource.setUrl(DB_URL);
         Connection connection;

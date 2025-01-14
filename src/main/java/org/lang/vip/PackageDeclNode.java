@@ -1,11 +1,13 @@
 package org.lang.vip;
 
+import org.lang.Services.DBService;
 import org.objectweb.asm.MethodVisitor;
 
 import java.util.List;
 
 public class PackageDeclNode extends ASTNode{
-    String packageRoute;
+    private final String packageRoute;
+
     public PackageDeclNode(String folderList) {
         this.packageRoute = folderList;
     }
@@ -13,6 +15,8 @@ public class PackageDeclNode extends ASTNode{
     @Override
     public void accept(AST visitor) {
         visitor.visitPackageDeclNode(this);
+        DBService.createContext();
+        DBService.createPackage(packageRoute);
     }
 
     @Override
