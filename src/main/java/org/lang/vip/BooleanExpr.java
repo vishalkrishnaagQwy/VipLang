@@ -1,5 +1,6 @@
 package org.lang.vip;
 
+import org.lang.exceptions.ExceptionOnCodeAnalysis;
 import org.objectweb.asm.MethodVisitor;
 
 import java.util.List;
@@ -44,7 +45,7 @@ public class BooleanExpr extends ASTNode{
     }
 
     @Override
-    public void accept(AST visitor, MethodVisitor methodVisitor) {
+    public void accept(AST visitor, MethodVisitor methodVisitor) throws ExceptionOnCodeAnalysis {
         visitor.visitBooleanExprNode(this,methodVisitor);
     }
 }

@@ -5,21 +5,10 @@ import org.objectweb.asm.MethodVisitor;
 import java.util.List;
 
 public class BlockNode extends ASTNode{
-    private ASTNode AssignExpr;
     private List<ASTNode> list;
     public List<ASTNode> getList() {
         return list;
     }
-
-    public ASTNode getAssignExpr() {
-        return AssignExpr;
-    }
-
-    public void setAssignExpr(ASTNode assignExpr) {
-        AssignExpr = assignExpr;
-    }
-
-
 
     public void setList(List<ASTNode> list) {
         this.list = list;

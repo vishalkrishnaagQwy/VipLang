@@ -1,5 +1,6 @@
 package org.lang.vip;
 
+import org.lang.exceptions.ExceptionOnCodeAnalysis;
 import org.objectweb.asm.MethodVisitor;
 
 public class AssignmentNode extends ASTNode {
@@ -12,7 +13,7 @@ public class AssignmentNode extends ASTNode {
 
     ASTNode expr;
     @Override
-    public void accept(AST visitor) {
+    public void accept(AST visitor) throws ExceptionOnCodeAnalysis {
        visitor.visitAssignmentNode(this);
     }
 

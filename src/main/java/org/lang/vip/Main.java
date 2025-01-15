@@ -1,5 +1,6 @@
 package org.lang.vip;
 
+import org.lang.exceptions.ExceptionOnCodeAnalysis;
 import org.lang.exceptions.VipCompilerException;
 import org.lang.memmory.SymbolTable;
 
@@ -45,7 +46,7 @@ public class Main {
                 try {
                     processFile(file,symbolTable,classId);
                     classId++;
-                } catch (IOException | VipCompilerException e) {
+                } catch (IOException | VipCompilerException | ExceptionOnCodeAnalysis e) {
                     System.err.println("Error processing file: " + file.getName());
                     e.printStackTrace();
                 }
@@ -60,7 +61,7 @@ public class Main {
      * @return true if the file is a .vp file, false otherwise
      */
     private static boolean isVipFile(File file) {
-        return file.isFile() && file.getName().endsWith(".py");
+        return file.isFile() && file.getName().endsWith(".vp");
     }
 
     /**
@@ -69,7 +70,7 @@ public class Main {
      * @param file the .vp file to process
      * @throws IOException if an error occurs while reading the file
      */
-    private static void processFile(File file,SymbolTable symbolTable,int classId) throws IOException, VipCompilerException {
+    private static void processFile(File file,SymbolTable symbolTable,int classId) throws IOException, VipCompilerException, ExceptionOnCodeAnalysis {
         System.out.println("Processing file: " + file.getName());
         Lexer lexer = new Lexer(file.getPath());
         Parser parser = new Parser(lexer,classId);
@@ -78,8 +79,8 @@ public class Main {
         ASTPrinter astPrinter = new ASTPrinter();
         JavaBytecodeGenerator codeGen = new JavaBytecodeGenerator(symbolTable);
         if (astNodes != null) {
-//                astNodes.accept(astPrinter);
-//                astNodes.accept(astAnalyser);
+                astNodes.accept(astPrinter);
+                astNodes.accept(astAnalyser);
                 astNodes.accept(codeGen);
         }
         codeGen.writeClassToFile();

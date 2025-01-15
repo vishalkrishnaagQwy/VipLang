@@ -1,4 +1,7 @@
 package org.lang.vip;
+import org.lang.Services.DBService;
+import org.lang.exceptions.ExceptionOnCodeAnalysis;
+import org.lang.exceptions.ExceptionOnDetailedAnalysis;
 import org.lang.utils.Pair;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
@@ -13,6 +16,8 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
     private SymbolTable symbolTab;
     private ClassWriter classWriter;
     private String className = "_dev_";
+    private String vipCurrentPackage = "vip";
+    private String FullPackageName = "compiler.vip";
 
 
     public JavaBytecodeGenerator(SymbolTable _symbolTable){
@@ -27,7 +32,13 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
         String descriptor = "()V";
         MethodVisitor mv = classWriter.visitMethod(ACC_PUBLIC | ACC_STATIC, methodDefNode.functionName, descriptor, null, null);
         mv.visitCode();
-        methodDefNode.body.forEach(element -> element.accept(this,mv));
+        methodDefNode.body.forEach(element -> {
+            try {
+                element.accept(this,mv);
+            } catch (ExceptionOnCodeAnalysis e) {
+                throw new ExceptionOnDetailedAnalysis(e);
+            }
+        });
         mv.visitInsn(RETURN);
         mv.visitMaxs(2, 1);
         mv.visitEnd();
@@ -42,7 +53,13 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
         }
         MethodVisitor mv = classWriter.visitMethod(ACC_PUBLIC | ACC_STATIC, methodDefNode.functionName, descriptor, null, null);
         mv.visitCode();
-        methodDefNode.body.forEach(element -> element.accept(this,mv));
+        methodDefNode.body.forEach(element -> {
+            try {
+                element.accept(this,mv);
+            } catch (ExceptionOnCodeAnalysis e) {
+                throw new ExceptionOnDetailedAnalysis(e);
+            }
+        });
         mv.visitInsn(RETURN);
         mv.visitMaxs(2, 1);
         mv.visitEnd();
@@ -50,16 +67,28 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
 
     @Override
     public void visitBlockNode(BlockNode blockNode) {
-       blockNode.getList().forEach(block -> block.accept(this));
+       blockNode.getList().forEach(block -> {
+           try {
+               block.accept(this);
+           } catch (ExceptionOnCodeAnalysis e) {
+               throw new ExceptionOnDetailedAnalysis(e);
+           }
+       });
     }
 
     @Override
     public void visitBlockNode(BlockNode blockNode,MethodVisitor methodVisitor) {
-        blockNode.getList().forEach(block -> block.accept(this,methodVisitor));
+        blockNode.getList().forEach(block -> {
+            try {
+                block.accept(this,methodVisitor);
+            } catch (ExceptionOnCodeAnalysis e) {
+                throw new ExceptionOnDetailedAnalysis(e);
+            }
+        });
     }
 
     @Override
-    public void visitMethodCallNode(MethodCallNode methodCallNode,MethodVisitor Method) {
+    public void visitMethodCallNode(MethodCallNode methodCallNode,MethodVisitor Method) throws ExceptionOnCodeAnalysis {
         Method.visitCode();
 
         if(methodCallNode.methodName.equals("print"))
@@ -160,9 +189,15 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
     }
 
     @Override
-    public void visitBooleanExprNode(BooleanExpr booleanExpr,MethodVisitor methodVisitor) {
+    public void visitBooleanExprNode(BooleanExpr booleanExpr,MethodVisitor methodVisitor) throws ExceptionOnCodeAnalysis {
         booleanExpr.getLeft().accept(this);
-        booleanExpr.getRight().forEach(right -> right.accept(this));
+        booleanExpr.getRight().forEach(right -> {
+            try {
+                right.accept(this);
+            } catch (ExceptionOnCodeAnalysis e) {
+                throw new ExceptionOnDetailedAnalysis(e);
+            }
+        });
         methodVisitor.visitCode();
         switch (booleanExpr.getOperator()) {
             case "+" -> methodVisitor.visitInsn(IADD);
@@ -181,9 +216,13 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
     }
 
     @Override
-    public void visitClassDeclNode(ClassDeclNode classDeclNode) {
+    public void visitClassDeclNode(ClassDeclNode classDeclNode) throws ExceptionOnCodeAnalysis {
         this.className = classDeclNode.getClassName();
+        classDeclNode.getPackage().accept(this);
+        this.vipCurrentPackage = classDeclNode.getPackage().getCurrentPackage();
+        this.FullPackageName = classDeclNode.getPackage().getPackageRoute();
         symbolTab.defineClass(classDeclNode.getClassId(),className);
+        DBService.insert(vipCurrentPackage,className,FullPackageName,"[]","[]");
         classWriter.visit(V1_8, ACC_PUBLIC, this.className, null, "java/lang/Object", null);
         // Add default constructor
         MethodVisitor mv = classWriter.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
@@ -242,9 +281,15 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
     }
 
     @Override
-    public void visitArithematicExpr(ArithematicExpr arithematicExpr,MethodVisitor methodVisitor) {
+    public void visitArithematicExpr(ArithematicExpr arithematicExpr,MethodVisitor methodVisitor) throws ExceptionOnCodeAnalysis {
         arithematicExpr.getLeft().accept(this);
-        arithematicExpr.getRight().forEach(right -> right.accept(this));
+        arithematicExpr.getRight().forEach(right -> {
+            try {
+                right.accept(this);
+            } catch (ExceptionOnCodeAnalysis e) {
+                throw new ExceptionOnDetailedAnalysis(e);
+            }
+        });
         methodVisitor.visitCode();
         switch (arithematicExpr.getOperator()) {
             case "+" -> methodVisitor.visitInsn(IADD);
@@ -292,7 +337,7 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
     }
 
     @Override
-    public void visitAssignmentNode(AssignmentNode assignmentNode) {
+    public void visitAssignmentNode(AssignmentNode assignmentNode) throws ExceptionOnCodeAnalysis {
         assignmentNode.variable.accept(this);
         assignmentNode.expr.accept(this);
     }

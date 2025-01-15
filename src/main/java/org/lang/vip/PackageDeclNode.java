@@ -1,18 +1,30 @@
 package org.lang.vip;
 
+import org.lang.Services.DBService;
 import org.objectweb.asm.MethodVisitor;
 
 import java.util.List;
 
 public class PackageDeclNode extends ASTNode{
-    String packageRoute;
+    private final String packageRoute;
+
     public PackageDeclNode(String folderList) {
         this.packageRoute = folderList;
+    }
+
+    public String getCurrentPackage(){
+        String [] bucket = this.packageRoute.split("\\.");
+        return bucket[bucket.length -1];
+    }
+    public String getPackageRoute(){
+        return this.packageRoute;
     }
 
     @Override
     public void accept(AST visitor) {
         visitor.visitPackageDeclNode(this);
+        DBService.createContext();
+        DBService.createPackage(this.getCurrentPackage());
     }
 
     @Override

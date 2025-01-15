@@ -1,5 +1,6 @@
 package org.lang.vip;
 
+import org.lang.exceptions.ExceptionOnCodeAnalysis;
 import org.objectweb.asm.MethodVisitor;
 
 public class ClassDeclNode extends ASTNode{
@@ -14,8 +15,8 @@ public class ClassDeclNode extends ASTNode{
         return className;
     }
 
-    public ASTNode getPackage() {
-        return pack_age;
+    public PackageDeclNode getPackage() {
+        return Package;
     }
 
     public ASTNode getVersion() {
@@ -26,7 +27,7 @@ public class ClassDeclNode extends ASTNode{
         return classBody;
     }
 
-    private ASTNode pack_age;
+    private PackageDeclNode Package;
    private ASTNode version;
    public ASTNode classBody;
     public ClassDeclNode(int ClassId) {
@@ -40,8 +41,8 @@ public class ClassDeclNode extends ASTNode{
     public void setVersion(ASTNode version){
         this.version = version;
     }
-    public void setPackage(ASTNode pack_age){
-        this.pack_age = pack_age;
+    public void setPackage(PackageDeclNode vip_package){
+        this.Package = vip_package;
     }
 
     public void setClassBody(ASTNode classBody){
@@ -49,7 +50,7 @@ public class ClassDeclNode extends ASTNode{
     }
 
     @Override
-    public void accept(AST visitor) {
+    public void accept(AST visitor) throws ExceptionOnCodeAnalysis {
         visitor.visitClassDeclNode(this);
     }
 

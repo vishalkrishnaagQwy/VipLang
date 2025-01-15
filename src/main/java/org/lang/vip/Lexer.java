@@ -23,6 +23,7 @@ public class Lexer {
     private boolean usesSpaces = false;
 
     private final Set<String> keywords = new HashSet<String>();
+    private final Set<String> hints = new HashSet<String>();
     private final Set<String> specialKeywords = new HashSet<String>();
     private final Set<String> dataTypes = new HashSet<String>();
 
@@ -103,18 +104,18 @@ public class Lexer {
         keywords.add("package");
         keywords.add("version");
         keywords.add("implements");
-        keywords.add("obj");
-        keywords.add("str");
-        keywords.add("float");
-        keywords.add("chr");
-        keywords.add("bool");
-        keywords.add("Optional");
-        keywords.add("int");
-        keywords.add("any");
         keywords.add("new");
+        hints.add("obj");
+        hints.add("str");
+        hints.add("float");
+        hints.add("char");
+        hints.add("bool");
+        hints.add("Optional");
+        hints.add("int");
+        hints.add("any");
+        hints.add("Either");
         specialKeywords.add("if");
         specialKeywords.add("elif");
-        ;
         specialKeywords.add("else");
         specialKeywords.add("while");
         specialKeywords.add("for");
@@ -252,7 +253,10 @@ public class Lexer {
             }
             this.NewLineCheckEnabled++;
             tokens.add(new Token(Token.TokenType.KEYWORD, currentToken.toString(), lineNumber));
-        } else {
+        } else if (hints.contains(currentToken.toString())) {
+            tokens.add(new Token(Token.TokenType.HINT, currentToken.toString(), lineNumber));
+        }
+        else {
             tokens.add(new Token(Token.TokenType.IDENTIFIER, currentToken.toString(), lineNumber));
         }
 
