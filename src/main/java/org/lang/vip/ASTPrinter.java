@@ -156,4 +156,14 @@ public class ASTPrinter implements AST{
     public void visitVarDeclNode(VarDeclNode varDeclNode, MethodVisitor methodVisitor) {
 
     }
+
+    @Override
+    public void visitVipInterfaceDeclNode(VipInterfaceDeclNode vipInterfaceDeclNode) {
+        System.out.println("----> Reached Interface Declaration");
+    }
+
+    @Override
+    public void visitVipInterfaceDeclNode(VipInterfaceDeclNode vipInterfaceDeclNode, MethodVisitor methodVisitor) {
+
+    }
 }

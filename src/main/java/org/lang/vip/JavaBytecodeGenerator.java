@@ -352,6 +352,16 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
 
     }
 
+    @Override
+    public void visitVipInterfaceDeclNode(VipInterfaceDeclNode vipInterfaceDeclNode) {
+
+    }
+
+    @Override
+    public void visitVipInterfaceDeclNode(VipInterfaceDeclNode vipInterfaceDeclNode, MethodVisitor methodVisitor) {
+
+    }
+
 
     public void writeClassToFile() {
         try {

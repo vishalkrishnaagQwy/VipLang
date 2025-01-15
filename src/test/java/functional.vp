@@ -1,0 +1,8 @@
+package "firstProject"
+version "v1"
+
+interface functional
+    def someMethod() -> Either<int | None>
+    return
+    def anotherMethod() -> Either<int | str>
+    return

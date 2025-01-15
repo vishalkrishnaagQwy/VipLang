@@ -35,4 +35,6 @@ public interface AST {
    void visitAssignmentNode(AssignmentNode assignmentNode) throws ExceptionOnCodeAnalysis;
    void visitVarDeclNode(VarDeclNode varDeclNode);
    void visitVarDeclNode(VarDeclNode varDeclNode,MethodVisitor methodVisitor);
+   void visitVipInterfaceDeclNode(VipInterfaceDeclNode vipInterfaceDeclNode);
+   void visitVipInterfaceDeclNode(VipInterfaceDeclNode vipInterfaceDeclNode,MethodVisitor methodVisitor);
 }

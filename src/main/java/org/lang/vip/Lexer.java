@@ -97,13 +97,14 @@ public class Lexer {
         keywords.add("global");
         keywords.add("static");
         keywords.add("lambda");
-        keywords.add("pass");
         keywords.add("True");
         keywords.add("False");
         keywords.add("None");
         keywords.add("package");
         keywords.add("version");
         keywords.add("implements");
+        keywords.add("extends");
+        keywords.add("abstract");
         keywords.add("new");
         hints.add("obj");
         hints.add("str");

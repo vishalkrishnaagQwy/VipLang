@@ -14,6 +14,7 @@ public class Parser {
     private Token currentToken;
     private List<Token> LineTokens;
     String className = "";
+    String interfaceName = "";
     int classId = 0;
     int readIndex = 0;
     ASTNode VipAstNodeBASE;
@@ -79,6 +80,10 @@ public class Parser {
         return (currentToken.getLexme().equals(lexeme));
     }
 
+    private boolean match(Token.TokenType type,String lexeme) {
+        return (currentToken.getType() == type && currentToken.getLexme().equals(lexeme));
+    }
+
     private boolean isHint()
     {
         return currentToken.getType() == Token.TokenType.HINT;
@@ -104,14 +109,6 @@ public class Parser {
     }
 
 
-    private void consume(Token.TokenType expectedType, ParsingType parsingType) throws VipCompilerException {
-        System.out.println(currentToken + "parsing type : " + parsingType);
-        if (currentToken.getType() == expectedType && currentToken.getLexme().equals(parsingType.getValue())) {
-            getNextToken();
-        } else {
-            throw new VipCompilerException("Unexpected token: " + currentToken + " expected " + expectedType);
-        }
-    }
 
     private void consume(Token.TokenType expectedType, String expected) throws VipCompilerException {
         System.out.println(currentToken + "parsing type : " + expected);
@@ -124,17 +121,43 @@ public class Parser {
 
     // Parse a program consisting of statements
     public ASTNode parseProgram() throws VipCompilerException {
-        ClassDeclNode classDeclNode = new ClassDeclNode(this.classId);
-        classDeclNode.setPackage(parsePackage());
-        classDeclNode.setVersion(parseVersion());
-        consume(Token.TokenType.KEYWORD, ParsingType.CLASS);
-        String vipClasName = currentToken.getLexme();
-        consume(Token.TokenType.IDENTIFIER);
-        consume(Token.TokenType.INDENT);
-        this.className = vipClasName;
-        classDeclNode.setClassName(this.className);
-        classDeclNode.setClassBody(parseClassBody());
-        return classDeclNode;
+        PackageDeclNode packageDeclNode = parsePackage();
+        ASTNode vesionAstNode = parseVersion();
+
+        if(match("class")|| match("abstract"))
+        {
+            ClassDeclNode classDeclNode = new ClassDeclNode(this.classId);
+            classDeclNode.setPackage(packageDeclNode);
+            classDeclNode.setVersion(vesionAstNode);
+            if(match("abstract"))
+            {
+                throw new VipCompilerException("abstract classes are currently not implemented");
+            }
+            consume(Token.TokenType.KEYWORD,"class");
+            String vipClasName = currentToken.getLexme();
+            consume(Token.TokenType.IDENTIFIER);
+            consume(Token.TokenType.INDENT);
+            this.className = vipClasName;
+            classDeclNode.setClassName(this.className);
+            classDeclNode.setClassBody(parseClassBody());
+            return classDeclNode;
+        } else if (match("interface")) {
+           VipInterfaceDeclNode vipInterfaceDeclNode =new VipInterfaceDeclNode(classId);
+            vipInterfaceDeclNode.setPackage(packageDeclNode);
+            vipInterfaceDeclNode.setVersion(vesionAstNode);
+            consume(Token.TokenType.KEYWORD,"interface");
+            String vipInterfaceName = currentToken.getLexme();
+            consume(Token.TokenType.IDENTIFIER);
+            consume(Token.TokenType.INDENT);
+            this.interfaceName = vipInterfaceName;
+            vipInterfaceDeclNode.setInterfaceName(this.className);
+            vipInterfaceDeclNode.setInterfaceBody(parseClassBody());
+            return vipInterfaceDeclNode;
+        }
+        else {
+            throw new VipCompilerException("invalid file organization . a file must be a class or an interface");
+        }
+
     }
 
     private PackageDeclNode parsePackage() throws VipCompilerException {
@@ -156,7 +179,7 @@ public class Parser {
         while (LineTokens != null || eof_reached) {
             switch (currentToken.getType()) {
                 case KEYWORD:
-                    if (match(ParsingType.DEF.getValue())) {
+                    if (match("def")) {
                         body.add(parseMethodDefinition());
                     } else {
                         // Handle other keywords like if, for, etc.
@@ -431,7 +454,7 @@ public class Parser {
 
     // Parse a function definition
     private ASTNode parseMethodDefinition() throws VipCompilerException {
-        consume(Token.TokenType.KEYWORD, ParsingType.DEF); // Consume 'def'
+        consume(Token.TokenType.KEYWORD); // Consume 'def'
         ASTNode params =null;
         ASTNode ReturnType =null;
         String functionName = currentToken.getLexme();

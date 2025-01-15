@@ -173,4 +173,14 @@ public class ASTAnalyser implements AST{
     public void visitVarDeclNode(VarDeclNode varDeclNode, MethodVisitor methodVisitor) {
 
     }
+
+    @Override
+    public void visitVipInterfaceDeclNode(VipInterfaceDeclNode vipInterfaceDeclNode) {
+
+    }
+
+    @Override
+    public void visitVipInterfaceDeclNode(VipInterfaceDeclNode vipInterfaceDeclNode, MethodVisitor methodVisitor) {
+
+    }
 }
