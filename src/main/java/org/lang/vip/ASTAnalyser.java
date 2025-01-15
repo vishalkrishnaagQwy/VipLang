@@ -1,5 +1,7 @@
 package org.lang.vip;
 
+import org.lang.exceptions.ExceptionOnCodeAnalysis;
+import org.lang.exceptions.VipCompilerException;
 import org.lang.memmory.SymbolTable;
 import org.lang.utils.Pair;
 import org.objectweb.asm.MethodVisitor;
@@ -7,6 +9,9 @@ import org.objectweb.asm.Opcodes;
 
 public class ASTAnalyser implements AST{
     private SymbolTable symbolTable;
+    private String vipCurrentPackage;
+    private String FullPackageName;
+
     public ASTAnalyser(SymbolTable _symbolTable){
         this.symbolTable = _symbolTable;
     }
@@ -72,7 +77,15 @@ public class ASTAnalyser implements AST{
     }
 
     @Override
-    public void visitClassDeclNode(ClassDeclNode classDeclNode) {
+    public void visitClassDeclNode(ClassDeclNode classDeclNode) throws ExceptionOnCodeAnalysis {
+        this.vipCurrentPackage = classDeclNode.getPackage().getCurrentPackage();
+        this.FullPackageName = classDeclNode.getPackage().getPackageRoute();
+        if(this.FullPackageName.length() ==0)
+        {
+            throw new ExceptionOnCodeAnalysis("Package route is not correct , please do a recheck");
+        } else if (this.vipCurrentPackage .length() == 0) {
+            throw new ExceptionOnCodeAnalysis("Package Name is envalid");
+        }
         System.out.println("class decl need analysis");
     }
 

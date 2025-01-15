@@ -1,4 +1,6 @@
 package org.lang.vip;
+import org.lang.exceptions.ExceptionOnCodeAnalysis;
+import org.lang.exceptions.ExceptionOnDetailedAnalysis;
 import org.lang.utils.Pair;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
@@ -13,6 +15,8 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
     private SymbolTable symbolTab;
     private ClassWriter classWriter;
     private String className = "_dev_";
+    private String vipCurrentPackage = "vip";
+    private String FullPackageName = "compiler.vip";
 
 
     public JavaBytecodeGenerator(SymbolTable _symbolTable){
@@ -50,7 +54,13 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
 
     @Override
     public void visitBlockNode(BlockNode blockNode) {
-       blockNode.getList().forEach(block -> block.accept(this));
+       blockNode.getList().forEach(block -> {
+           try {
+               block.accept(this);
+           } catch (ExceptionOnCodeAnalysis e) {
+               throw new ExceptionOnDetailedAnalysis(e);
+           }
+       });
     }
 
     @Override
@@ -160,9 +170,15 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
     }
 
     @Override
-    public void visitBooleanExprNode(BooleanExpr booleanExpr,MethodVisitor methodVisitor) {
+    public void visitBooleanExprNode(BooleanExpr booleanExpr,MethodVisitor methodVisitor) throws ExceptionOnCodeAnalysis {
         booleanExpr.getLeft().accept(this);
-        booleanExpr.getRight().forEach(right -> right.accept(this));
+        booleanExpr.getRight().forEach(right -> {
+            try {
+                right.accept(this);
+            } catch (ExceptionOnCodeAnalysis e) {
+                throw new ExceptionOnDetailedAnalysis(e);
+            }
+        });
         methodVisitor.visitCode();
         switch (booleanExpr.getOperator()) {
             case "+" -> methodVisitor.visitInsn(IADD);
@@ -184,6 +200,8 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
     public void visitClassDeclNode(ClassDeclNode classDeclNode) {
         this.className = classDeclNode.getClassName();
         classDeclNode.getPackage().accept(this);
+        this.vipCurrentPackage = classDeclNode.getPackage().getCurrentPackage();
+        this.FullPackageName = classDeclNode.getPackage().getPackageRoute();
         symbolTab.defineClass(classDeclNode.getClassId(),className);
         classWriter.visit(V1_8, ACC_PUBLIC, this.className, null, "java/lang/Object", null);
         // Add default constructor
@@ -243,9 +261,15 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
     }
 
     @Override
-    public void visitArithematicExpr(ArithematicExpr arithematicExpr,MethodVisitor methodVisitor) {
+    public void visitArithematicExpr(ArithematicExpr arithematicExpr,MethodVisitor methodVisitor) throws ExceptionOnCodeAnalysis {
         arithematicExpr.getLeft().accept(this);
-        arithematicExpr.getRight().forEach(right -> right.accept(this));
+        arithematicExpr.getRight().forEach(right -> {
+            try {
+                right.accept(this);
+            } catch (ExceptionOnCodeAnalysis e) {
+                throw new ExceptionOnDetailedAnalysis(e);
+            }
+        });
         methodVisitor.visitCode();
         switch (arithematicExpr.getOperator()) {
             case "+" -> methodVisitor.visitInsn(IADD);
@@ -293,7 +317,7 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
     }
 
     @Override
-    public void visitAssignmentNode(AssignmentNode assignmentNode) {
+    public void visitAssignmentNode(AssignmentNode assignmentNode) throws ExceptionOnCodeAnalysis {
         assignmentNode.variable.accept(this);
         assignmentNode.expr.accept(this);
     }

@@ -1,5 +1,6 @@
 package org.lang.vip;
 
+import org.lang.exceptions.ExceptionOnCodeAnalysis;
 import org.lang.utils.Pair;
 import org.objectweb.asm.MethodVisitor;
 
@@ -14,9 +15,9 @@ public interface AST {
    void visitWhileNode(WhileNode whileNode);
    void visitExperNode(ExprNode exprNode);
    void visitBooleanExprNode(BooleanExpr booleanExpr);
-   void visitBooleanExprNode(BooleanExpr booleanExpr,MethodVisitor methodVisitor);
+   void visitBooleanExprNode(BooleanExpr booleanExpr,MethodVisitor methodVisitor) throws ExceptionOnCodeAnalysis;
    void visitParserExceptionNode(ParserExceptionNode parserExceptionNode);
-   void visitClassDeclNode(ClassDeclNode classDeclNode);
+   void visitClassDeclNode(ClassDeclNode classDeclNode) throws ExceptionOnCodeAnalysis;
    void visitClassObjectNode(ClassObjectDeclNode objClassNode);
    void visitClassObjectNode(ClassObjectDeclNode objClassNode,MethodVisitor methodVisitor);
    void visitObjectDeclNode(ObjectDeclNode objectDeclNode);
@@ -26,12 +27,12 @@ public interface AST {
    void visitVersionNode(VersionNode versionNode);
    String visitVariableNode(VariableNode variableNode);
    void visitArithematicExpr(ArithematicExpr arithematicExpr);
-   void visitArithematicExpr(ArithematicExpr arithematicExpr,MethodVisitor methodVisitor);
+   void visitArithematicExpr(ArithematicExpr arithematicExpr,MethodVisitor methodVisitor) throws ExceptionOnCodeAnalysis;
    void visitForEachNode(ForEachNode forEachNode);
    void visitForNode(ForNode forEachNode);
    Pair<String,NumberNode.Type> visitNumberNode(NumberNode numberNode);
    void visitNumberNode(NumberNode numberNode,MethodVisitor methodVisitor);
-   void visitAssignmentNode(AssignmentNode assignmentNode);
+   void visitAssignmentNode(AssignmentNode assignmentNode) throws ExceptionOnCodeAnalysis;
    void visitVarDeclNode(VarDeclNode varDeclNode);
    void visitVarDeclNode(VarDeclNode varDeclNode,MethodVisitor methodVisitor);
 }

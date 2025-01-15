@@ -12,11 +12,22 @@ public class PackageDeclNode extends ASTNode{
         this.packageRoute = folderList;
     }
 
+    public String getCurrentPackage(){
+        String [] bucket = this.packageRoute.split("\\.");
+        return bucket[bucket.length -1];
+    }
+    public String getPackageRoute(){
+        String [] bucket = this.packageRoute.split("\\.");
+        return bucket[bucket.length -1];
+    }
+
     @Override
     public void accept(AST visitor) {
         visitor.visitPackageDeclNode(this);
         DBService.createContext();
-        DBService.createPackage(packageRoute);
+        String currentPackage = this.getCurrentPackage();
+        DBService.createPackage(currentPackage);
+        return currentPackage;
     }
 
     @Override

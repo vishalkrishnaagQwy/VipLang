@@ -137,9 +137,9 @@ public class Parser {
         return classDeclNode;
     }
 
-    private ASTNode parsePackage() throws VipCompilerException {
+    private PackageDeclNode parsePackage() throws VipCompilerException {
         consume(Token.TokenType.KEYWORD, "package");
-        ASTNode pack = new PackageDeclNode(currentToken.getLexme());
+        PackageDeclNode pack = new PackageDeclNode(currentToken.getLexme());
         consume(Token.TokenType.STRING);
         return pack;
     }
