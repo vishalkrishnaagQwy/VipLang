@@ -1,18 +1,21 @@
 package org.lang.memmory;
 
+import org.lang.Services.DBService;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
 public class SymbolTable {
+    private DBService dbService;
     private Stack<Map<Integer,Object>> scopes;
 
     public SymbolTable() {
         scopes = new Stack<>();
-        enterScope(); // Start with a global scope
+        createScope(); // Start with a global scope
     }
 
-    public void enterScope() {
+    public void createScope() {
         scopes.push(new HashMap<>());
     }
 
@@ -46,6 +49,7 @@ public class SymbolTable {
                 return scope.get(id);
             }
         }
+
         return null; // Not found
     }
 
@@ -81,7 +85,7 @@ public class SymbolTable {
 
     public void defineClass(int classId,String className) {
         define(classId, new Classes(className));
-        enterScope();
+        createScope();
     }
 
     public void defineMethod(int ClassId, String methodName) {

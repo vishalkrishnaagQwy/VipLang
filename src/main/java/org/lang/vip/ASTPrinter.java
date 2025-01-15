@@ -7,7 +7,6 @@ public class ASTPrinter implements AST{
     @Override
     public void visitMethodDefNode(MethodDefNode methodDefNode) {
         System.out.println("--> Reached Method Declaration");
-        methodDefNode.body.forEach(statement->statement.accept(this));
     }
 
     @Override
@@ -18,7 +17,6 @@ public class ASTPrinter implements AST{
     @Override
     public void visitBlockNode(BlockNode blockNode) {
         System.out.println("--> Reached statements : "+ blockNode.getList().size());
-        blockNode.getList().forEach(body->body.accept(this));
     }
 
     @Override
@@ -34,7 +32,6 @@ public class ASTPrinter implements AST{
     @Override
     public void visitMethodCallNode(MethodCallNode methodCallNode) {
         System.out.println("--> Reached Method Call");
-        methodCallNode.expr.accept(this);
     }
 
     @Override

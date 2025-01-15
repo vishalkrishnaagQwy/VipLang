@@ -43,6 +43,21 @@ public class DBService {
     }
 
     public static void insert(String tableName, String className, String packageName, String fields, String methods) {
+
+        /**
+         * Sample JSON Structure
+         *     Fields:
+         * [
+         *   {"id": 1, "name": "field1", "type": "int", "visibility": "private"},
+         *   {"id": 2, "name": "field2", "type": "String", "visibility": "public"}
+         * ]
+         *
+         * [
+         *   {"id": 1, "name": "method1", "return_type": "void", "visibility": "public"},
+         *   {"id": 2, "name": "method2", "return_type": "String", "visibility": "private"}
+         * ]
+         *
+         */
         DSLContext create = createContext();
         Table<?> table = table(name(tableName));
 

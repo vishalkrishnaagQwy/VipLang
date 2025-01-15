@@ -17,17 +17,14 @@ public class PackageDeclNode extends ASTNode{
         return bucket[bucket.length -1];
     }
     public String getPackageRoute(){
-        String [] bucket = this.packageRoute.split("\\.");
-        return bucket[bucket.length -1];
+        return this.packageRoute;
     }
 
     @Override
     public void accept(AST visitor) {
         visitor.visitPackageDeclNode(this);
         DBService.createContext();
-        String currentPackage = this.getCurrentPackage();
-        DBService.createPackage(currentPackage);
-        return currentPackage;
+        DBService.createPackage(this.getCurrentPackage());
     }
 
     @Override

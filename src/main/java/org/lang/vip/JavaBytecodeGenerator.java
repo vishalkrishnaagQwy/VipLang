@@ -1,4 +1,5 @@
 package org.lang.vip;
+import org.lang.Services.DBService;
 import org.lang.exceptions.ExceptionOnCodeAnalysis;
 import org.lang.exceptions.ExceptionOnDetailedAnalysis;
 import org.lang.utils.Pair;
@@ -31,7 +32,13 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
         String descriptor = "()V";
         MethodVisitor mv = classWriter.visitMethod(ACC_PUBLIC | ACC_STATIC, methodDefNode.functionName, descriptor, null, null);
         mv.visitCode();
-        methodDefNode.body.forEach(element -> element.accept(this,mv));
+        methodDefNode.body.forEach(element -> {
+            try {
+                element.accept(this,mv);
+            } catch (ExceptionOnCodeAnalysis e) {
+                throw new ExceptionOnDetailedAnalysis(e);
+            }
+        });
         mv.visitInsn(RETURN);
         mv.visitMaxs(2, 1);
         mv.visitEnd();
@@ -46,7 +53,13 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
         }
         MethodVisitor mv = classWriter.visitMethod(ACC_PUBLIC | ACC_STATIC, methodDefNode.functionName, descriptor, null, null);
         mv.visitCode();
-        methodDefNode.body.forEach(element -> element.accept(this,mv));
+        methodDefNode.body.forEach(element -> {
+            try {
+                element.accept(this,mv);
+            } catch (ExceptionOnCodeAnalysis e) {
+                throw new ExceptionOnDetailedAnalysis(e);
+            }
+        });
         mv.visitInsn(RETURN);
         mv.visitMaxs(2, 1);
         mv.visitEnd();
@@ -65,11 +78,17 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
 
     @Override
     public void visitBlockNode(BlockNode blockNode,MethodVisitor methodVisitor) {
-        blockNode.getList().forEach(block -> block.accept(this,methodVisitor));
+        blockNode.getList().forEach(block -> {
+            try {
+                block.accept(this,methodVisitor);
+            } catch (ExceptionOnCodeAnalysis e) {
+                throw new ExceptionOnDetailedAnalysis(e);
+            }
+        });
     }
 
     @Override
-    public void visitMethodCallNode(MethodCallNode methodCallNode,MethodVisitor Method) {
+    public void visitMethodCallNode(MethodCallNode methodCallNode,MethodVisitor Method) throws ExceptionOnCodeAnalysis {
         Method.visitCode();
 
         if(methodCallNode.methodName.equals("print"))
@@ -197,12 +216,13 @@ public class JavaBytecodeGenerator implements AST, Opcodes {
     }
 
     @Override
-    public void visitClassDeclNode(ClassDeclNode classDeclNode) {
+    public void visitClassDeclNode(ClassDeclNode classDeclNode) throws ExceptionOnCodeAnalysis {
         this.className = classDeclNode.getClassName();
         classDeclNode.getPackage().accept(this);
         this.vipCurrentPackage = classDeclNode.getPackage().getCurrentPackage();
         this.FullPackageName = classDeclNode.getPackage().getPackageRoute();
         symbolTab.defineClass(classDeclNode.getClassId(),className);
+        DBService.insert(vipCurrentPackage,className,FullPackageName,"[]","[]");
         classWriter.visit(V1_8, ACC_PUBLIC, this.className, null, "java/lang/Object", null);
         // Add default constructor
         MethodVisitor mv = classWriter.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);

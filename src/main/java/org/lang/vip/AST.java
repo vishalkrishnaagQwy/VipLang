@@ -9,7 +9,7 @@ public interface AST {
    void visitMethodDefNode(MethodDefNode methodDefNode,MethodVisitor methodVisitor);
    void visitBlockNode(BlockNode blockNode);
    void visitBlockNode(BlockNode blockNode,MethodVisitor methodVisitor);
-   void visitMethodCallNode(MethodCallNode methodCallNode, MethodVisitor methodVisitor);
+   void visitMethodCallNode(MethodCallNode methodCallNode, MethodVisitor methodVisitor) throws ExceptionOnCodeAnalysis;
    void visitMethodCallNode(MethodCallNode methodCallNode);
    void visitIFNode(IFNode ifNode);
    void visitWhileNode(WhileNode whileNode);
