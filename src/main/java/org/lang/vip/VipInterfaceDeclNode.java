@@ -9,6 +9,25 @@ public class VipInterfaceDeclNode extends ASTNode{
     private PackageDeclNode Package;
     private ASTNode version;
     public ASTNode InterfaceBody;
+    private ASTNode Extends;
+    private ASTNode Implements;
+
+    public ASTNode getExtends() {
+        return Extends;
+    }
+
+    public void setExtends(ASTNode anExtends) {
+        Extends = anExtends;
+    }
+
+    public ASTNode getImplements() {
+        return Implements;
+    }
+
+    public void setImplements(ASTNode anImplements) {
+        Implements = anImplements;
+    }
+
 
     public VipInterfaceDeclNode(int classId) {
         this.interfaceId = classId;

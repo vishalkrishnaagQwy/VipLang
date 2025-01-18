@@ -19,6 +19,7 @@ public class Parser {
     int readIndex = 0;
     ASTNode VipAstNodeBASE;
     boolean eof_reached = false;
+    boolean isClass = true;
 
 
     public Parser(Lexer lexer, int mClassId) throws VipCompilerException {
@@ -109,7 +110,6 @@ public class Parser {
     }
 
 
-
     private void consume(Token.TokenType expectedType, String expected) throws VipCompilerException {
         System.out.println(currentToken + "parsing type : " + expected);
         if (currentToken.getType() == expectedType && currentToken.getLexme().equals(expected)) {
@@ -136,6 +136,23 @@ public class Parser {
             consume(Token.TokenType.KEYWORD,"class");
             String vipClasName = currentToken.getLexme();
             consume(Token.TokenType.IDENTIFIER);
+            if(match("Extends"))
+            {
+               classDeclNode.setExtends(parseExtends());
+                if(match("Implements"))
+                {
+                    classDeclNode.setImplements(parseImplements());
+                }
+            }
+
+            if(match("Implements"))
+            {
+                classDeclNode.setImplements(parseImplements());
+                if(match("Extends"))
+                {
+                    classDeclNode.setExtends(parseExtends());
+                }
+            }
             consume(Token.TokenType.INDENT);
             this.className = vipClasName;
             classDeclNode.setClassName(this.className);
@@ -148,10 +165,28 @@ public class Parser {
             consume(Token.TokenType.KEYWORD,"interface");
             String vipInterfaceName = currentToken.getLexme();
             consume(Token.TokenType.IDENTIFIER);
+            if(match("Extends"))
+            {
+                vipInterfaceDeclNode.setExtends(parseImplements());
+                if(match("Implements"))
+                {
+                    vipInterfaceDeclNode.setImplements(parseImplements());
+                }
+            }
+
+            if(match("Implements"))
+            {
+                vipInterfaceDeclNode.setImplements(parseImplements());
+                if(match("Extends"))
+                {
+                    vipInterfaceDeclNode.setExtends(parseExtends());
+                }
+            }
             consume(Token.TokenType.INDENT);
             this.interfaceName = vipInterfaceName;
-            vipInterfaceDeclNode.setInterfaceName(this.className);
+            vipInterfaceDeclNode.setInterfaceName(this.interfaceName);
             vipInterfaceDeclNode.setInterfaceBody(parseClassBody());
+            isClass = false;
             return vipInterfaceDeclNode;
         }
         else {
@@ -172,6 +207,32 @@ public class Parser {
         String version = currentToken.getLexme();
         consume(Token.TokenType.STRING);
         return new VersionNode(version);
+    }
+
+    private ASTNode parseExtends(){
+        List<Token> values = new ArrayList<>();
+        int Count =1;
+        getNextToken();
+        while (Count != 0) {
+            if(match("<")) {Count++;}
+            if(match(">")) {Count--;}
+            values.add(currentToken);
+            getNextToken();
+        }
+        return new ExtendsNode(values);
+    }
+
+    private ASTNode parseImplements(){
+        List<Token> values = new ArrayList<>();
+        int Count =1;
+        getNextToken();
+        while (Count != 0) {
+            if(match("<")) {Count++;}
+            if(match(">")) {Count--;}
+            values.add(currentToken);
+            getNextToken();
+        }
+        return new ImplementsNode(values);
     }
 
     private ASTNode parseClassBody() throws VipCompilerException {
@@ -458,7 +519,6 @@ public class Parser {
         ASTNode params =null;
         ASTNode ReturnType =null;
         String functionName = currentToken.getLexme();
-        List<ASTNode> statements = new ArrayList<>();
         consume(Token.TokenType.IDENTIFIER);
         if(match("("))
         {
@@ -470,15 +530,23 @@ public class Parser {
             consume(Token.TokenType.OPERATOR, ">");
             ReturnType = calculateCollectiveHints();
         }
-        consume(Token.TokenType.INDENT);
-        // Parse method body
-        while (!match("return")) {
-            System.out.println("looping ...");
-            statements.add(parseStatement());
-        }
-        getNextToken();
+        if(match(Token.TokenType.INDENT) && isClass)
+        {
+            List<ASTNode> statements = new ArrayList<>();
+            consume(Token.TokenType.INDENT);
+            // Parse method body
+            while (!match("return")) {
+                System.out.println("looping ...");
+                statements.add(parseStatement());
+            }
+            getNextToken();
 //        consume(Token.TokenType.DEDENT);
-        return new MethodDefNode(functionName,params, statements, ReturnType);
+            return new MethodDefNode(functionName,params, statements, ReturnType);
+        }
+        else {
+            return new MethodDefNode(functionName,params,null, ReturnType);
+        }
+
     }
 
     private ASTNode parseExpression() throws VipCompilerException {
