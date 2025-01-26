@@ -9,23 +9,20 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Lexer {
-    boolean peek = false;
-
-    private String encoding;
+    private final String encoding;
     private String path;
-    private File file;
+    private final File file;
     private int lineNumber;
     private List<String> textContent;
-    private int index;
     private int currentIndentation = 0;
     private int NewLineCheckEnabled = 0;
     private boolean usesTabs = false;   // Track if the file uses tabs
     private boolean usesSpaces = false;
 
-    private final Set<String> keywords = new HashSet<String>();
-    private final Set<String> hints = new HashSet<String>();
-    private final Set<String> specialKeywords = new HashSet<String>();
-    private final Set<String> dataTypes = new HashSet<String>();
+    private final Set<String> keywords = new HashSet<>();
+    private final Set<String> hints = new HashSet<>();
+    private final Set<String> specialKeywords = new HashSet<>();
+    private final Set<String> dataTypes = new HashSet<>();
 
     // Define symbols and their types
     private final Map<String, Token.TokenType> symbols = new HashMap<>();
