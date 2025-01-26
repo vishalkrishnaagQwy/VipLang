@@ -154,7 +154,7 @@ public class ASTAnalyser implements AST {
 
     @Override
     public Pair<String,NumberNode.Type> visitNumberNode(NumberNode numberNode) {
-        return new Pair<>(numberNode.value,numberNode.type);
+        return new Pair<>(numberNode.getValue(), numberNode.getType());
     }
 
     @Override
