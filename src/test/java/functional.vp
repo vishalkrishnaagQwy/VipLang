@@ -1,0 +1,10 @@
+package "my.package"
+version "v1"
+
+interface functional extends <AnotherInterface | someOtherInterface | something_else>
+    def someMethod() -> Either<int | None>
+    return
+    def anotherMethod() -> Either<int | str>
+    return
+    def something(int param1,str param2) -> Either<str | float | None>
+    return

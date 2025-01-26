@@ -3,11 +3,19 @@ package "firstProject"
 #compilerVersion.fileVersion
 version "v1"
 
-class test
+class test Extends<mainTest | subTest | Remainder>
+           Implements<Interface1 | Interface2 | Interface3>
     def main(Map<str,list<int>> operant1) -> Either<int | None>
         int a = 10
         obj b = new tuple<int,int,int>(12,12,3,3)
         int b = 23 + 223
         print("hello world")
         print "java is a simple lang" + "but it makes me fucks reallY"
-        return
+        return None
+
+    def nila(int data,obj hello) -> Either <None | str>
+       print "hello ji"
+       return None
+
+    def foo(obj hello_world) -> str
+        return "Ini Kannir onnum manda"

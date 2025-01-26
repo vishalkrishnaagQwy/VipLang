@@ -1,5 +1,11 @@
 package org.lang.vip;
 
+import org.lang.Analyser.ASTAnalyser;
+import org.lang.Analyser.ASTPrinter;
+import org.lang.AstNode.ASTNode;
+import org.lang.CodeGen.JavaBytecodeGenerator;
+import org.lang.Lexer.Lexer;
+import org.lang.Parser.Parser;
 import org.lang.exceptions.ExceptionOnCodeAnalysis;
 import org.lang.exceptions.VipCompilerException;
 import org.lang.memmory.SymbolTable;
