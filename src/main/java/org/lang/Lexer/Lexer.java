@@ -84,6 +84,7 @@ public class Lexer {
         symbols.put("not", Token.TokenType.OPERATOR);
         keywords.add("def");
         keywords.add("class");
+        keywords.add("interface");
         keywords.add("in");
         keywords.add("break");
         keywords.add("continue");
