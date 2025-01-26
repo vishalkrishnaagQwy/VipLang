@@ -171,7 +171,7 @@ public class Parser {
             consume(Token.TokenType.IDENTIFIER);
             if(match("Extends"))
             {
-                vipInterfaceDeclNode.setExtends(parseImplements());
+                vipInterfaceDeclNode.setExtends(parseExtends());
                 if(match("Implements"))
                 {
                     vipInterfaceDeclNode.setImplements(parseImplements());
@@ -213,10 +213,11 @@ public class Parser {
         return new VersionNode(version);
     }
 
-    private ASTNode parseExtends(){
+    private ASTNode parseExtends() throws VipCompilerException {
         List<Token> values = new ArrayList<>();
         int Count =1;
         getNextToken();
+        consume(Token.TokenType.OPERATOR,"<");
         while (Count != 0) {
             if(match("<")) {Count++;}
             if(match(">")) {Count--;}
@@ -226,10 +227,11 @@ public class Parser {
         return new ExtendsNode(values);
     }
 
-    private ASTNode parseImplements(){
+    private ASTNode parseImplements() throws VipCompilerException {
         List<Token> values = new ArrayList<>();
         int Count =1;
         getNextToken();
+        consume(Token.TokenType.OPERATOR,"<");
         while (Count != 0) {
             if(match("<")) {Count++;}
             if(match(">")) {Count--;}

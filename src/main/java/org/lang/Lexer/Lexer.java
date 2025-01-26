@@ -10,7 +10,7 @@ import java.util.*;
 
 public class Lexer {
     private final String encoding;
-    private String path;
+    private final String path;
     private final File file;
     private int lineNumber;
     private List<String> textContent;
@@ -22,11 +22,9 @@ public class Lexer {
     private final Set<String> keywords = new HashSet<>();
     private final Set<String> hints = new HashSet<>();
     private final Set<String> specialKeywords = new HashSet<>();
-    private final Set<String> dataTypes = new HashSet<>();
 
     // Define symbols and their types
     private final Map<String, Token.TokenType> symbols = new HashMap<>();
-    private static final int minimum_space = 1;
 
     public Lexer(String fileName) {
         this.encoding = "UTF-8"; // Change as needed
