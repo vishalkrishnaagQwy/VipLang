@@ -4,37 +4,28 @@ import org.lang.exceptions.ExceptionOnCodeAnalysis;
 import org.objectweb.asm.MethodVisitor;
 
 public class VipInterfaceDeclNode extends ASTNode {
+    private int InterfaceId;
     private String interfaceName;
-    private int interfaceId;
     private PackageDeclNode Package;
     private ASTNode version;
     public ASTNode InterfaceBody;
-    private ASTNode Extends;
-    private ASTNode Implements;
 
-    public ASTNode getExtends() {
-        return Extends;
+    public ASTNode getFrom() {
+        return From;
     }
 
-    public void setExtends(ASTNode anExtends) {
-        Extends = anExtends;
+    public void setFrom(ASTNode from) {
+        From = from;
     }
 
-    public ASTNode getImplements() {
-        return Implements;
-    }
-
-    public void setImplements(ASTNode anImplements) {
-        Implements = anImplements;
-    }
-
+    private ASTNode From;
 
     public VipInterfaceDeclNode(int classId) {
-        this.interfaceId = classId;
+        this.InterfaceId = classId;
     }
 
     public int getClassId(){
-        return this.interfaceId;
+        return this.InterfaceId;
     }
 
     public String getInterfaceName() {

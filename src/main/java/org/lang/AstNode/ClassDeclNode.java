@@ -4,26 +4,7 @@ import org.lang.exceptions.ExceptionOnCodeAnalysis;
 import org.objectweb.asm.MethodVisitor;
 
 public class ClassDeclNode extends ASTNode {
-    private String className;
-    private int classId;
-    private ASTNode Extends;
-    private ASTNode Implements;
 
-    public ASTNode getExtends() {
-        return Extends;
-    }
-
-    public void setExtends(ASTNode anExtends) {
-        Extends = anExtends;
-    }
-
-    public ASTNode getImplements() {
-        return Implements;
-    }
-
-    public void setImplements(ASTNode anImplements) {
-        Implements = anImplements;
-    }
 
 
     public int getClassId(){
@@ -47,8 +28,20 @@ public class ClassDeclNode extends ASTNode {
     }
 
     private PackageDeclNode Package;
-   private ASTNode version;
-   public ASTNode classBody;
+    private ASTNode version;
+    public ASTNode classBody;
+    private String className;
+    private int classId;
+
+    public ASTNode getFrom() {
+        return From;
+    }
+
+    public void setFrom(ASTNode from) {
+        From = from;
+    }
+
+    private ASTNode From;
     public ClassDeclNode(int ClassId) {
         this.classId = ClassId;
     }

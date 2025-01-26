@@ -6,18 +6,18 @@ import org.objectweb.asm.MethodVisitor;
 
 import java.util.List;
 
-public class ImplementsNode extends ASTNode {
-    List<Token> ImplimentationList;
-    public List<Token> getImplimentationList() {
-        return ImplimentationList;
+public class FromNode extends ASTNode {
+    List<Token> inheritedList;
+    public List<Token> getInheritedList() {
+        return inheritedList;
     }
 
-    public ImplementsNode(List<Token> implimentationList) {
-        ImplimentationList = implimentationList;
+    public FromNode(List<Token> implimentationList) {
+        inheritedList = implimentationList;
     }
 
-    public void setImplimentationList(List<Token> implimentationList) {
-        ImplimentationList = implimentationList;
+    public void setInheritedList(List<Token> inheritedList) {
+        this.inheritedList = inheritedList;
     }
 
     @Override

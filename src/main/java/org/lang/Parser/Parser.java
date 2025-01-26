@@ -140,22 +140,9 @@ public class Parser {
             consume(Token.TokenType.KEYWORD,"class");
             String vipClasName = currentToken.getLexme();
             consume(Token.TokenType.IDENTIFIER);
-            if(match("Extends"))
+            if(match("From"))
             {
-               classDeclNode.setExtends(parseExtends());
-                if(match("Implements"))
-                {
-                    classDeclNode.setImplements(parseImplements());
-                }
-            }
-
-            if(match("Implements"))
-            {
-                classDeclNode.setImplements(parseImplements());
-                if(match("Extends"))
-                {
-                    classDeclNode.setExtends(parseExtends());
-                }
+               classDeclNode.setFrom(parseFrom());
             }
             consume(Token.TokenType.INDENT);
             this.className = vipClasName;
@@ -163,34 +150,22 @@ public class Parser {
             classDeclNode.setClassBody(parseClassBody());
             return classDeclNode;
         } else if (match("interface")) {
+            isClass = false;
            VipInterfaceDeclNode vipInterfaceDeclNode =new VipInterfaceDeclNode(classId);
             vipInterfaceDeclNode.setPackage(packageDeclNode);
             vipInterfaceDeclNode.setVersion(vesionAstNode);
             consume(Token.TokenType.KEYWORD,"interface");
             String vipInterfaceName = currentToken.getLexme();
             consume(Token.TokenType.IDENTIFIER);
-            if(match("Extends"))
+            if(match("From"))
             {
-                vipInterfaceDeclNode.setExtends(parseExtends());
-                if(match("Implements"))
-                {
-                    vipInterfaceDeclNode.setImplements(parseImplements());
-                }
+                vipInterfaceDeclNode.setFrom(parseFrom());
             }
 
-            if(match("Implements"))
-            {
-                vipInterfaceDeclNode.setImplements(parseImplements());
-                if(match("Extends"))
-                {
-                    vipInterfaceDeclNode.setExtends(parseExtends());
-                }
-            }
             consume(Token.TokenType.INDENT);
             this.interfaceName = vipInterfaceName;
             vipInterfaceDeclNode.setInterfaceName(this.interfaceName);
             vipInterfaceDeclNode.setInterfaceBody(parseClassBody());
-            isClass = false;
             return vipInterfaceDeclNode;
         }
         else {
@@ -213,21 +188,8 @@ public class Parser {
         return new VersionNode(version);
     }
 
-    private ASTNode parseExtends() throws VipCompilerException {
-        List<Token> values = new ArrayList<>();
-        int Count =1;
-        getNextToken();
-        consume(Token.TokenType.OPERATOR,"<");
-        while (Count != 0) {
-            if(match("<")) {Count++;}
-            if(match(">")) {Count--;}
-            values.add(currentToken);
-            getNextToken();
-        }
-        return new ExtendsNode(values);
-    }
 
-    private ASTNode parseImplements() throws VipCompilerException {
+    private ASTNode parseFrom() throws VipCompilerException {
         List<Token> values = new ArrayList<>();
         int Count =1;
         getNextToken();
@@ -238,7 +200,7 @@ public class Parser {
             values.add(currentToken);
             getNextToken();
         }
-        return new ImplementsNode(values);
+        return new FromNode(values);
     }
 
     private ASTNode parseClassBody() throws VipCompilerException {
@@ -537,7 +499,11 @@ public class Parser {
             ReturnType = calculateCollectiveHints();
         }
             List<ASTNode> statements = new ArrayList<>();
-            consume(Token.TokenType.INDENT);
+            if(match("def") && !isClass)
+            {
+                return new MethodDefNode(functionName,params,null, ReturnType);
+            }
+
             // Parse method body
             while (!match("return")) {
                 System.out.println("looping ...");
