@@ -9,6 +9,7 @@ import org.lang.utils.ParsingType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import static java.lang.System.exit;
 
@@ -123,54 +124,56 @@ public class Parser {
 
     // Parse a program consisting of statements
     public ASTNode parseProgram() throws VipCompilerException {
+        List<ASTNode> elements = new ArrayList<>();
         PackageDeclNode packageDeclNode = parsePackage();
         ASTNode vesionAstNode = parseVersion();
-
-        if(match("class")|| match("abstract"))
+        while (eof_reached)
         {
-            ClassDeclNode classDeclNode = new ClassDeclNode(this.classId);
-            classDeclNode.setPackage(packageDeclNode);
-            classDeclNode.setVersion(vesionAstNode);
-            if(match("abstract"))
+            if(match("class")|| match("abstract"))
             {
-                throw new VipCompilerException("abstract classes are currently not implemented");
+                ClassDeclNode classDeclNode = new ClassDeclNode(this.classId);
+                classDeclNode.setPackage(packageDeclNode);
+                classDeclNode.setVersion(vesionAstNode);
+                if(match("abstract"))
+                {
+                    throw new VipCompilerException("abstract classes are currently not implemented");
+                }
+                consume(Token.TokenType.KEYWORD,"class");
+                String vipClasName = currentToken.getLexme();
+                consume(Token.TokenType.IDENTIFIER);
+                if(match("From"))
+                {
+                    classDeclNode.setFrom(parseFrom());
+                }
+                consume(Token.TokenType.INDENT);
+                this.className = vipClasName;
+                classDeclNode.setClassName(this.className);
+                classDeclNode.setClassBody(parseClassBody());
+                elements.add(classDeclNode);
+            } else if (match("interface")) {
+                isClass = false;
+                VipInterfaceDeclNode vipInterfaceDeclNode =new VipInterfaceDeclNode(classId);
+                vipInterfaceDeclNode.setPackage(packageDeclNode);
+                vipInterfaceDeclNode.setVersion(vesionAstNode);
+                consume(Token.TokenType.KEYWORD,"interface");
+                String vipInterfaceName = currentToken.getLexme();
+                consume(Token.TokenType.IDENTIFIER);
+                if(match("From"))
+                {
+                    vipInterfaceDeclNode.setFrom(parseFrom());
+                }
+                consume(Token.TokenType.INDENT);
+                this.interfaceName = vipInterfaceName;
+                vipInterfaceDeclNode.setInterfaceName(this.interfaceName);
+                vipInterfaceDeclNode.setInterfaceBody(parseClassBody());
+                System.out.println("parsed interface");
+                elements.add(vipInterfaceDeclNode);
             }
-            consume(Token.TokenType.KEYWORD,"class");
-            String vipClasName = currentToken.getLexme();
-            consume(Token.TokenType.IDENTIFIER);
-            if(match("From"))
-            {
-               classDeclNode.setFrom(parseFrom());
+            else {
+                throw new VipCompilerException("invalid file organization . a file must be a class or an interface");
             }
-            consume(Token.TokenType.INDENT);
-            this.className = vipClasName;
-            classDeclNode.setClassName(this.className);
-            classDeclNode.setClassBody(parseClassBody());
-            return classDeclNode;
-        } else if (match("interface")) {
-            isClass = false;
-           VipInterfaceDeclNode vipInterfaceDeclNode =new VipInterfaceDeclNode(classId);
-            vipInterfaceDeclNode.setPackage(packageDeclNode);
-            vipInterfaceDeclNode.setVersion(vesionAstNode);
-            consume(Token.TokenType.KEYWORD,"interface");
-            String vipInterfaceName = currentToken.getLexme();
-            consume(Token.TokenType.IDENTIFIER);
-            if(match("From"))
-            {
-                vipInterfaceDeclNode.setFrom(parseFrom());
-            }
-
-            consume(Token.TokenType.INDENT);
-            this.interfaceName = vipInterfaceName;
-            vipInterfaceDeclNode.setInterfaceName(this.interfaceName);
-            vipInterfaceDeclNode.setInterfaceBody(parseClassBody());
-            System.out.println("parsed interface");
-            return vipInterfaceDeclNode;
         }
-        else {
-            throw new VipCompilerException("invalid file organization . a file must be a class or an interface");
-        }
-
+       return new BlockNode(elements);
     }
 
     private PackageDeclNode parsePackage() throws VipCompilerException {
