@@ -39,7 +39,7 @@ public class Parser {
     }
 
     // Advance to the next token
-    private void consume(Token.TokenType expectedType) {
+    private void consume(Token.TokenType expectedType) throws VipCompilerException {
         System.out.println(currentToken);
         if (currentToken.getType() == expectedType) {
             getNextToken();
@@ -48,7 +48,7 @@ public class Parser {
         }
     }
 
-    private void getNextToken() {
+    private void getNextToken() throws VipCompilerException {
         if (readIndex < LineTokens.size() && !eof_reached) {
             currentToken = LineTokens.get(readIndex);
         } else {
@@ -57,24 +57,22 @@ public class Parser {
                 readIndex = 0;
                 currentToken = LineTokens.get(0);
             } else {
-                if (LineTokens != null) {
                     eof_reached = true;
-                }
-
+                 throw new VipCompilerException("something terrible happened");
             }
         }
         readIndex++;
 
     }
 
-    private void consumeSilent(Token.TokenType expectedType) {
+    private void consumeSilent(Token.TokenType expectedType) throws VipCompilerException {
         System.out.println("silent = " + currentToken);
         if (currentToken.getType() == expectedType) {
             getNextToken();
         }
     }
 
-    private void consumeSilent(Token.TokenType expectedType, String expected) {
+    private void consumeSilent(Token.TokenType expectedType, String expected) throws VipCompilerException {
         System.out.println("silent = " + currentToken);
         if (currentToken.getType() == expectedType && currentToken.getLexme().equals(expected)) {
             getNextToken();
@@ -166,6 +164,7 @@ public class Parser {
             this.interfaceName = vipInterfaceName;
             vipInterfaceDeclNode.setInterfaceName(this.interfaceName);
             vipInterfaceDeclNode.setInterfaceBody(parseClassBody());
+            System.out.println("parsed interface");
             return vipInterfaceDeclNode;
         }
         else {
@@ -205,19 +204,22 @@ public class Parser {
 
     private ASTNode parseClassBody() throws VipCompilerException {
         List<ASTNode> body = new ArrayList<>();
-        while (LineTokens != null || eof_reached) {
+        while (eof_reached || match(Token.TokenType.EOF)) {
             switch (currentToken.getType()) {
                 case KEYWORD:
                     if (match("def")) {
                         body.add(parseMethodDefinition());
                     } else {
                         // Handle other keywords like if, for, etc.
-                        throw new RuntimeException("Illegal codes inside class body of '" + className + "' .vp");
+                        throw new RuntimeException("Illegal codes inside class body of '" + className + "' .vp" + "got "+currentToken);
                     }
                     break;
                 case HINT:
                     body.add(parseVarDecl());
                     // assignment a = 20 or a , b = 10 , 20
+                    break;
+                case EOF:
+                    eof_reached = true;
                     break;
 //                case INDENT:
 //                    consume(Token.TokenType.INDENT);
@@ -332,7 +334,7 @@ public class Parser {
         return typeBucket;
     }
 
-    private List<Token> calculateObjectHints(){
+    private List<Token> calculateObjectHints() throws VipCompilerException {
         List<Token> values = new ArrayList<>();
         int Count =1;
         values.add(currentToken);
@@ -457,7 +459,7 @@ public class Parser {
         return new ParserExceptionNode("broken_from_if_state", "E04");
     }
 
-    private void parseBuiltInClassMethods() {
+    private void parseBuiltInClassMethods() throws VipCompilerException {
         consume(Token.TokenType.IDENTIFIER); // system
         if (match(ParsingType.DOT.getValue())) {
             getNextToken();
@@ -503,14 +505,14 @@ public class Parser {
             {
                 return new MethodDefNode(functionName,params,null, ReturnType);
             }
-
+            consume(Token.TokenType.INDENT);
             // Parse method body
             while (!match("return")) {
                 System.out.println("looping ...");
                 statements.add(parseStatement());
             }
             statements.add(parseReturn());
-//        consume(Token.TokenType.DEDENT);
+            consume(Token.TokenType.DEDENT);
             return new MethodDefNode(functionName,params, statements, ReturnType);
 
     }
@@ -707,18 +709,19 @@ public class Parser {
         }
        else if(currentToken.getLexme().equalsIgnoreCase("none"))
         {
+            getNextToken();
             return new NoneNode();
         }
         throw new VipCompilerException("undefined operation");
     }
 
-    private ASTNode parseId() {
+    private ASTNode parseId() throws VipCompilerException {
         String remap = currentToken.getLexme();
         getNextToken();
         return new VariableNode(remap);
     }
 
-    private ASTNode parseString() {
+    private ASTNode parseString() throws VipCompilerException {
         String StringToken = currentToken.getLexme();
         getNextToken();
         return new StringLiteralNode(StringToken);

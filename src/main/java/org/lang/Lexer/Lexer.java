@@ -185,9 +185,10 @@ public class Lexer {
             lineNumber++;
             return lexLine(textContent.get(lineRead));
         } else {
-//            ArrayList<Token> last_token = new ArrayList<>();
-//            last_token.add(new Token(Token.TokenType.EOF,"EOF",lineNumber));
-            return null;
+            ArrayList<Token> last_token = new ArrayList<>();
+            last_token.add(new Token(Token.TokenType.DEDENT, "DEDENT", lineNumber));
+            last_token.add(new Token(Token.TokenType.EOF,"EOF",lineNumber));
+            return last_token;
         }
     }
 
