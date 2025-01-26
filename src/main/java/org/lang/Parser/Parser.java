@@ -127,7 +127,7 @@ public class Parser {
         List<ASTNode> elements = new ArrayList<>();
         PackageDeclNode packageDeclNode = parsePackage();
         ASTNode vesionAstNode = parseVersion();
-        while (eof_reached)
+        while (!eof_reached)
         {
             if(match("class")|| match("abstract"))
             {
@@ -207,7 +207,7 @@ public class Parser {
 
     private ASTNode parseClassBody() throws VipCompilerException {
         List<ASTNode> body = new ArrayList<>();
-        while (eof_reached || match(Token.TokenType.EOF)) {
+        while (!eof_reached) {
             switch (currentToken.getType()) {
                 case KEYWORD:
                     if (match("def")) {
@@ -227,15 +227,20 @@ public class Parser {
 //                case INDENT:
 //                    consume(Token.TokenType.INDENT);
 //                    break;
-//                case DEDENT:
-//                    consume(Token.TokenType.DEDENT);
-//                    break;
+                case DEDENT:
+                    consume(Token.TokenType.DEDENT);
+                    break;
                 default:
                     System.out.println("something went wrong got "+currentToken);
                     exit(-1);
                     break;
             }
+            if(match("class"))
+            {
+                break;
+            }
         }
+
         return new BlockNode(body);
     }
 
@@ -511,7 +516,7 @@ public class Parser {
             consume(Token.TokenType.INDENT);
             // Parse method body
             while (!match("return")) {
-                System.out.println("looping ...");
+                System.out.println("looping ..."+currentToken);
                 statements.add(parseStatement());
             }
             statements.add(parseReturn());
@@ -533,6 +538,15 @@ public class Parser {
         }
         List<ASTNode> list = new ArrayList<>();
         ASTNode left = parseTerminal();
+        if(match(Token.TokenType.DEDENT))
+        {
+            if (list.isEmpty() && left != null) {
+                return left;
+            }
+            else {
+                return null;
+            }
+        }
         String operator = "";
         if (match(")")) {
             return left;
@@ -693,6 +707,8 @@ public class Parser {
                 return this.parseFloat();
             case DOUBLE:
                 return this.parseDouble();
+            case DEDENT:
+                break;
             case OPERATOR:
                 if (match("(")) {
                     return this.parseExpressionList(true);
