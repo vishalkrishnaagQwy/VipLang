@@ -5,6 +5,7 @@ import org.lang.Analyser.ASTPrinter;
 import org.lang.AstNode.ASTNode;
 import org.lang.CodeGen.JavaBytecodeGenerator;
 import org.lang.Lexer.Lexer;
+import org.lang.Lexer.Token;
 import org.lang.Parser.Parser;
 import org.lang.exceptions.ExceptionOnCodeAnalysis;
 import org.lang.exceptions.VipCompilerException;
@@ -12,6 +13,7 @@ import org.lang.memmory.SymbolTable;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
@@ -79,6 +81,13 @@ public class Main {
     private static void processFile(File file,SymbolTable symbolTable,int classId) throws IOException, VipCompilerException, ExceptionOnCodeAnalysis {
         System.out.println("Processing file: " + file.getName());
         Lexer lexer = new Lexer(file.getPath());
+//        List<Token> tokenList = lexer.getNextLine();
+//        while (tokenList != null)
+//        {
+//            System.out.println(tokenList);
+//            tokenList = lexer.getNextLine();
+//
+//        }
         Parser parser = new Parser(lexer,classId);
         ASTNode astNodes = parser.getParseTree();
         ASTAnalyser astAnalyser = new ASTAnalyser(symbolTable);

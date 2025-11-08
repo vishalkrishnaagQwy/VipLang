@@ -16,11 +16,7 @@ public class Lexer {
     private File file;
     private int lineNumber;
     private List<String> textContent;
-    private int index;
-    private int currentIndentation = 0;
     private int NewLineCheckEnabled = 0;
-    private boolean usesTabs = false;   // Track if the file uses tabs
-    private boolean usesSpaces = false;
 
     private final Set<String> keywords = new HashSet<String>();
     private final Set<String> hints = new HashSet<String>();
@@ -29,9 +25,11 @@ public class Lexer {
 
     // Define symbols and their types
     private final Map<String, Token.TokenType> symbols = new HashMap<>();
+    private final Stack<Integer> intents;
     private static final int minimum_space = 1;
 
     public Lexer(String fileName) {
+        this.intents = new Stack<>();
         this.encoding = "UTF-8"; // Change as needed
         this.path = fileName;
         this.file = new File(path);
@@ -123,63 +121,6 @@ public class Lexer {
         specialKeywords.add("except");
     }
 
-    private int calculateIndent(String line) {
-        int indentLevel = 0;
-        boolean foundIndentation = false;
-        for (char c : line.toCharArray()) {
-            if (c == ' ') {
-                indentLevel++;
-                if (!foundIndentation) {
-                    usesSpaces = true;
-                    foundIndentation = true;
-                }
-            } else if (c == '\t') {
-                indentLevel += 4;
-                if (!foundIndentation) {
-                    usesTabs = true;
-                    foundIndentation = true;
-                }
-            } else {
-                break;
-            }
-        }
-
-        // Check if the file is mixing tabs and spaces
-        if (usesTabs && usesSpaces) {
-            throw new IllegalArgumentException("IndentationError: Mixed tabs and spaces detected in the file!");
-        }
-        return indentLevel / 4;
-    }
-
-
-//    private void handleIndentation(List<Token> tokens, int indentLevel) {
-//
-//        if (indentLevel > currentIndentation) {
-//            tokens.add(new Token(Token.TokenType.INDENT, "INDENT", lineNumber));
-//        } else if (indentLevel < currentIndentation) {
-//            tokens.add(new Token(Token.TokenType.DEDENT, "DEDENT", lineNumber));
-//        }
-//        currentIndentation = indentLevel;
-//    }
-
-    private void handleIndentation(List<Token> tokens, String line) {
-        int newIndentation = calculateIndent(line);
-
-        if (newIndentation > currentIndentation) {
-            // Emit an INDENT token
-            tokens.add(new Token(Token.TokenType.INDENT, "", lineNumber));
-        } else if (newIndentation < currentIndentation) {
-            // Emit multiple DEDENT tokens based on the difference
-            int dedentCount = currentIndentation - newIndentation;
-            for (int i = 0; i < dedentCount; i++) {
-                tokens.add(new Token(Token.TokenType.DEDENT, "", lineNumber));
-            }
-        }
-
-        // Update the current indentation level
-        currentIndentation = newIndentation;
-    }
-
 
 
 
@@ -236,6 +177,41 @@ public class Lexer {
             }
         }
         return tokens;
+    }
+
+    private int countIndent(String line) {
+        int count = 0;
+        for (char c : line.toCharArray()) {
+            if (c == ' ') count++;
+            else break;
+        }
+        return count;
+    }
+
+    private void handleIndentation(List<Token> tokens, String inputLine) {
+        int currentIndent = countIndent(inputLine);
+        System.out.println("indent is : "+currentIndent+ " stack is "+intents);
+        if(!intents.isEmpty())
+        {
+            if(intents.peek() == currentIndent)
+            {
+                tokens.add(new Token(Token.TokenType.NEW_LINE,"",lineNumber));
+            }
+            else if (currentIndent < intents.peek()) {
+                intents.push(currentIndent);
+                tokens.add(new Token(Token.TokenType.DEDENT,"",lineNumber));
+            }
+            else if (currentIndent > intents.peek()) {
+                intents.pop();
+//                tokens.add(new Token(Token.TokenType.NEW_LINE,"",lineNumber));
+            }
+        }
+        else {
+           if (currentIndent > 0) {
+               intents.push(currentIndent);
+           }
+        }
+
     }
 
     private boolean isOperator(char c) {

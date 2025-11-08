@@ -157,7 +157,7 @@ public class Parser {
                     classDeclNode.setExtends(parseExtends());
                 }
             }
-            consume(Token.TokenType.INDENT);
+//            consume(Token.TokenType);
             this.className = vipClasName;
             classDeclNode.setClassName(this.className);
             classDeclNode.setClassBody(parseClassBody());
@@ -248,7 +248,7 @@ public class Parser {
                         body.add(parseMethodDefinition());
                     } else {
                         // Handle other keywords like if, for, etc.
-                        throw new RuntimeException("Illegal codes inside class body of '" + className + "' .vp");
+                        throw new RuntimeException("Illegal codes inside class body of '" + className + "' .vp token received "+currentToken);
                     }
                     break;
                 case HINT:
@@ -273,6 +273,10 @@ public class Parser {
     // Parse a single statement
     private ASTNode parseStatement() throws VipCompilerException {
         List<ASTNode> astList = new ArrayList<>();
+        if(match(Token.TokenType.NEW_LINE))
+        {
+            getNextToken();
+        }
         switch (currentToken.getType()) {
             case HINT:
                 astList.add(parseVarDecl());
@@ -535,7 +539,6 @@ public class Parser {
             ReturnType = calculateCollectiveHints();
         }
             List<ASTNode> statements = new ArrayList<>();
-            consume(Token.TokenType.INDENT);
             // Parse method body
             while (!match("return")) {
                 System.out.println("looping ...");
