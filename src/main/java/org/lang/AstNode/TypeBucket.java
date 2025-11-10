@@ -1,7 +1,6 @@
 package org.lang.AstNode;
 
 import org.lang.Lexer.Token;
-import org.objectweb.asm.MethodVisitor;
 
 import java.util.List;
 
@@ -32,8 +31,4 @@ public class TypeBucket extends ASTNode {
 
     }
 
-    @Override
-    public void accept(AST visitor, MethodVisitor methodVisitor) {
-
-    }
 }

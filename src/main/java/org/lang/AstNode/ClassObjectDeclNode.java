@@ -1,7 +1,6 @@
 package org.lang.AstNode;
 
 import org.lang.Lexer.Token;
-import org.objectweb.asm.MethodVisitor;
 
 import java.util.List;
 
@@ -37,10 +36,5 @@ public class ClassObjectDeclNode extends ASTNode {
     @Override
     public void accept(AST visitor) {
         visitor.visitClassObjectNode(this);
-    }
-
-    @Override
-    public void accept(AST visitor, MethodVisitor methodVisitor) {
-        visitor.visitClassObjectNode(this,methodVisitor);
     }
 }

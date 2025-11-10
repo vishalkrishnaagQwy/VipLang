@@ -1,6 +1,5 @@
 package org.lang.AstNode;
 
-import org.objectweb.asm.MethodVisitor;
 
 public class DefParams extends ASTNode {
 
@@ -40,11 +39,6 @@ public class DefParams extends ASTNode {
 
     @Override
     public void accept(AST visitor) {
-
-    }
-
-    @Override
-    public void accept(AST visitor, MethodVisitor methodVisitor) {
 
     }
 }

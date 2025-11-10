@@ -1,7 +1,6 @@
 package org.lang.AstNode;
 
 import org.lang.exceptions.ExceptionOnCodeAnalysis;
-import org.objectweb.asm.MethodVisitor;
 
 public class ClassDeclNode extends ASTNode {
     private String className;
@@ -73,8 +72,4 @@ public class ClassDeclNode extends ASTNode {
         visitor.visitClassDeclNode(this);
     }
 
-    @Override
-    public void accept(AST visitor, MethodVisitor methodVisitor) {
-
-    }
 }

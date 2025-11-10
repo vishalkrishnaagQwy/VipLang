@@ -1,7 +1,7 @@
 package org.lang.AstNode;
 
 
-import org.objectweb.asm.MethodVisitor;
+
 
 public class NumberNode extends ASTNode {
     public String getValue() {
@@ -39,8 +39,4 @@ public class NumberNode extends ASTNode {
 
     }
 
-    @Override
-    public void accept(AST visitor, MethodVisitor methodVisitor) {
-
-    }
 }

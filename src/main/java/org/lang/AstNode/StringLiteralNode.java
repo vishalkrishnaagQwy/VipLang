@@ -1,6 +1,5 @@
 package org.lang.AstNode;
 
-import org.objectweb.asm.MethodVisitor;
 
 public class StringLiteralNode extends ASTNode {
    private String value;
@@ -17,12 +16,6 @@ public class StringLiteralNode extends ASTNode {
     public void accept(AST visitor) {
       visitor.visitStringLiteralNode(this);
     }
-
-    @Override
-    public void accept(AST visitor, MethodVisitor methodVisitor) {
-        visitor.visitStringLiteralNode(this,methodVisitor);
-    }
-
     public String getValue() {
         return value;
     }

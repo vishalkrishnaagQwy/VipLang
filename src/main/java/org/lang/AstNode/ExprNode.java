@@ -1,7 +1,5 @@
 package org.lang.AstNode;
 
-import org.objectweb.asm.MethodVisitor;
-
 public class ExprNode extends ASTNode {
     String value;
 
@@ -12,10 +10,5 @@ public class ExprNode extends ASTNode {
     @Override
     public void accept(AST visitor) {
        visitor.visitExperNode(this);
-    }
-
-    @Override
-    public void accept(AST visitor, MethodVisitor methodVisitor) {
-
     }
 }

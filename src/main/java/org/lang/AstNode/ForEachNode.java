@@ -1,6 +1,5 @@
 package org.lang.AstNode;
 
-import org.objectweb.asm.MethodVisitor;
 
 public class ForEachNode  extends ASTNode {
     public ForEachNode() {
@@ -8,10 +7,5 @@ public class ForEachNode  extends ASTNode {
     @Override
     public void accept(AST visitor) {
         visitor.visitForEachNode(this);
-    }
-
-    @Override
-    public void accept(AST visitor, MethodVisitor methodVisitor) {
-
     }
 }

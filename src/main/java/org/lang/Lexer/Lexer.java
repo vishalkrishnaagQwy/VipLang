@@ -189,6 +189,8 @@ public class Lexer {
     }
 
     private void handleIndentation(List<Token> tokens, String inputLine) {
+        if(!inputLine.trim().isEmpty())
+        {
         int currentIndent = countIndent(inputLine);
         System.out.println("indent is : "+currentIndent+ " stack is "+intents);
         if(!intents.isEmpty())
@@ -202,7 +204,7 @@ public class Lexer {
                 tokens.add(new Token(Token.TokenType.DEDENT,"",lineNumber));
             }
             else if (currentIndent > intents.peek()) {
-                intents.pop();
+//                intents.pop();
 //                tokens.add(new Token(Token.TokenType.NEW_LINE,"",lineNumber));
             }
         }
@@ -212,7 +214,7 @@ public class Lexer {
            }
         }
 
-    }
+    }}
 
     private boolean isOperator(char c) {
         return symbols.containsKey(String.valueOf(c));

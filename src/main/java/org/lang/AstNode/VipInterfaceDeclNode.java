@@ -1,7 +1,6 @@
 package org.lang.AstNode;
 
 import org.lang.exceptions.ExceptionOnCodeAnalysis;
-import org.objectweb.asm.MethodVisitor;
 
 public class VipInterfaceDeclNode extends ASTNode {
     private String interfaceName;
@@ -74,8 +73,4 @@ public class VipInterfaceDeclNode extends ASTNode {
         visitor.visitVipInterfaceDeclNode(this);
     }
 
-    @Override
-    public void accept(AST visitor, MethodVisitor methodVisitor) throws ExceptionOnCodeAnalysis {
-        visitor.visitVipInterfaceDeclNode(this,methodVisitor);
-    }
 }

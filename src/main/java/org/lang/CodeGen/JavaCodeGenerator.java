@@ -1,16 +1,18 @@
 package org.lang.CodeGen;
+
 import org.lang.AstNode.*;
-import org.lang.Services.DBService;
 import org.lang.exceptions.ExceptionOnCodeAnalysis;
 import org.lang.exceptions.ExceptionOnDetailedAnalysis;
-import org.lang.utils.Pair;
 import org.lang.memmory.SymbolTable;
+import org.lang.utils.Pair;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
-public class JavaBytecodeGenerator implements AST {
+public class JavaCodeGenerator implements AST {
     private SymbolTable symbolTab;
     private String className = "_dev_";
     private String vipCurrentPackage = "vip";
@@ -18,16 +20,17 @@ public class JavaBytecodeGenerator implements AST {
     private List<String> code;
 
 
-    public JavaBytecodeGenerator(SymbolTable _symbolTable){
+    public JavaCodeGenerator(SymbolTable _symbolTable){
 
         this.symbolTab = _symbolTable;
         this.className = className.replace('.', '/');
+        this.code = new ArrayList<>();
 
         // Define the class
     }
     @Override
     public void visitMethodDefNode(MethodDefNode methodDefNode) {
-        String descriptor = "()V";
+        code.add(methodDefNode.getFunctionName() + "{");
         methodDefNode.body.forEach(element -> {
             try {
                 element.accept(this);
@@ -35,6 +38,7 @@ public class JavaBytecodeGenerator implements AST {
                 throw new ExceptionOnDetailedAnalysis(e);
             }
         });
+        code.add("}\n");
     }
 
     @Override
@@ -52,6 +56,7 @@ public class JavaBytecodeGenerator implements AST {
     @Override
     public void visitMethodCallNode(MethodCallNode methodCallNode) {
        //method call node
+        code.add(methodCallNode.methodName + "(" + methodCallNode.expr+")");
     }
 
     @Override
@@ -61,7 +66,9 @@ public class JavaBytecodeGenerator implements AST {
 
     @Override
     public void visitWhileNode(WhileNode whileNode) {
+
     }
+
 
     @Override
     public void visitExperNode(ExprNode exprNode) {
@@ -87,16 +94,17 @@ public class JavaBytecodeGenerator implements AST {
         this.vipCurrentPackage = classDeclNode.getPackage().getCurrentPackage();
         this.FullPackageName = classDeclNode.getPackage().getPackageRoute();
         symbolTab.defineClass(classDeclNode.getClassId(),className);
+        code.add("public class "+className+ "{ \n");
 //        DBService.insert(vipCurrentPackage,className,FullPackageName,"[]","[]");
         classDeclNode.classBody.accept(this);
+        code.add("}\n");
 
    }
 
     @Override
     public void visitClassObjectNode(ClassObjectDeclNode objClassNode) {
-
+         code.add(objClassNode.getClassName()+ " "+objClassNode.getParams());
     }
-
 
 
     @Override
@@ -106,27 +114,31 @@ public class JavaBytecodeGenerator implements AST {
 
     @Override
     public void visitPackageDeclNode(PackageDeclNode packageDeclNode) {
-
+        code.add("package "+ packageDeclNode.getCurrentPackage()+ ";\n");
     }
 
     @Override
     public void visitStringLiteralNode(StringLiteralNode stringLiteralNode) {
+        code.add(stringLiteralNode.getValue());
     }
 
     @Override
     public void visitVersionNode(VersionNode versionNode) {
-
+        code.add("// "+ versionNode.getVersion()+ "\n");
     }
 
     @Override
-    public String visitVariableNode(VariableNode variableNode) {
-          return variableNode.getName();
+    public String visitVariableNode(VariableNode variableNode)
+    {
+        code.add(variableNode.getName());
+          return "";
     }
 
     @Override
     public void visitArithematicExpr(ArithematicExpr arithematicExpr) {
 
     }
+
 
     @Override
     public void visitForEachNode(ForEachNode forEachNode) {
@@ -154,6 +166,7 @@ public class JavaBytecodeGenerator implements AST {
 
     }
 
+
     @Override
     public void visitVipInterfaceDeclNode(VipInterfaceDeclNode vipInterfaceDeclNode) {
 
@@ -162,6 +175,12 @@ public class JavaBytecodeGenerator implements AST {
 
 
     public void writeClassToFile() {
-        throw new RuntimeException("it wont work");
+        try {
+            FileOutputStream fos = new FileOutputStream(className + ".java");
+            fos.write(String.join(" ", code).getBytes(StandardCharsets.UTF_8));
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -6,7 +6,6 @@ import org.lang.AstNode.ForNode;
 import org.lang.AstNode.IFNode;
 import org.lang.AstNode.ParserExceptionNode;
 import org.lang.AstNode.StringLiteralNode;
-import org.objectweb.asm.MethodVisitor;
 
 public class ASTPrinter implements AST {
     @Override
@@ -15,23 +14,8 @@ public class ASTPrinter implements AST {
     }
 
     @Override
-    public void visitMethodDefNode(MethodDefNode methodDefNode, MethodVisitor methodVisitor) {
-
-    }
-
-    @Override
     public void visitBlockNode(BlockNode blockNode) {
         System.out.println("--> Reached statements : "+ blockNode.getList().size());
-    }
-
-    @Override
-    public void visitBlockNode(BlockNode blockNode, MethodVisitor methodVisitor) {
-
-    }
-
-    @Override
-    public void visitMethodCallNode(MethodCallNode methodCallNode, MethodVisitor methodVisitor) {
-
     }
 
     @Override
@@ -60,11 +44,6 @@ public class ASTPrinter implements AST {
     }
 
     @Override
-    public void visitBooleanExprNode(BooleanExpr booleanExpr, MethodVisitor methodVisitor) {
-
-    }
-
-    @Override
     public void visitParserExceptionNode(ParserExceptionNode parserExceptionNode) {
         System.out.println("error catched"+parserExceptionNode.errorCode);
     }
@@ -79,10 +58,6 @@ public class ASTPrinter implements AST {
 
     }
 
-    @Override
-    public void visitClassObjectNode(ClassObjectDeclNode objClassNode, MethodVisitor methodVisitor) {
-
-    }
 
 
     @Override
@@ -101,11 +76,6 @@ public class ASTPrinter implements AST {
     }
 
     @Override
-    public void visitStringLiteralNode(StringLiteralNode stringLiteralNode, MethodVisitor methodVisitor) {
-
-    }
-
-    @Override
     public void visitVersionNode(VersionNode versionNode) {
         System.out.println("---> Reached version node");
     }
@@ -121,10 +91,6 @@ public class ASTPrinter implements AST {
 
     }
 
-    @Override
-    public void visitArithematicExpr(ArithematicExpr arithematicExpr, MethodVisitor methodVisitor) {
-
-    }
 
     @Override
     public void visitForEachNode(ForEachNode forEachNode) {
@@ -142,10 +108,6 @@ public class ASTPrinter implements AST {
         return new Pair<>(numberNode.getValue(), numberNode.getType());
     }
 
-    @Override
-    public void visitNumberNode(NumberNode numberNode, MethodVisitor methodVisitor) {
-        System.out.println("[number("+ numberNode.getValue() +")]");
-    }
 
     @Override
     public void visitAssignmentNode(AssignmentNode assignmentNode) {
@@ -158,17 +120,7 @@ public class ASTPrinter implements AST {
     }
 
     @Override
-    public void visitVarDeclNode(VarDeclNode varDeclNode, MethodVisitor methodVisitor) {
-
-    }
-
-    @Override
     public void visitVipInterfaceDeclNode(VipInterfaceDeclNode vipInterfaceDeclNode) {
         System.out.println("----> Reached Interface Declaration");
-    }
-
-    @Override
-    public void visitVipInterfaceDeclNode(VipInterfaceDeclNode vipInterfaceDeclNode, MethodVisitor methodVisitor) {
-
     }
 }

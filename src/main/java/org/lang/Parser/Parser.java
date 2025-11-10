@@ -49,21 +49,28 @@ public class Parser {
     }
 
     private void getNextToken() {
-        if (readIndex < LineTokens.size() && !eof_reached) {
-            currentToken = LineTokens.get(readIndex);
-        } else {
-            LineTokens = lexer.getNextLine();
-            if (LineTokens != null && !LineTokens.isEmpty()) {
-                readIndex = 0;
-                currentToken = LineTokens.get(0);
-            } else {
-                if (LineTokens != null) {
-                    eof_reached = true;
-                }
-
-            }
+        if(LineTokens == null)
+        {
+            eof_reached = true;
         }
-        readIndex++;
+        else {
+            if (readIndex < LineTokens.size() && !eof_reached) {
+                currentToken = LineTokens.get(readIndex);
+            } else {
+                LineTokens = lexer.getNextLine();
+                if (LineTokens != null && !LineTokens.isEmpty()) {
+                    readIndex = 0;
+                    currentToken = LineTokens.get(0);
+                } else {
+                    if (LineTokens != null) {
+                        eof_reached = true;
+                    }
+
+                }
+            }
+            readIndex++;
+        }
+
 
     }
 
@@ -254,6 +261,9 @@ public class Parser {
                 case HINT:
                     body.add(parseVarDecl());
                     // assignment a = 20 or a , b = 10 , 20
+                    break;
+                case NEW_LINE:
+                    consume(Token.TokenType.NEW_LINE);
                     break;
 //                case INDENT:
 //                    consume(Token.TokenType.INDENT);
@@ -545,7 +555,7 @@ public class Parser {
                 statements.add(parseStatement());
             }
             statements.add(parseReturn());
-//        consume(Token.TokenType.DEDENT);
+
             return new MethodDefNode(functionName,params, statements, ReturnType);
 
     }
@@ -554,6 +564,7 @@ public class Parser {
         getNextToken();
        ReturnNode returnNode = new ReturnNode();
        returnNode.setExpr(this.parseExpression());
+       getNextToken();
         return returnNode;
     }
 

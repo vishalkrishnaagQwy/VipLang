@@ -1,6 +1,5 @@
 package org.lang.AstNode;
 
-import org.objectweb.asm.MethodVisitor;
 
 public class VarDeclNode extends ASTNode {
    private String VariableName;
@@ -39,8 +38,4 @@ public class VarDeclNode extends ASTNode {
     public VarDeclNode() {
     }
 
-    @Override
-    public void accept(AST visitor, MethodVisitor methodVisitor) {
-        visitor.visitVarDeclNode(this,methodVisitor);
-    }
 }

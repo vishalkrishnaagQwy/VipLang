@@ -10,7 +10,6 @@ repositories {
 }
 
 dependencies {
-    implementation("org.ow2.asm:asm:9.7.1")
     implementation("org.xerial:sqlite-jdbc:3.47.1.0")
     implementation("org.jooq:jooq:3.19.16")
     testImplementation(platform("org.junit:junit-bom:5.10.0"))

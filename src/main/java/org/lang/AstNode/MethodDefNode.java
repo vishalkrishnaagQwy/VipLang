@@ -1,7 +1,5 @@
 package org.lang.AstNode;
 
-import org.objectweb.asm.MethodVisitor;
-
 import java.util.List;
 
 public class MethodDefNode extends ASTNode {
@@ -22,10 +20,6 @@ public class MethodDefNode extends ASTNode {
         visitor.visitMethodDefNode(this);
     }
 
-    @Override
-    public void accept(AST visitor, MethodVisitor methodVisitor) {
-        visitor.visitMethodDefNode(this,methodVisitor);
-    }
 
     public String getFunctionName() {
         return functionName;

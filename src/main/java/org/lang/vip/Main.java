@@ -4,6 +4,7 @@ import org.lang.Analyser.ASTAnalyser;
 import org.lang.Analyser.ASTPrinter;
 import org.lang.AstNode.ASTNode;
 import org.lang.CodeGen.JavaBytecodeGenerator;
+import org.lang.CodeGen.JavaCodeGenerator;
 import org.lang.Lexer.Lexer;
 import org.lang.Lexer.Token;
 import org.lang.Parser.Parser;
@@ -92,7 +93,7 @@ public class Main {
         ASTNode astNodes = parser.getParseTree();
         ASTAnalyser astAnalyser = new ASTAnalyser(symbolTable);
         ASTPrinter astPrinter = new ASTPrinter();
-        JavaBytecodeGenerator codeGen = new JavaBytecodeGenerator(symbolTable);
+        JavaCodeGenerator codeGen = new JavaCodeGenerator(symbolTable);
         if (astNodes != null) {
                 astNodes.accept(astPrinter);
                 astNodes.accept(astAnalyser);

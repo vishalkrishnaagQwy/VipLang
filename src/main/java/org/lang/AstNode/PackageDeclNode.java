@@ -1,7 +1,6 @@
 package org.lang.AstNode;
 
 import org.lang.Services.DBService;
-import org.objectweb.asm.MethodVisitor;
 
 public class PackageDeclNode extends ASTNode {
     private final String packageRoute;
@@ -21,12 +20,8 @@ public class PackageDeclNode extends ASTNode {
     @Override
     public void accept(AST visitor) {
         visitor.visitPackageDeclNode(this);
-        DBService.createContext();
-        DBService.createPackage(this.getCurrentPackage());
+//        DBService.createContext();
+//        DBService.createPackage(this.getCurrentPackage());
     }
 
-    @Override
-    public void accept(AST visitor, MethodVisitor methodVisitor) {
-
-    }
 }

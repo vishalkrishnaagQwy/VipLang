@@ -1,6 +1,5 @@
 package org.lang.AstNode;
 
-import org.objectweb.asm.MethodVisitor;
 
 import java.util.List;
 
@@ -23,10 +22,5 @@ public class BlockNode extends ASTNode {
     @Override
     public void accept(AST visitor) {
         visitor.visitBlockNode(this);
-    }
-
-    @Override
-    public void accept(AST visitor, MethodVisitor methodVisitor) {
-        visitor.visitBlockNode(this,methodVisitor);
     }
 }
