@@ -1,4 +1,4 @@
-# Virtual Interfacing Programming Language (VIPL)
+# Vishal Interfacing Programming Language (VIPL)
 
 VIPL (Virtual Interfacing Programming Language) is a domain-specific language (DSL) with a syntax similar to Python, designed for flexible and intuitive virtual interfacing. VIPL offers a streamlined syntax and Python-like functionality, making it approachable for those familiar with Python while providing features specific to interfacing tasks. The VIPL compiler is implemented in Java, ensuring performance and portability.
 
